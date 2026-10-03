@@ -1,4 +1,4 @@
-﻿using CenterApp.Service.Services;
+﻿using CenterApp.Service;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CenterApp.Web.Controllers;
