@@ -1,0 +1,57 @@
+﻿@model List<LookupVm>
+@{
+    var type = (string)ViewBag.Type;
+    ViewData["Title"] = (string)ViewBag.Title;
+}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3>@ViewBag.Title</h3>
+    <button class="btn btn-primary" onclick="openForm('@Url.Action("Form", "Lookups", new { type })', '@ViewBag.Title')">+ إضافة</button>
+</div>
+
+<table class="table table-striped table-hover align-middle">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>الاسم</th>
+            @if (type == "teachers")
+            {
+                <th>الموبايل</th>
+                <th>الحالة</th>
+            }
+            @if (type == "gradelevels")
+            {
+                <th>الترتيب</th>
+            }
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var r in Model)
+        {
+            <tr>
+                <td>@r.Id</td>
+                <td>@r.Name</td>
+                @if (type == "teachers")
+                {
+                    <td>@r.Phone</td>
+                    <td>@if (r.IsActive) {
+                        <span class="badge bg-success">نشط</span>
+                    } else
+                    {
+
+                        <span class="badge bg-secondary">غير نشط</span>
+                    }
+                </td>
+            }
+            @if (type == "gradelevels")
+            {
+                <td>@r.SortOrder</td>
+            }
+            <td class="text-nowrap">
+                <button class="btn btn-sm btn-outline-primary" onclick="openForm('@Url.Action("Form", "Lookups", new { type, id = r.Id })', '@ViewBag.Title')">تعديل</button>
+                <button class="btn btn-sm btn-outline-danger" onclick="confirmPost('@Url.Action("Delete", "Lookups")', { type: '@type', id: @r.Id }, 'تأكيد الحذف؟')">حذف</button>
+            </td>
+        </tr>
+    }
+</tbody>
+</table>
