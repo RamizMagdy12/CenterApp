@@ -1,0 +1,58 @@
+﻿@model ManageEnrollmentsVm
+@using System.Text.Json
+<div class="mb-3">
+    <strong>@Model.GroupName</strong> —
+    المسجلين: @Model.Enrolled.Count / @(Model.Capacity == 0 ? "∞" : Model.Capacity.ToString()) —
+    السعر الشهري: @Model.MonthlyFee.ToString("N2")
+</div>
+
+<div class="row g-2 mb-3">
+    <div class="col-md-6">
+        <input id="enrStudent" list="enrList" class="form-control" placeholder="ابحث عن طالب بالاسم أو الكود..." autocomplete="off" />
+        <datalist id="enrList">
+            @foreach (var a in Model.Available)
+            {
+                <option value="@a.Text"></option>
+            }
+        </datalist>
+    </div>
+    <div class="col-md-3"><input id="enrFee" type="number" min="0" step="0.01" class="form-control" placeholder="سعر خاص (اختياري)" /></div>
+    <div class="col-md-3"><button class="btn btn-success w-100" onclick="addEnrollment()">تسجيل</button></div>
+</div>
+
+<table class="table table-sm table-striped align-middle">
+    <thead><tr><th>الطالب</th><th>الموبايل</th><th>انضم في</th><th>سعر خاص</th><th></th></tr></thead>
+    <tbody>
+        @foreach (var e in Model.Enrolled)
+        {
+            <tr>
+                <td>@e.StudentName</td>
+                <td>@e.Phone</td>
+                <td>@e.JoinedAt.ToString("yyyy-MM-dd")</td>
+                <td>@(e.CustomFee?.ToString("N2") ?? "-")</td>
+                <td><button class="btn btn-sm btn-outline-danger" onclick="removeEnrollment(@e.EnrollmentId)">إلغاء التسجيل</button></td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<script>
+    var stuMap = @Html.Raw(JsonSerializer.Serialize(Model.Available.ToDictionary(a => a.Text, a => a.Id)));
+    var manageUrl = '@Url.Action("Manage", "Enrollments", new { groupId = Model.GroupId })';
+
+    function reopen() { openForm(manageUrl, 'طلاب المجموعة', true); }
+
+    function addEnrollment() {
+        var id = stuMap[$('#enrStudent').val()];
+        if (!id) { alert('اختار الطالب من القائمة'); return; }
+        postJson('@Url.Action("Add", "Enrollments")',
+            { groupId: @Model.GroupId, studentId: id, customFee: $('#enrFee').val() }, reopen);
+    }
+
+    function removeEnrollment(id) {
+        if (!confirm('إلغاء تسجيل الطالب من المجموعة؟')) return;
+        postJson('@Url.Action("Remove", "Enrollments")', { id: id }, reopen);
+    }
+
+    $('#appModal').off('hidden.bs.modal.enr').one('hidden.bs.modal.enr', function () { location.reload(); });
+</script>
