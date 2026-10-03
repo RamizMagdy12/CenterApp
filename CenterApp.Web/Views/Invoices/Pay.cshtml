@@ -1,0 +1,47 @@
+﻿@model InvoiceRow
+<div class="mb-3">
+    <div><strong>@Model.StudentName</strong> — @Model.GroupName</div>
+    <div>فاتورة @Model.Month/@Model.Year — المبلغ: @Model.Amount.ToString("N2") — المدفوع: @Model.Paid.ToString("N2")</div>
+</div>
+
+@if (Model.Payments.Any())
+{
+    <table class="table table-sm">
+        <thead><tr><th>التاريخ</th><th>المبلغ</th><th>الطريقة</th><th>ملاحظة</th></tr></thead>
+        <tbody>
+            @foreach (var p in Model.Payments)
+            {
+                <tr>
+                    <td>@p.PaidAt.ToString("yyyy-MM-dd HH:mm")</td>
+                    <td>@p.Amount.ToString("N2")</td>
+                    <td>@(p.Method == PaymentMethod.Cash ? "نقدي" : p.Method == PaymentMethod.Wallet ? "محفظة" : "تحويل")</td>
+                    <td>@p.Note</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<form id="payForm" onsubmit="return false;">
+    <input type="hidden" name="invoiceId" value="@Model.Id" />
+    <div class="row g-3">
+        <div class="col-md-4">
+            <label class="form-label">الخصم</label>
+            <input name="discount" type="number" min="0" step="0.01" class="form-control" value="@Model.Discount.ToString("0.##")" />
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">المبلغ المدفوع الآن (المتبقي @Model.Remaining.ToString("N2"))</label>
+            <input name="amount" type="number" min="0" step="0.01" class="form-control" value="@Model.Remaining.ToString("0.##")" />
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">طريقة الدفع</label>
+            <select name="method" class="form-select">
+                <option value="0">نقدي</option>
+                <option value="1">محفظة</option>
+                <option value="2">تحويل</option>
+            </select>
+        </div>
+        <div class="col-12"><label class="form-label">ملاحظة</label><input name="note" class="form-control" /></div>
+        <div class="col-12"><button class="btn btn-success" onclick="submitForm('#payForm', '@Url.Action("Pay", "Invoices")')">حفظ التحصيل</button></div>
+    </div>
+</form>
