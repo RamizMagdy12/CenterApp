@@ -1,0 +1,39 @@
+﻿@model AttendanceVm
+<div class="mb-3">
+    <strong>@Model.GroupName</strong> — @ArabicDays.Name(Model.Date.DayOfWeek) @Model.Date.ToString("yyyy-MM-dd")
+    <button type="button" class="btn btn-sm btn-outline-secondary me-3" onclick="$('.att-present').prop('checked', true)">الكل حاضر</button>
+</div>
+
+@if (Model.Rows.Count == 0)
+{
+    <div class="alert alert-warning">مفيش طلاب مسجلين في المجموعة في اليوم ده.</div>
+}
+else
+{
+    <table class="table table-sm align-middle">
+        <thead><tr><th>الطالب</th><th>حاضر</th><th>غائب</th><th>معذور</th><th>متأخر</th></tr></thead>
+        <tbody>
+            @foreach (var r in Model.Rows)
+            {
+                <tr class="att-row" data-student="@r.StudentId">
+                    <td>@r.StudentName</td>
+                    <td><input type="radio" class="att-present" name="st_@r.StudentId" value="0" @(r.Status == AttendanceStatus.Present ? "checked" : "") /></td>
+                    <td><input type="radio" name="st_@r.StudentId" value="1" @(r.Status == AttendanceStatus.Absent ? "checked" : "") /></td>
+                    <td><input type="radio" name="st_@r.StudentId" value="2" @(r.Status == AttendanceStatus.Excused ? "checked" : "") /></td>
+                    <td><input type="radio" name="st_@r.StudentId" value="3" @(r.Status == AttendanceStatus.Late ? "checked" : "") /></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <button class="btn btn-success" onclick="saveAttendance()">حفظ الحضور</button>
+}
+
+<script>
+    function saveAttendance() {
+        var rows = $('.att-row').map(function () {
+            var sid = $(this).data('student');
+            return { StudentId: sid, Status: parseInt($(this).find('input[name=st_' + sid + ']:checked').val()) };
+        }).get();
+        postBody('@Url.Action("SaveAttendance", "Sessions")', { SessionId: @Model.SessionId, Rows: rows });
+    }
+</script>

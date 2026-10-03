@@ -1,0 +1,76 @@
+﻿@model List<SessionRow>
+@{
+    ViewData["Title"] = "الحصص والحضور";
+    var groups = (List<SelectListItem>)ViewBag.Groups;
+    var gid = ((long)ViewBag.GroupId).ToString();
+}
+<h3 class="mb-3">الحصص والحضور</h3>
+
+<form method="get" class="row g-2 mb-3 align-items-end">
+    <div class="col-md-4">
+        <label class="form-label">المجموعة</label>
+        <select id="groupId" name="groupId" class="form-select">
+            <option value="0">كل المجموعات</option>
+            @foreach (var g in groups)
+            {
+                <option value="@g.Value" selected="@(g.Value == gid)">@g.Text</option>
+            }
+        </select>
+    </div>
+    <div class="col-md-3">
+        <label class="form-label">الشهر</label>
+        <input type="month" id="month" name="month" value="@ViewBag.Month" class="form-control" />
+    </div>
+    <div class="col-auto"><button class="btn btn-outline-primary">عرض</button></div>
+    <div class="col-auto"><button type="button" class="btn btn-primary" onclick="generateSessions()">توليد حصص الشهر</button></div>
+</form>
+
+<table class="table table-striped table-hover align-middle">
+    <thead><tr><th>التاريخ</th><th>اليوم</th><th>المجموعة</th><th>من</th><th>إلى</th><th>الحالة</th><th>حضور / غياب</th><th></th></tr></thead>
+    <tbody>
+        @foreach (var r in Model)
+        {
+            <tr class="@(r.Status == SessionStatus.Cancelled ? "table-secondary text-decoration-line-through" : "")">
+                <td>@r.Date.ToString("yyyy-MM-dd")</td>
+                <td>@ArabicDays.Name(r.Date.DayOfWeek)</td>
+                <td>@r.GroupName</td>
+                <td>@r.Start.ToString(@"hh\:mm")</td>
+                <td>@r.End.ToString(@"hh\:mm")</td>
+                <td>
+                    @if (r.Status == SessionStatus.Done)
+                    {
+                        <span class="badge bg-success">تم</span>
+                    }
+                    else if (r.Status == SessionStatus.Cancelled)
+                    {
+
+                        <span class="badge bg-secondary">ملغية</span>
+                    }
+                    else
+                    {
+
+                        <span class="badge bg-warning text-dark">مجدولة</span>
+                    }
+                </td>
+                <td>@(r.Total == 0 ? "-" : $"{r.Present} / {r.Absent}")</td>
+                <td class="text-nowrap">
+                    @if (r.Status != SessionStatus.Cancelled)
+                    {
+                        <button class="btn btn-sm btn-outline-success" onclick="openForm('@Url.Action("Attendance", "Sessions", new { id = r.Id })', 'تحضير الحصة', true)">تحضير</button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="confirmPost('@Url.Action("Cancel", "Sessions")', { id: @r.Id }, 'إلغاء الحصة؟')">إلغاء</button>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@section Scripts {
+    <script>
+        function generateSessions() {
+            postJson('@Url.Action("Generate", "Sessions")',
+                { groupId: $('#groupId').val(), month: $('#month').val() },
+                function (r) { alert(r.message); location.reload(); });
+        }
+    </script>
+}
