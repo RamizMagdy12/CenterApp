@@ -1,0 +1,28 @@
+﻿@model LookupVm
+<form id="lookupForm" onsubmit="return false;">
+    <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="Type" />
+    <div class="mb-3">
+        <label class="form-label">الاسم</label>
+        <input asp-for="Name" class="form-control" />
+    </div>
+    @if (Model.Type == "teachers")
+    {
+        <div class="mb-3">
+            <label class="form-label">الموبايل</label>
+            <input asp-for="Phone" class="form-control" />
+        </div>
+        <div class="form-check mb-3">
+            <input asp-for="IsActive" class="form-check-input" />
+            <label class="form-check-label">نشط</label>
+        </div>
+    }
+    @if (Model.Type == "gradelevels")
+    {
+        <div class="mb-3">
+            <label class="form-label">الترتيب</label>
+            <input asp-for="SortOrder" type="number" class="form-control" />
+        </div>
+    }
+    <button class="btn btn-success" onclick="submitForm('#lookupForm', '@Url.Action("Save", "Lookups")')">حفظ</button>
+</form>

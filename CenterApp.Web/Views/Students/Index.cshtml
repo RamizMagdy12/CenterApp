@@ -1,0 +1,67 @@
+﻿@model PagedResult<Student>
+@{
+    ViewData["Title"] = "الطلاب";
+    var grades = (List<SelectListItem>)ViewBag.Grades;
+    var gid = (ViewBag.GradeId as long?)?.ToString() ?? "";
+    var q = (string?)ViewBag.Q;
+}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3>الطلاب <span class="badge bg-secondary">@Model.Total</span></h3>
+    <button class="btn btn-primary" onclick="openForm('@Url.Action("Form", "Students")', 'طالب جديد', true)">+ طالب جديد</button>
+</div>
+
+<form method="get" class="row g-2 mb-3">
+    <div class="col-md-5"><input name="q" value="@q" class="form-control" placeholder="بحث بالاسم / الموبايل / الكود" /></div>
+    <div class="col-md-3">
+        <select name="gradeId" class="form-select">
+            <option value="">كل المراحل</option>
+            @foreach (var g in grades)
+            {
+                <option value="@g.Value" selected="@(g.Value == gid)">@g.Text</option>
+            }
+        </select>
+    </div>
+    <div class="col-auto"><button class="btn btn-outline-primary">بحث</button></div>
+</form>
+
+<table class="table table-striped table-hover align-middle">
+    <thead><tr><th>الكود</th><th>الاسم</th><th>الموبايل</th><th>ولي الأمر</th><th>المرحلة</th><th>الحالة</th><th></th></tr></thead>
+    <tbody>
+        @foreach (var s in Model.Items)
+        {
+            <tr>
+                <td>@s.Code</td>
+                <td>@s.Name</td>
+                <td>@s.Phone</td>
+                <td>@s.ParentName <small class="text-muted">@s.ParentPhone</small></td>
+                <td>@s.GradeLevel?.Name</td>
+                <td>@if (s.IsActive) {
+                    <span class="badge bg-success">نشط</span>
+                } else
+                {
+
+                    <span class="badge bg-secondary">متوقف</span>
+                }
+            </td>
+            <td class="text-nowrap">
+                <button class="btn btn-sm btn-outline-primary" onclick="openForm('@Url.Action("Form", "Students", new { id = s.Id })', 'تعديل طالب', true)">تعديل</button>
+                <button class="btn btn-sm btn-outline-danger" onclick="confirmPost('@Url.Action("Delete", "Students")', { id: @s.Id }, 'تأكيد الحذف؟')">حذف</button>
+            </td>
+        </tr>
+    }
+</tbody>
+</table>
+
+@if (Model.TotalPages > 1)
+{
+    <nav>
+        <ul class="pagination">
+            @for (var p = 1; p <= Model.TotalPages; p++)
+            {
+                <li class="page-item @(p == Model.Page ? "active" : "")">
+                    <a class="page-link" asp-action="Index" asp-route-q="@q" asp-route-gradeId="@gid" asp-route-page="@p">@p</a>
+                </li>
+            }
+        </ul>
+    </nav>
+}
