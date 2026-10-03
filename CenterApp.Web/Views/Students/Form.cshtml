@@ -1,0 +1,24 @@
+﻿@model StudentVm
+@{
+    var grades = (List<SelectListItem>)ViewBag.Grades;
+}
+<form id="studentForm" onsubmit="return false;">
+    <input type="hidden" asp-for="Id" />
+    <div class="row g-3">
+        <div class="col-md-6"><label class="form-label">الاسم</label><input asp-for="Name" class="form-control" /></div>
+        <div class="col-md-3"><label class="form-label">الكود (اتركه فاضي للتوليد)</label><input asp-for="Code" class="form-control" /></div>
+        <div class="col-md-3">
+            <label class="form-label">المرحلة</label>
+            <select asp-for="GradeLevelId" asp-items="grades" class="form-select"><option value="">-- اختر --</option></select>
+        </div>
+        <div class="col-md-4"><label class="form-label">موبايل الطالب</label><input asp-for="Phone" class="form-control" /></div>
+        <div class="col-md-4"><label class="form-label">اسم ولي الأمر</label><input asp-for="ParentName" class="form-control" /></div>
+        <div class="col-md-4"><label class="form-label">موبايل ولي الأمر</label><input asp-for="ParentPhone" class="form-control" /></div>
+        <div class="col-md-4"><label class="form-label">تاريخ الميلاد</label><input asp-for="BirthDate" type="date" class="form-control" /></div>
+        <div class="col-md-8"><label class="form-label">ملاحظات</label><input asp-for="Notes" class="form-control" /></div>
+        <div class="col-12 form-check ms-3">
+            <input asp-for="IsActive" class="form-check-input" /><label class="form-check-label">نشط</label>
+        </div>
+        <div class="col-12"><button class="btn btn-success" onclick="submitForm('#studentForm', '@Url.Action("Save", "Students")')">حفظ</button></div>
+    </div>
+</form>
