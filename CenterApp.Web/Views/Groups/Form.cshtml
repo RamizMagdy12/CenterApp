@@ -1,0 +1,85 @@
+﻿@model GroupSaveDto
+@using System.Text.Json
+@{
+    var teachers = (List<SelectListItem>)ViewBag.Teachers;
+    var subjects = (List<SelectListItem>)ViewBag.Subjects;
+    var grades = (List<SelectListItem>)ViewBag.Grades;
+}
+<form id="groupForm" onsubmit="return false;">
+    <input type="hidden" id="gId" value="@Model.Id" />
+    <div class="row g-3">
+        <div class="col-md-6"><label class="form-label">اسم المجموعة</label><input id="gName" class="form-control" value="@Model.Name" /></div>
+        <div class="col-md-3">
+            <label class="form-label">المدرس</label>
+            <select asp-for="TeacherId" id="gTeacher" asp-items="teachers" class="form-select"><option value="">-- اختر --</option></select>
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">المادة</label>
+            <select asp-for="SubjectId" id="gSubject" asp-items="subjects" class="form-select"><option value="">-- اختر --</option></select>
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">المرحلة</label>
+            <select asp-for="GradeLevelId" id="gGrade" asp-items="grades" class="form-select"><option value="">-- بدون --</option></select>
+        </div>
+        <div class="col-md-3"><label class="form-label">السعر الشهري</label><input id="gFee" type="number" min="0" step="0.01" class="form-control" value="@Model.MonthlyFee" /></div>
+        <div class="col-md-3"><label class="form-label">الحد الأقصى للطلاب (0 = بلا حد)</label><input id="gCap" type="number" min="0" class="form-control" value="@Model.Capacity" /></div>
+        <div class="col-md-3 d-flex align-items-end">
+            <div class="form-check"><input id="gActive" type="checkbox" class="form-check-input" @(Model.IsActive ? "checked" : "") /><label class="form-check-label">نشطة</label></div>
+        </div>
+
+        <div class="col-12"><h6>المواعيد الأسبوعية</h6></div>
+        <div class="col-12" id="scheduleRows"></div>
+        <div class="col-12"><button type="button" class="btn btn-sm btn-outline-secondary" onclick="addScheduleRow()">+ ميعاد</button></div>
+
+        <div class="col-12"><button class="btn btn-success" onclick="saveGroup()">حفظ</button></div>
+    </div>
+</form>
+
+<script>
+    var DAYS = [
+        { v: 6, t: 'السبت' }, { v: 0, t: 'الأحد' }, { v: 1, t: 'الإثنين' }, { v: 2, t: 'الثلاثاء' },
+        { v: 3, t: 'الأربعاء' }, { v: 4, t: 'الخميس' }, { v: 5, t: 'الجمعة' }
+    ];
+
+    function addScheduleRow(day, start, end, room) {
+        var opts = DAYS.map(function (d) {
+            return "<option value='" + d.v + "'" + (d.v === day ? " selected" : "") + ">" + d.t + "</option>";
+        }).join('');
+        var html =
+            "<div class='row g-2 mb-2 sch-row'>" +
+            "<div class='col-md-3'><select class='form-select sch-day'>" + opts + "</select></div>" +
+            "<div class='col-md-3'><input type='time' class='form-control sch-start' value='" + (start || '16:00') + "'></div>" +
+            "<div class='col-md-3'><input type='time' class='form-control sch-end' value='" + (end || '17:30') + "'></div>" +
+            "<div class='col-md-2'><input class='form-control sch-room' placeholder='القاعة' value='" + (room || '') + "'></div>" +
+            "<div class='col-md-1'><button type='button' class='btn btn-outline-danger' onclick=\"$(this).closest('.sch-row').remove()\">×</button></div>" +
+            "</div>";
+        $('#scheduleRows').append(html);
+    }
+
+    var existing = @Html.Raw(JsonSerializer.Serialize(Model.Schedules));
+    if (existing.length) existing.forEach(function (s) { addScheduleRow(s.DayOfWeek, s.StartTime, s.EndTime, s.Room); });
+    else { addScheduleRow(6); addScheduleRow(2); }
+
+    function saveGroup() {
+        var schedules = $('.sch-row').map(function () {
+            return {
+                DayOfWeek: parseInt($(this).find('.sch-day').val()),
+                StartTime: $(this).find('.sch-start').val(),
+                EndTime: $(this).find('.sch-end').val(),
+                Room: $(this).find('.sch-room').val()
+            };
+        }).get();
+
+        postBody('@Url.Action("Save", "Groups")', {
+            Id: parseInt($('#gId').val()) || 0,
+            Name: $('#gName').val(),
+            TeacherId: parseInt($('#gTeacher').val()) || 0,
+            SubjectId: parseInt($('#gSubject').val()) || 0,
+            GradeLevelId: parseInt($('#gGrade').val()) || null,
+            MonthlyFee: parseFloat($('#gFee').val()) || 0,
+            Capacity: parseInt($('#gCap').val()) || 0,
+            IsActive: $('#gActive').is(':checked'),
+            Schedules: schedules
+        });
+    }
+</script>
