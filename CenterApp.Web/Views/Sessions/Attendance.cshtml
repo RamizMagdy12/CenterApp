@@ -1,7 +1,23 @@
 ﻿@model AttendanceVm
-<div class="mb-3">
+
+<div class="mb-3 d-flex flex-wrap align-items-center gap-2">
     <strong>@Model.GroupName</strong> — @ArabicDays.Name(Model.Date.DayOfWeek) @Model.Date.ToString("yyyy-MM-dd")
-    <button type="button" class="btn btn-sm btn-outline-secondary me-3" onclick="$('.att-present').prop('checked', true)">الكل حاضر</button>
+    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="$('.att-present').prop('checked', true); updateCounter();">الكل حاضر</button>
+    <button type="button" class="btn btn-sm btn-dark" onclick="startQrMode()">تحضير بالـ QR</button>
+    <span class="badge bg-info text-dark" id="attCounter"></span>
+</div>
+
+<div id="qrPanel" class="border rounded p-3 mb-3" style="display:none">
+    <div class="row g-2 align-items-center">
+        <div class="col-md-6">
+            <input id="qrInput" class="form-control" autocomplete="off" placeholder="اعمل Scan بقارئ الباركود أو اكتب الكود واضغط Enter" />
+        </div>
+        <div class="col-md-3"><button type="button" class="btn btn-outline-primary w-100" onclick="startCam()">تشغيل الكاميرا</button></div>
+        <div class="col-md-3"><button type="button" class="btn btn-outline-secondary w-100" onclick="stopCam()">إيقاف الكاميرا</button></div>
+    </div>
+    <div id="camBox" class="mt-3" style="display:none"><div id="qrReader" style="max-width:360px"></div></div>
+    <div id="scanMsg" class="mt-2 fw-bold"></div>
+    <small class="text-muted">في وضع الـ QR كل الطلاب بيبدأوا "غائب"، وكل واحد بيتعمله Scan بيتحول "حاضر".</small>
 </div>
 
 @if (Model.Rows.Count == 0)
@@ -11,11 +27,12 @@
 else
 {
     <table class="table table-sm align-middle">
-        <thead><tr><th>الطالب</th><th>حاضر</th><th>غائب</th><th>معذور</th><th>متأخر</th></tr></thead>
+        <thead><tr><th>الكود</th><th>الطالب</th><th>حاضر</th><th>غائب</th><th>معذور</th><th>متأخر</th></tr></thead>
         <tbody>
             @foreach (var r in Model.Rows)
             {
-                <tr class="att-row" data-student="@r.StudentId">
+                <tr class="att-row" data-student="@r.StudentId" data-code="@r.StudentCode">
+                    <td class="text-muted">@r.StudentCode</td>
                     <td>@r.StudentName</td>
                     <td><input type="radio" class="att-present" name="st_@r.StudentId" value="0" @(r.Status == AttendanceStatus.Present ? "checked" : "") /></td>
                     <td><input type="radio" name="st_@r.StudentId" value="1" @(r.Status == AttendanceStatus.Absent ? "checked" : "") /></td>
@@ -29,11 +46,121 @@ else
 }
 
 <script>
+    var qrScanner = null, lastCode = '', lastTime = 0;
+
+    function norm(c) { return (c || '').toString().trim().toUpperCase(); }
+
+    function beep(ok) {
+        try {
+            var ctx = new (window.AudioContext || window.webkitAudioContext)();
+            var o = ctx.createOscillator();
+            o.frequency.value = ok ? 880 : 220;
+            o.connect(ctx.destination);
+            o.start();
+            setTimeout(function () { o.stop(); ctx.close(); }, ok ? 120 : 300);
+        } catch (e) { }
+    }
+
+    function showMsg(text, ok) {
+        $('#scanMsg').text(text).removeClass('text-success text-danger').addClass(ok ? 'text-success' : 'text-danger');
+    }
+
+    function updateCounter() {
+        var total = $('.att-row').length;
+        var present = $('.att-row input[value="0"]:checked, .att-row input[value="3"]:checked').length;
+        $('#attCounter').text('حضر ' + present + ' من ' + total);
+    }
+
+    function startQrMode() {
+        $('.att-row input[value="1"]').prop('checked', true);   // الكل غائب
+        $('.att-row').removeClass('table-success scanned');
+        $('#qrPanel').show();
+        updateCounter();
+        showMsg('جاهز للمسح...', true);
+        $('#qrInput').focus();
+    }
+
+    function markByCode(raw) {
+        var code = norm(raw);
+        if (!code) return;
+
+        var $row = $('.att-row').filter(function () { return norm($(this).data('code')) === code; });
+        if ($row.length === 0) {
+            beep(false);
+            showMsg('الكود ' + code + ' مش لطالب مسجل في المجموعة دي', false);
+            return;
+        }
+
+        var sid = $row.data('student');
+        var name = $row.find('td').eq(1).text();
+
+        if ($row.hasClass('scanned')) {
+            beep(true);
+            showMsg(name + ' اتسجل حضوره قبل كده', true);
+            return;
+        }
+
+        $row.find('input[name=st_' + sid + '][value="0"]').prop('checked', true);
+        $row.addClass('table-success scanned');
+        if ($row[0].scrollIntoView) $row[0].scrollIntoView({ block: 'nearest' });
+        beep(true);
+        showMsg('تم تحضير: ' + name, true);
+        updateCounter();
+    }
+
+    // قارئ الباركود (بيكتب الكود ويدوس Enter)
+    $('#qrInput').on('keydown', function (e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            markByCode($(this).val());
+            $(this).val('').focus();
+        }
+    });
+
+    // الكاميرا
+    function startCam() {
+        function run() {
+            $('#camBox').show();
+            qrScanner = new Html5Qrcode('qrReader');
+            qrScanner.start({ facingMode: 'environment' }, { fps: 10, qrbox: 250 }, function (text) {
+                var now = Date.now();
+                if (text === lastCode && now - lastTime < 2500) return;   // منع التكرار السريع
+                lastCode = text; lastTime = now;
+                markByCode(text);
+            }).catch(function (err) {
+                $('#camBox').hide();
+                alert('تعذر تشغيل الكاميرا: ' + err + '\nالكاميرا بتشتغل على HTTPS أو localhost بس.');
+            });
+        }
+        if (qrScanner) return;
+        if (typeof Html5Qrcode === 'undefined') {
+            $.getScript('https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js', run)
+                .fail(function () { alert('تعذر تحميل مكتبة الكاميرا (محتاج إنترنت).'); });
+        } else run();
+    }
+
+    function stopCam() {
+        if (qrScanner) {
+            var sc = qrScanner; qrScanner = null;
+            sc.stop().then(function () { sc.clear(); }).catch(function () { });
+        }
+        $('#camBox').hide();
+    }
+
+    $('#appModal').off('hidden.bs.modal.cam').one('hidden.bs.modal.cam', stopCam);
+    $('#appModal').off('shown.bs.modal.att').one('shown.bs.modal.att', function () {
+        if ($('#qrPanel').is(':visible')) $('#qrInput').focus();
+    });
+
+    $(document).off('change.att').on('change.att', '.att-row input', updateCounter);
+    updateCounter();
+
     function saveAttendance() {
         var rows = $('.att-row').map(function () {
             var sid = $(this).data('student');
             return { StudentId: sid, Status: parseInt($(this).find('input[name=st_' + sid + ']:checked').val()) };
         }).get();
+        stopCam();
         postBody('@Url.Action("SaveAttendance", "Sessions")', { SessionId: @Model.SessionId, Rows: rows });
     }
 </script>

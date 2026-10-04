@@ -47,8 +47,7 @@ public class AppDbContext : IdentityDbContext<AppUser>
             mb.Entity(t.ClrType).HasQueryFilter(Expression.Lambda(body, p));
         }
 
-        mb.Entity<Student>().HasIndex(x => x.Code);
-        mb.Entity<Student>().HasIndex(x => x.Phone);
+        mb.Entity<Student>().HasIndex(x => x.Code).IsUnique(); mb.Entity<Student>().HasIndex(x => x.Phone);
 
         mb.Entity<GroupSchedule>().HasIndex(x => new { x.GroupId, x.DayOfWeek });
         mb.Entity<GroupEnrollment>().HasIndex(x => new { x.GroupId, x.StudentId });

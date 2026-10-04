@@ -8,4 +8,5 @@ public interface IStudentService
     Task<StudentVm> GetAsync(long id);
     Task<OpResult> SaveAsync(StudentVm vm);
     Task<OpResult> DeleteAsync(long id);
+    Task<List<StudentCardVm>> GetCardsAsync(long? studentId, long? groupId);
 }

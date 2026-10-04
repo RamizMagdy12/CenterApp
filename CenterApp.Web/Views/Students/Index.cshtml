@@ -45,6 +45,7 @@
             </td>
             <td class="text-nowrap">
                 <button class="btn btn-sm btn-outline-primary" onclick="openForm('@Url.Action("Form", "Students", new { id = s.Id })', 'تعديل طالب', true)">تعديل</button>
+                    <a class="btn btn-sm btn-outline-dark" target="_blank" href="@Url.Action("Card", "Students", new { id = s.Id })">كارت QR</a>
                 <button class="btn btn-sm btn-outline-danger" onclick="confirmPost('@Url.Action("Delete", "Students")', { id: @s.Id }, 'تأكيد الحذف؟')">حذف</button>
             </td>
         </tr>

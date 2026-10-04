@@ -1,0 +1,99 @@
+﻿@model List<StudentCardVm>
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="utf-8" />
+    <title>كروت الطلاب</title>
+    <style>
+            body {
+                font-family: Tahoma, Arial, sans-serif;
+                margin: 0;
+                padding: 16px;
+            }
+
+            .toolbar {
+                margin-bottom: 16px;
+            }
+
+                .toolbar button {
+                    padding: 8px 20px;
+                    font-size: 16px;
+                    cursor: pointer;
+                }
+
+            .cards {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+
+            .id-card {
+                width: 8.6cm;
+                height: 5.4cm;
+                border: 1px solid #333;
+                border-radius: 8px;
+                display: flex;
+                align-items: center;
+                justify-content: space-around;
+                padding: 6px;
+                box-sizing: border-box;
+                page-break-inside: avoid;
+            }
+
+                .id-card img {
+                    width: 3.6cm;
+                    height: 3.6cm;
+                }
+
+            .info {
+                text-align: center;
+                max-width: 4cm;
+            }
+
+                .info .nm {
+                    font-weight: bold;
+                    font-size: 14px;
+                    word-break: break-word;
+                }
+
+                .info .cd {
+                    margin-top: 6px;
+                    font-size: 16px;
+                    letter-spacing: 1px;
+                    direction: ltr;
+                }
+
+            @@media print {
+                .toolbar {
+                    display: none;
+                }
+
+                body {
+                    padding: 0;
+                }
+            }
+    </style>
+</head>
+<body>
+    <div class="toolbar"><button onclick="window.print()">طباعة</button></div>
+    @if (Model.Count == 0)
+    {
+        <p>مفيش طلاب.</p>
+    }
+    <div class="cards">
+        @foreach (var s in Model)
+        {
+            <div class="id-card">
+                <img src="@Url.Action("Qr", "Students", new { code = s.Code })" alt="QR" />
+                <div class="info">
+                    <div class="nm">@s.Name</div>
+                    <div class="cd">@s.Code</div>
+                </div>
+            </div>
+        }
+    </div>
+</body>
+</html>

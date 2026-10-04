@@ -1,12 +1,21 @@
 ﻿@model StudentVm
 @{
     var grades = (List<SelectListItem>)ViewBag.Grades;
+    var groups = (List<SelectListItem>)ViewBag.Groups;
+    var enrolled = Model.EnrolledGroupIds;
 }
 <form id="studentForm" onsubmit="return false;">
     <input type="hidden" asp-for="Id" />
     <div class="row g-3">
-        <div class="col-md-6"><label class="form-label">الاسم</label><input asp-for="Name" class="form-control" /></div>
-        <div class="col-md-3"><label class="form-label">الكود (اتركه فاضي للتوليد)</label><input asp-for="Code" class="form-control" /></div>
+        <div class="col-md-6">
+            <label class="form-label">الاسم</label>
+            <input asp-for="Name" class="form-control" />
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">كود الطالب</label>
+            <input class="form-control" disabled
+                   value="@(Model.Id == 0 ? "هيتولد تلقائياً عند الحفظ" : Model.Code)" />
+        </div>
         <div class="col-md-3">
             <label class="form-label">المرحلة</label>
             <select asp-for="GradeLevelId" asp-items="grades" class="form-select"><option value="">-- اختر --</option></select>
@@ -16,9 +25,52 @@
         <div class="col-md-4"><label class="form-label">موبايل ولي الأمر</label><input asp-for="ParentPhone" class="form-control" /></div>
         <div class="col-md-4"><label class="form-label">تاريخ الميلاد</label><input asp-for="BirthDate" type="date" class="form-control" /></div>
         <div class="col-md-8"><label class="form-label">ملاحظات</label><input asp-for="Notes" class="form-control" /></div>
+
+        <div class="col-12">
+            <label class="form-label">تسجيل الطالب في مجموعات</label>
+            <div class="border rounded p-2" style="max-height:180px; overflow:auto;">
+                @if (groups.Count == 0)
+                {
+                    <span class="text-muted">مفيش مجموعات لسه</span>
+                }
+                @foreach (var g in groups)
+                {
+                    var gid = long.Parse(g.Value);
+                    var isIn = enrolled.Contains(gid);
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="grp_@g.Value" name="GroupIds" value="@g.Value" @(isIn ? "checked disabled" : "") />
+                        <label class="form-check-label" for="grp_@g.Value">@g.Text @(isIn ? "(مسجل)" : "")</label>
+                    </div>
+                }
+            </div>
+        </div>
+
         <div class="col-12 form-check ms-3">
             <input asp-for="IsActive" class="form-check-input" /><label class="form-check-label">نشط</label>
         </div>
-        <div class="col-12"><button class="btn btn-success" onclick="submitForm('#studentForm', '@Url.Action("Save", "Students")')">حفظ</button></div>
+        <div class="col-12"><button class="btn btn-success" onclick="saveStudent()">حفظ</button></div>
     </div>
 </form>
+
+<script>
+    var qrUrl = '@Url.Action("Qr", "Students")';
+    var cardUrl = '@Url.Action("Card", "Students")';
+
+    function saveStudent() {
+        var isNew = $('#studentForm input[name=Id]').val() === '0';
+        postJson('@Url.Action("Save", "Students")', $('#studentForm').serialize(), function (r) {
+            if (!isNew) { appModal().hide(); location.reload(); return; }
+
+            var html =
+                '<div class="text-center">' +
+                '<div class="alert alert-success">' + r.message + '</div>' +
+                '<img src="' + qrUrl + '?code=' + encodeURIComponent(r.extra) + '" width="180" alt="QR" />' +
+                '<div class="fw-bold fs-5 my-2">' + r.extra + '</div>' +
+                '<a class="btn btn-primary" target="_blank" href="' + cardUrl + '/' + r.id + '">طباعة الكارت</a> ' +
+                '<button class="btn btn-secondary" onclick="location.reload()">إغلاق</button>' +
+                '</div>';
+            $('#appModalBody').html(html);
+            $('#appModal').off('hidden.bs.modal.stu').one('hidden.bs.modal.stu', function () { location.reload(); });
+        });
+    }
+</script>

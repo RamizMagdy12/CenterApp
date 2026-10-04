@@ -2,12 +2,11 @@
 
 namespace CenterApp.Service.Models;
 
-public record OpResult(bool Ok, string Message)
+public record OpResult(bool Ok, string Message, long? Id = null, string? Extra = null)
 {
     public static OpResult Success(string m = "تم الحفظ") => new(true, m);
     public static OpResult Fail(string m) => new(false, m);
 }
-
 public record SimpleItem(long Id, string Text);
 
 public class PagedResult<T>
@@ -55,8 +54,17 @@ public class StudentVm
     public DateTime? BirthDate { get; set; }
     public string? Notes { get; set; }
     public bool IsActive { get; set; } = true;
+
+    public List<long> GroupIds { get; set; } = new();          // مجموعات هتتضاف
+    public List<long> EnrolledGroupIds { get; set; } = new();  // مسجل فيها حالياً (للعرض فقط)
 }
 
+public class StudentCardVm
+{
+    public long Id { get; set; }
+    public string Name { get; set; } = "";
+    public string Code { get; set; } = "";
+}
 // ── Groups
 public class GroupScheduleDto
 {
@@ -130,10 +138,10 @@ public class SessionRow
 public class AttendanceRowVm
 {
     public long StudentId { get; set; }
+    public string StudentCode { get; set; } = "";
     public string StudentName { get; set; } = "";
     public AttendanceStatus Status { get; set; } = AttendanceStatus.Present;
 }
-
 public class AttendanceVm
 {
     public long SessionId { get; set; }
