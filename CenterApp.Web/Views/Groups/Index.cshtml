@@ -27,6 +27,7 @@
                 <td>@g.Enrolled / @(g.Capacity == 0 ? "∞" : g.Capacity.ToString())</td>
                 <td class="text-nowrap">
                     <button class="btn btn-sm btn-outline-success" onclick="openForm('@Url.Action("Manage", "Enrollments", new { groupId = g.Id })', 'طلاب المجموعة', true)">الطلاب</button>
+                    <a class="btn btn-sm btn-outline-dark" target="_blank" href="@Url.Action("Cards", "Students", new { groupId = g.Id })">كروت QR</a>
                     <button class="btn btn-sm btn-outline-primary" onclick="openForm('@Url.Action("Form", "Groups", new { id = g.Id })', 'تعديل مجموعة', true)">تعديل</button>
                     <button class="btn btn-sm btn-outline-danger" onclick="confirmPost('@Url.Action("Delete", "Groups")', { id: @g.Id }, 'تأكيد الحذف؟')">حذف</button>
                 </td>

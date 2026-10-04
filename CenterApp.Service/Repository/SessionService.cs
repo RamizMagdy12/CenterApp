@@ -91,6 +91,7 @@ public class SessionService : ISessionService
             Rows = enrollments.Select(e => new AttendanceRowVm
             {
                 StudentId = e.StudentId,
+                StudentCode = e.Student.Code ?? "",
                 StudentName = e.Student.Name,
                 Status = recorded.TryGetValue(e.StudentId, out var st) ? st : AttendanceStatus.Present
             }).ToList()
