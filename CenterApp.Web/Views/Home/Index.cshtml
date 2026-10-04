@@ -1,8 +1,198 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model DashboardVm
+@using System.Text.Json
+@{
+    ViewData["Title"] = "لوحة التحكم";
+    var ar = new System.Globalization.CultureInfo("ar-EG");
+    var gradesTotal = Model.Grades.Sum(g => g.Count);
+    var colors = new[] { "#4b2fd0", "#8f73f1", "#2b2663", "#b7a4f7", "#6b4ee0", "#d8cffb" };
+    var userName = User.Identity?.IsAuthenticated == true ? User.Identity!.Name! : "المدير";
+    var hasAtt = Model.Last7.Any(d => d.Rate.HasValue);
+    var collectedPct = Model.MonthDue > 0 ? (int)Math.Round(100 * Model.MonthCollected / Model.MonthDue) : 0;
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="hello">
+    <div class="avatar">@userName.Substring(0, 1)</div>
+    <div>
+        <h2>أهلاً، @userName 👋</h2>
+        <p>نورت تاني — ده ملخص النهارده.</p>
+    </div>
+    <div class="date-pill"><i class="bi bi-calendar3"></i> @DateTime.Now.ToString("dddd، dd MMMM yyyy", ar)</div>
 </div>
+
+<div class="stats">
+    <div class="stat">
+        <span class="pill pill-primary">@Model.EnrolledStudents مسجل في مجموعات</span>
+        <div class="stat-ico dark"><i class="bi bi-people"></i></div>
+        <div class="stat-num">@Model.TotalStudents</div>
+        <div class="stat-label">إجمالي الطلاب</div>
+    </div>
+    <div class="stat">
+        @if (Model.TodayPresentRate.HasValue)
+        {
+            <span class="pill pill-ok">@Model.TodaySessionsCount حصة اليوم</span>
+        }
+        else
+        {
+
+            <span class="pill pill-warn">لا توجد بيانات</span>
+        }
+        <div class="stat-ico light"><i class="bi bi-check2"></i></div>
+        <div class="stat-num">@(Model.TodayPresentRate.HasValue ? Model.TodayPresentRate + "%" : "—")</div>
+        <div class="stat-label">حضور النهارده</div>
+    </div>
+    <div class="stat">
+        <span class="pill pill-primary">@Model.ActiveGroups نشطة</span>
+        <div class="stat-ico dark"><i class="bi bi-collection"></i></div>
+        <div class="stat-num">@Model.ActiveGroups</div>
+        <div class="stat-label">المجموعات</div>
+    </div>
+    <div class="stat">
+        <span class="pill pill-primary">@Model.Teachers مدرس</span>
+        <div class="stat-ico light"><i class="bi bi-person-workspace"></i></div>
+        <div class="stat-num">@Model.Teachers</div>
+        <div class="stat-label">المدرسين</div>
+    </div>
+</div>
+
+<div class="grid-2-1">
+    <div class="panel">
+        <h3>نظرة عامة على الحضور</h3>
+        <div class="sub">نسبة الحضور اليومية — آخر 7 أيام</div>
+        @if (!hasAtt)
+        {
+            <div class="empty-note">لسه مفيش بيانات حضور</div>
+        }
+        <div class="chart-box"><canvas id="attChart"></canvas></div>
+    </div>
+
+    <div class="panel">
+        <h3>الطلاب حسب المرحلة</h3>
+        <div class="sub">الإجمالي: @gradesTotal طالب نشط</div>
+        @if (gradesTotal == 0)
+        {
+            <div class="empty-box">مفيش طلاب لسه</div>
+        }
+        else
+        {
+            <div class="donut-wrap">
+                <canvas id="gradeChart"></canvas>
+                <div class="donut-center"><div><b>@gradesTotal</b><span>إجمالي</span></div></div>
+            </div>
+            @for (var i = 0; i < Model.Grades.Count; i++)
+            {
+                var g = Model.Grades[i];
+                <div class="legend-row">
+                    <span class="legend-dot" style="background:@colors[i % colors.Length]"></span>
+                    <span>@g.Name</span>
+                    <span class="cnt">@g.Count</span>
+                    <span class="pct">@((100.0 * g.Count / gradesTotal).ToString("0.0"))%</span>
+                </div>
+            }
+        }
+    </div>
+</div>
+
+<div class="grid-3">
+    <div class="panel">
+        <h3>حصص النهارده</h3>
+        <div class="sub">@Model.TodaySessionsCount حصة</div>
+        @if (Model.TodaySessions.Count == 0)
+        {
+            <div class="empty-box">مفيش حصص النهارده.<br /><a href="@Url.Action("Index", "Sessions")">توليد حصص الشهر</a></div>
+        }
+        @foreach (var s in Model.TodaySessions)
+        {
+            <div class="row-item">
+                <div class="row-time">@s.Start.ToString(@"hh\:mm")</div>
+                <div class="row-main">
+                    <b>@s.GroupName</b>
+                    <small>@(s.Total == 0 ? "لسه متحضرتش" : $"حضر {s.Present} من {s.Total}")</small>
+                </div>
+                @if (s.Status == SessionStatus.Done)
+                {
+                    <span class="pill pill-ok">تمت</span>
+                }
+                else
+                {
+
+                    <a class="pill pill-warn" href="@Url.Action("Index", "Sessions")">تحضير</a>
+                }
+            </div>
+        }
+    </div>
+
+    <div class="panel">
+        <h3>حسابات الشهر</h3>
+        <div class="sub">@DateTime.Today.ToString("MMMM yyyy", ar)</div>
+        <div class="fin-row"><span>إجمالي المستحق</span><b>@Model.MonthDue.ToString("N2")</b></div>
+        <div class="fin-row"><span>المحصّل</span><b class="money">@Model.MonthCollected.ToString("N2")</b></div>
+        <div class="fin-row"><span>المتبقي</span><b style="color:#c53030">@Model.MonthRemaining.ToString("N2")</b></div>
+        <div class="progress-bar-x"><div style="width:@collectedPct%"></div></div>
+        <small class="text-muted">تم تحصيل @collectedPct% من فواتير الشهر</small>
+        <div class="mt-3"><a class="btn btn-sm btn-outline-primary" href="@Url.Action("Index", "Invoices")">الفواتير والتحصيل</a></div>
+    </div>
+
+    <div class="panel">
+        <h3>آخر التحصيلات</h3>
+        <div class="sub">آخر @Model.RecentPayments.Count عمليات</div>
+        @if (Model.RecentPayments.Count == 0)
+        {
+            <div class="empty-box">مفيش تحصيلات لسه</div>
+        }
+        @foreach (var p in Model.RecentPayments)
+        {
+            <div class="row-item">
+                <div class="mini-avatar">@(string.IsNullOrEmpty(p.StudentName) ? "؟" : p.StudentName.Substring(0, 1))</div>
+                <div class="row-main"><b>@p.StudentName</b><small>@p.PaidAt.ToString("yyyy-MM-dd HH:mm")</small></div>
+                <span class="money">@p.Amount.ToString("N2")</span>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script>
+        Chart.defaults.font.family = "'Cairo', Tahoma, sans-serif";
+        Chart.defaults.color = '#7b809e';
+
+        var last7 = @Html.Raw(JsonSerializer.Serialize(Model.Last7.Select(d => new { l = d.Label, r = d.Rate })));
+        new Chart(document.getElementById('attChart'), {
+            type: 'line',
+            data: {
+                labels: last7.map(function (d) { return d.l; }),
+                datasets: [{
+                    data: last7.map(function (d) { return d.r; }),
+                    borderColor: '#4b2fd0', backgroundColor: 'rgba(75,47,208,.08)', fill: true, tension: .35,
+                    pointBackgroundColor: '#fff', pointBorderColor: '#4b2fd0', pointBorderWidth: 2, pointRadius: 5,
+                    spanGaps: true
+                }]
+            },
+            options: {
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false }, tooltip: { callbacks: { label: function (c) { return c.parsed.y == null ? 'لا بيانات' : c.parsed.y + '%'; } } } },
+                scales: {
+                    y: { min: 0, max: 100, ticks: { callback: function (v) { return v + '%'; } }, grid: { color: '#eef0f6' } },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+
+        var grades = @Html.Raw(JsonSerializer.Serialize(Model.Grades.Select(g => new { n = g.Name, c = g.Count })));
+        var gc = document.getElementById('gradeChart');
+        if (gc) {
+            new Chart(gc, {
+                type: 'doughnut',
+                data: {
+                    labels: grades.map(function (g) { return g.n; }),
+                    datasets: [{
+                        data: grades.map(function (g) { return g.c; }),
+                        backgroundColor: ['#4b2fd0', '#8f73f1', '#2b2663', '#b7a4f7', '#6b4ee0', '#d8cffb'],
+                        borderWidth: 0
+                    }]
+                },
+                options: { maintainAspectRatio: false, cutout: '72%', plugins: { legend: { display: false } } }
+            });
+        }
+    </script>
+}

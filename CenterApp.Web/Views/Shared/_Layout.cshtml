@@ -1,41 +1,114 @@
-﻿<!DOCTYPE html>
+﻿@functions {
+    record MI(string Text, string C, string A, string? Type = null);
+    record MG(string Title, string Icon, string Ctrl, MI[] Items);
+}
+@{
+    var ctrl = ((ViewContext.RouteData.Values["controller"] as string) ?? "").ToLower();
+    var typeQ = Context.Request.Query["type"].ToString().ToLower();
+    var pageTitle = ViewData["Title"] as string ?? "لوحة التحكم";
+    var userName = User.Identity?.IsAuthenticated == true ? User.Identity!.Name! : "المدير";
+
+    var menu = new[]
+    {
+        new MG("الطلاب", "bi-people-fill", "students", new[] { new MI("قائمة الطلاب", "Students", "Index") }),
+        new MG("المجموعات", "bi-collection-fill", "groups", new[] { new MI("المجموعات والمواعيد", "Groups", "Index") }),
+        new MG("الحضور", "bi-qr-code-scan", "sessions", new[] { new MI("الحصص والتحضير", "Sessions", "Index") }),
+        new MG("الحسابات", "bi-cash-coin", "invoices", new[] { new MI("الفواتير والتحصيل", "Invoices", "Index") }),
+        new MG("البيانات الأساسية", "bi-gear-fill", "lookups", new[]
+        {
+            new MI("المدرسين", "Lookups", "Index", "teachers"),
+            new MI("المواد", "Lookups", "Index", "subjects"),
+            new MI("المراحل الدراسية", "Lookups", "Index", "gradelevels")
+        })
+    };
+}
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - السنتر</title>
+    <title>@pageTitle - السنتر</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 </head>
-<body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
-        <div class="container-fluid">
-            <a class="navbar-brand" asp-controller="Home" asp-action="Index">السنتر</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="mainNav">
-                <ul class="navbar-nav gap-lg-2">
-                    <li class="nav-item"><a class="nav-link" asp-controller="Students" asp-action="Index">الطلاب</a></li>
-                    <li class="nav-item"><a class="nav-link" asp-controller="Groups" asp-action="Index">المجموعات</a></li>
-                    <li class="nav-item"><a class="nav-link" asp-controller="Sessions" asp-action="Index">الحصص والحضور</a></li>
-                    <li class="nav-item"><a class="nav-link" asp-controller="Invoices" asp-action="Index">الفواتير والتحصيل</a></li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">البيانات الأساسية</a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" asp-controller="Lookups" asp-action="Index" asp-route-type="teachers">المدرسين</a></li>
-                            <li><a class="dropdown-item" asp-controller="Lookups" asp-action="Index" asp-route-type="subjects">المواد</a></li>
-                            <li><a class="dropdown-item" asp-controller="Lookups" asp-action="Index" asp-route-type="gradelevels">المراحل الدراسية</a></li>
-                        </ul>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
+<body class="app">
 
-    <main class="container-fluid px-4">
-        @RenderBody()
-    </main>
+    <aside class="sidebar" id="sidebar">
+        <a class="brand" asp-controller="Home" asp-action="Index">
+            <span class="brand-logo"><i class="bi bi-mortarboard-fill"></i></span>
+            <span class="brand-name">السنتر</span>
+        </a>
+
+        <div class="sb-tools">
+            <input id="sbSearch" type="text" placeholder="ابحث في كل الشاشات" autocomplete="off" />
+            <button type="button" id="sbCollapseAll">طي الكل</button>
+        </div>
+
+        <nav>
+            <a class="mi-home @(ctrl == "home" ? "active" : "")" asp-controller="Home" asp-action="Index">
+                <i class="bi bi-speedometer2"></i><span>لوحة التحكم</span>
+            </a>
+
+            @foreach (var g in menu)
+            {
+                var open = ctrl == g.Ctrl;
+                <div class="mg @(open ? "open" : "")">
+                    <button type="button" class="mg-head">
+                        <i class="bi @g.Icon mg-ico"></i>
+                        <span class="mg-title">@g.Title</span>
+                        <i class="bi bi-chevron-down chev"></i>
+                    </button>
+                    <div class="mg-items">
+                        @foreach (var it in g.Items)
+                        {
+                            var active = ctrl == it.C.ToLower() && (it.Type == null || typeQ == it.Type);
+                            <a class="mi @(active ? "active" : "")" href="@Url.Action(it.A, it.C, it.Type == null ? null : new { type = it.Type })">
+                                <i class="bi bi-dot"></i><span>@it.Text</span>
+                            </a>
+                        }
+                    </div>
+                </div>
+            }
+        </nav>
+    </aside>
+    <div class="sb-overlay" id="sbOverlay"></div>
+
+    <div class="main">
+        <header class="topbar">
+            <button type="button" class="tb-hamb" id="sbToggle" aria-label="القائمة"><i class="bi bi-list"></i></button>
+            <div class="tb-title">
+                <h1>@pageTitle</h1>
+                <div class="crumbs"><a asp-controller="Home" asp-action="Index">الرئيسية</a> / @pageTitle</div>
+            </div>
+
+            <div class="tb-right">
+                <div class="tb-dd">
+                    <button type="button" class="tb-icon" data-pop="popBell"><i class="bi bi-bell"></i></button>
+                    <div class="tb-pop" id="popBell">
+                        <div class="tb-pop-title">الإشعارات</div>
+                        <div class="tb-pop-empty">مفيش إشعارات جديدة</div>
+                    </div>
+                </div>
+
+                <div class="tb-lang"><span class="lang-code">AR</span> العربية</div>
+
+                <div class="tb-user">
+                    <div class="tb-user-txt">
+                        <div class="tb-user-name">@userName</div>
+                        <div class="tb-user-role">مدير</div>
+                    </div>
+                    <div class="avatar">@userName.Substring(0, 1)</div>
+                </div>
+            </div>
+        </header>
+
+        <main class="content">
+            @RenderBody()
+        </main>
+    </div>
 
     <div class="modal fade" id="appModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-scrollable" id="appModalDialog">
@@ -52,6 +125,7 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/layout.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

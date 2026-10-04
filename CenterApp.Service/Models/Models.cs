@@ -186,3 +186,43 @@ public class InvoiceRow
     public DateTime DueDate { get; set; }
     public List<PaymentRow> Payments { get; set; } = new();
 }
+// ── Dashboard
+public record DayRate(string Label, double? Rate);
+public record GradeSlice(string Name, int Count);
+
+public class TodaySessionRow
+{
+    public string GroupName { get; set; } = "";
+    public TimeSpan Start { get; set; }
+    public TimeSpan End { get; set; }
+    public SessionStatus Status { get; set; }
+    public int Present { get; set; }
+    public int Total { get; set; }
+}
+
+public class RecentPaymentRow
+{
+    public string StudentName { get; set; } = "";
+    public decimal Amount { get; set; }
+    public DateTime PaidAt { get; set; }
+}
+
+public class DashboardVm
+{
+    public int TotalStudents { get; set; }
+    public int EnrolledStudents { get; set; }
+    public int ActiveGroups { get; set; }
+    public int Teachers { get; set; }
+    public int TodaySessionsCount { get; set; }
+    public double? TodayPresentRate { get; set; }
+
+    public List<DayRate> Last7 { get; set; } = new();
+    public List<GradeSlice> Grades { get; set; } = new();
+
+    public decimal MonthDue { get; set; }
+    public decimal MonthCollected { get; set; }
+    public decimal MonthRemaining => MonthDue - MonthCollected;
+
+    public List<TodaySessionRow> TodaySessions { get; set; } = new();
+    public List<RecentPaymentRow> RecentPayments { get; set; } = new();
+}
