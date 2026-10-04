@@ -41,10 +41,13 @@ public class SessionsController : Controller
     {
         var vm = await _s.GetAttendanceAsync(id);
         if (vm == null) return NotFound();
+        if (vm.LockReason != null) return Conflict(vm.LockReason);   // بيظهر كـ SweetAlert
         return PartialView(vm);
     }
+    [HttpPost] public async Task<IActionResult> Restore(long id) => Json(await _s.RestoreAsync(id));
 
     [HttpPost]
     public async Task<IActionResult> SaveAttendance([FromBody] AttendanceSaveDto dto)
         => Json(await _s.SaveAttendanceAsync(dto));
+
 }

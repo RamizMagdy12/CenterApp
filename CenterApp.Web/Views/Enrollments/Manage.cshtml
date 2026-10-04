@@ -44,14 +44,15 @@
 
     function addEnrollment() {
         var id = stuMap[$('#enrStudent').val()];
-        if (!id) { alert('اختار الطالب من القائمة'); return; }
+        if (!id) { notify('warning', 'اختار الطالب من القائمة'); return; }
         postJson('@Url.Action("Add", "Enrollments")',
             { groupId: @Model.GroupId, studentId: id, customFee: $('#enrFee').val() }, reopen);
     }
 
     function removeEnrollment(id) {
-        if (!confirm('إلغاء تسجيل الطالب من المجموعة؟')) return;
-        postJson('@Url.Action("Remove", "Enrollments")', { id: id }, reopen);
+        askConfirm('إلغاء تسجيل الطالب من المجموعة؟', 'نعم، إلغاء التسجيل').then(function (ok) {
+            if (ok) postJson('@Url.Action("Remove", "Enrollments")', { id: id }, reopen);
+        });
     }
 
     $('#appModal').off('hidden.bs.modal.enr').one('hidden.bs.modal.enr', function () { location.reload(); });
