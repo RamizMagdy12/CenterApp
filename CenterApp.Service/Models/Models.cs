@@ -129,6 +129,8 @@ public class SessionRow
     public DateTime Date { get; set; }
     public TimeSpan Start { get; set; }
     public TimeSpan End { get; set; }
+    public DateTime StartsAt { get; set; }
+    public bool CanTakeAttendance { get; set; }
     public SessionStatus Status { get; set; }
     public int Present { get; set; }
     public int Absent { get; set; }
@@ -141,15 +143,17 @@ public class AttendanceRowVm
     public string StudentCode { get; set; } = "";
     public string StudentName { get; set; } = "";
     public AttendanceStatus Status { get; set; } = AttendanceStatus.Present;
+    public bool IsRecorded { get; set; }     // اتسجل له حضور/غياب قبل كده
 }
+
 public class AttendanceVm
 {
     public long SessionId { get; set; }
     public string GroupName { get; set; } = "";
     public DateTime Date { get; set; }
+    public string? LockReason { get; set; }   // لو مش مسموح بالتحضير
     public List<AttendanceRowVm> Rows { get; set; } = new();
 }
-
 public class AttendanceRowDto
 {
     public long StudentId { get; set; }

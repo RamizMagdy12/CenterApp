@@ -1,0 +1,30 @@
+{
+  "version": "1.0",
+  "defaultProvider": "jsdelivr",
+  "libraries": [
+    {
+      "library": "bootstrap-icons@1.11.3",
+      "destination": "wwwroot/lib/bootstrap-icons/",
+      "files": [
+        "font/bootstrap-icons.min.css",
+        "font/fonts/bootstrap-icons.woff",
+        "font/fonts/bootstrap-icons.woff2"
+      ]
+    },
+    {
+      "library": "chart.js@4.4.1",
+      "destination": "wwwroot/lib/chart.js/",
+      "files": [ "dist/chart.umd.js" ]
+    },
+    {
+      "library": "html5-qrcode@2.3.8",
+      "destination": "wwwroot/lib/html5-qrcode/",
+      "files": [ "html5-qrcode.min.js" ]
+    },
+    {
+      "library": "sweetalert2@11.14.5",
+      "destination": "wwwroot/lib/sweetalert2/",
+      "files": [ "dist/sweetalert2.all.min.js" ]
+    }
+  ]
+}

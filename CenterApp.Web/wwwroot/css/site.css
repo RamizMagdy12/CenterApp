@@ -740,3 +740,11 @@ body.sb-collapsed .sidebar {
         display: none;
     }
 }
+.swal2-popup {
+    font-family: inherit;
+    border-radius: 16px;
+}
+
+.swal2-title {
+    font-size: 1.15rem;
+}

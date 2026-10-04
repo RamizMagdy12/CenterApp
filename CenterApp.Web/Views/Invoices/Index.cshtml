@@ -81,7 +81,7 @@
         function generateInvoices() {
             postJson('@Url.Action("Generate", "Invoices")',
                 { month: $('#month').val(), groupId: $('#groupId').val() },
-                function (r) { alert(r.message); location.reload(); });
+                function (r) { notify('success', r.message, function () { location.reload(); }); });
         }
     </script>
 }

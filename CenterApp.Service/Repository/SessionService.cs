@@ -5,8 +5,24 @@ using Microsoft.EntityFrameworkCore;
 
 public class SessionService : ISessionService
 {
+    // التحضير بيفتح قبل بداية الحصة بالدقايق دي (0 = من معاد الحصة بالظبط)
+    private const int EarlyMinutes = 15;
+
     private readonly IUnitOfWork _u;
     public SessionService(IUnitOfWork u) => _u = u;
+
+    private static DateTime StartsAt(Session s) => s.Date.Date.Add(s.StartTime);
+
+    private static string? LockReason(Session s)
+    {
+        if (s.Status == SessionStatus.Cancelled) return "الحصة دي ملغية";
+
+        var opensAt = StartsAt(s).AddMinutes(-EarlyMinutes);
+        if (DateTime.Now < opensAt)
+            return $"معاد الحصة لسه ما جاش. التحضير بيفتح يوم {opensAt:yyyy-MM-dd} الساعة {opensAt:HH:mm}";
+
+        return null;
+    }
 
     public async Task<List<SessionRow>> ListAsync(long groupId, int year, int month)
     {
@@ -25,6 +41,8 @@ public class SessionService : ISessionService
             Start = s.StartTime,
             End = s.EndTime,
             Status = s.Status,
+            StartsAt = StartsAt(s),
+            CanTakeAttendance = LockReason(s) == null,
             Present = s.Attendances.Count(a => a.Status == AttendanceStatus.Present || a.Status == AttendanceStatus.Late),
             Absent = s.Attendances.Count(a => a.Status == AttendanceStatus.Absent || a.Status == AttendanceStatus.Excused),
             Total = s.Attendances.Count
@@ -76,6 +94,9 @@ public class SessionService : ISessionService
         var s = await _u.Session.GetAll(x => x.Id == sessionId, "Group").FirstOrDefaultAsync();
         if (s == null) return null;
 
+        var reason = LockReason(s);
+        if (reason != null) return new AttendanceVm { SessionId = s.Id, LockReason = reason };
+
         var enrollments = await _u.GroupEnrollment
             .GetAll(e => e.GroupId == s.GroupId && e.JoinedAt <= s.Date && (e.LeftAt == null || e.LeftAt >= s.Date), "Student")
             .OrderBy(e => e.Student.Name).ToListAsync();
@@ -93,6 +114,7 @@ public class SessionService : ISessionService
                 StudentId = e.StudentId,
                 StudentCode = e.Student.Code ?? "",
                 StudentName = e.Student.Name,
+                IsRecorded = recorded.ContainsKey(e.StudentId),
                 Status = recorded.TryGetValue(e.StudentId, out var st) ? st : AttendanceStatus.Present
             }).ToList()
         };
@@ -102,7 +124,9 @@ public class SessionService : ISessionService
     {
         var s = _u.Session.GetFirstOrDefault(x => x.Id == dto.SessionId);
         if (s == null) return OpResult.Fail("الحصة غير موجودة");
-        if (s.Status == SessionStatus.Cancelled) return OpResult.Fail("الحصة ملغية");
+
+        var reason = LockReason(s);
+        if (reason != null) return OpResult.Fail(reason);
 
         var existing = await _u.SessionAttendance.GetAll(a => a.SessionId == dto.SessionId, tracking: true).ToListAsync();
 
@@ -118,5 +142,15 @@ public class SessionService : ISessionService
         s.Status = SessionStatus.Done;
         await _u.SaveAsync();
         return OpResult.Success("تم حفظ الحضور");
+    }
+    public async Task<OpResult> RestoreAsync(long id)
+    {
+        var s = await _u.Session.GetAll(x => x.Id == id, "Attendances", tracking: true).FirstOrDefaultAsync();
+        if (s == null) return OpResult.Fail("الحصة غير موجودة");
+        if (s.Status != SessionStatus.Cancelled) return OpResult.Fail("الحصة مش ملغية");
+
+        s.Status = s.Attendances.Any() ? SessionStatus.Done : SessionStatus.Scheduled;
+        await _u.SaveAsync();
+        return OpResult.Success("تم استرجاع الحصة");
     }
 }

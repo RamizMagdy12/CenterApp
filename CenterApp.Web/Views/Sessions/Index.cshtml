@@ -4,7 +4,6 @@
     var groups = (List<SelectListItem>)ViewBag.Groups;
     var gid = ((long)ViewBag.GroupId).ToString();
 }
-<h3 class="mb-3">الحصص والحضور</h3>
 
 <form method="get" class="row g-2 mb-3 align-items-end">
     <div class="col-md-4">
@@ -46,18 +45,35 @@
 
                         <span class="badge bg-secondary">ملغية</span>
                     }
+                    else if (r.CanTakeAttendance)
+                    {
+
+                        <span class="badge bg-warning text-dark">جارية / مجدولة</span>
+                    }
                     else
                     {
 
-                        <span class="badge bg-warning text-dark">مجدولة</span>
+                        <span class="badge bg-light text-dark border">لسه ما جاش معادها</span>
                     }
                 </td>
                 <td>@(r.Total == 0 ? "-" : $"{r.Present} / {r.Absent}")</td>
                 <td class="text-nowrap">
                     @if (r.Status != SessionStatus.Cancelled)
                     {
-                        <button class="btn btn-sm btn-outline-success" onclick="openForm('@Url.Action("Attendance", "Sessions", new { id = r.Id })', 'تحضير الحصة', true)">تحضير</button>
+                        if (r.CanTakeAttendance)
+                        {
+                            <button class="btn btn-sm btn-outline-success" onclick="openForm('@Url.Action("Attendance", "Sessions", new { id = r.Id })', 'تحضير الحصة', true)">تحضير</button>
+                        }
+                        else
+                        {
+                            <button class="btn btn-sm btn-outline-secondary" disabled title="التحضير بيفتح قبل الحصة بـ 15 دقيقة">تحضير</button>
+                        }
+
                         <button class="btn btn-sm btn-outline-danger" onclick="confirmPost('@Url.Action("Cancel", "Sessions")', { id: @r.Id }, 'إلغاء الحصة؟')">إلغاء</button>
+                    }
+                    else
+                    {
+                        <button class="btn btn-sm btn-outline-primary" onclick="confirmPost('@Url.Action("Restore", "Sessions")', { id: @r.Id }, 'استرجاع الحصة؟')">استرجاع</button>
                     }
                 </td>
             </tr>
@@ -70,7 +86,7 @@
         function generateSessions() {
             postJson('@Url.Action("Generate", "Sessions")',
                 { groupId: $('#groupId').val(), month: $('#month').val() },
-                function (r) { alert(r.message); location.reload(); });
+                function (r) { notify('success', r.message, function () { location.reload(); }); });
         }
     </script>
 }

@@ -9,15 +9,16 @@
 
 <div id="qrPanel" class="border rounded p-3 mb-3" style="display:none">
     <div class="row g-2 align-items-center">
-        <div class="col-md-6">
+        <div class="col-md-5">
             <input id="qrInput" class="form-control" autocomplete="off" placeholder="اعمل Scan بقارئ الباركود أو اكتب الكود واضغط Enter" />
         </div>
         <div class="col-md-3"><button type="button" class="btn btn-outline-primary w-100" onclick="startCam()">تشغيل الكاميرا</button></div>
-        <div class="col-md-3"><button type="button" class="btn btn-outline-secondary w-100" onclick="stopCam()">إيقاف الكاميرا</button></div>
+        <div class="col-md-2"><button type="button" class="btn btn-outline-secondary w-100" onclick="stopCam()">إيقاف</button></div>
+        <div class="col-md-2"><button type="button" class="btn btn-outline-danger w-100" onclick="resetAllAbsent()">تصفير الكل</button></div>
     </div>
     <div id="camBox" class="mt-3" style="display:none"><div id="qrReader" style="max-width:360px"></div></div>
     <div id="scanMsg" class="mt-2 fw-bold"></div>
-    <small class="text-muted">في وضع الـ QR كل الطلاب بيبدأوا "غائب"، وكل واحد بيتعمله Scan بيتحول "حاضر".</small>
+    <small class="text-muted">اللي اتسجل حضوره قبل كده بيفضل زي ما هو، واللي لسه ما اتسجلش بيبدأ "غائب" لحد ما يتمسح كوده.</small>
 </div>
 
 @if (Model.Rows.Count == 0)
@@ -31,7 +32,7 @@ else
         <tbody>
             @foreach (var r in Model.Rows)
             {
-                <tr class="att-row" data-student="@r.StudentId" data-code="@r.StudentCode">
+                <tr class="att-row" data-student="@r.StudentId" data-code="@r.StudentCode" data-recorded="@(r.IsRecorded ? "1" : "0")">
                     <td class="text-muted">@r.StudentCode</td>
                     <td>@r.StudentName</td>
                     <td><input type="radio" class="att-present" name="st_@r.StudentId" value="0" @(r.Status == AttendanceStatus.Present ? "checked" : "") /></td>
@@ -65,19 +66,45 @@ else
         $('#scanMsg').text(text).removeClass('text-success text-danger').addClass(ok ? 'text-success' : 'text-danger');
     }
 
+    function currentStatus($row) {
+        var sid = $row.data('student');
+        return $row.find('input[name=st_' + sid + ']:checked').val();
+    }
+
     function updateCounter() {
         var total = $('.att-row').length;
         var present = $('.att-row input[value="0"]:checked, .att-row input[value="3"]:checked').length;
         $('#attCounter').text('حضر ' + present + ' من ' + total);
     }
 
+    // وضع الـ QR: المسجّل قبل كده يفضل زي ما هو، وغير المسجّل يبدأ غائب
     function startQrMode() {
-        $('.att-row input[value="1"]').prop('checked', true);   // الكل غائب
-        $('.att-row').removeClass('table-success scanned');
+        $('.att-row').each(function () {
+            var $r = $(this), sid = $r.data('student');
+            $r.removeClass('table-success scanned');
+
+            if ($r.attr('data-recorded') === '1') {
+                var st = currentStatus($r);
+                if (st === '0' || st === '3') $r.addClass('table-success scanned');   // حاضر قبل كده
+            } else {
+                $r.find('input[name=st_' + sid + '][value="1"]').prop('checked', true);
+            }
+        });
         $('#qrPanel').show();
         updateCounter();
         showMsg('جاهز للمسح...', true);
         $('#qrInput').focus();
+    }
+
+    function resetAllAbsent() {
+        askConfirm('تحويل كل الطلاب لغائب والبدء من الأول؟', 'نعم، صفّر').then(function (ok) {
+            if (!ok) return;
+            $('.att-row').removeClass('table-success scanned');
+            $('.att-row input[value="1"]').prop('checked', true);
+            updateCounter();
+            showMsg('تم التصفير، ابدأ المسح...', true);
+            $('#qrInput').focus();
+        });
     }
 
     function markByCode(raw) {
@@ -124,18 +151,19 @@ else
             qrScanner = new Html5Qrcode('qrReader');
             qrScanner.start({ facingMode: 'environment' }, { fps: 10, qrbox: 250 }, function (text) {
                 var now = Date.now();
-                if (text === lastCode && now - lastTime < 2500) return;   // منع التكرار السريع
+                if (text === lastCode && now - lastTime < 2500) return;
                 lastCode = text; lastTime = now;
                 markByCode(text);
             }).catch(function (err) {
                 $('#camBox').hide();
-                alert('تعذر تشغيل الكاميرا: ' + err + '\nالكاميرا بتشتغل على HTTPS أو localhost بس.');
+                qrScanner = null;
+                notify('error', 'تعذر تشغيل الكاميرا. الكاميرا بتشتغل على HTTPS أو localhost بس.');
             });
         }
         if (qrScanner) return;
         if (typeof Html5Qrcode === 'undefined') {
-            $.getScript('https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js', run)
-                .fail(function () { alert('تعذر تحميل مكتبة الكاميرا (محتاج إنترنت).'); });
+            $.getScript('@Url.Content("~/lib/html5-qrcode/html5-qrcode.min.js")', run)
+                .fail(function () { notify('error', 'تعذر تحميل مكتبة الكاميرا'); });
         } else run();
     }
 
