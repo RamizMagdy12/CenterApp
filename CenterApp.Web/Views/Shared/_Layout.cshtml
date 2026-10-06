@@ -1,26 +1,40 @@
-﻿@functions {
-    record MI(string Text, string C, string A, string? Type = null);
-    record MG(string Title, string Icon, string Ctrl, MI[] Items);
+﻿@using System.Security.Claims
+@inject CenterApp.Service.Services.IPermissionService Perm
+@functions {
+    record MI(string Text, string C, string A, string Screen, string? Type = null);
+    record MG(string Title, string Icon, MI[] Items);
 }
 @{
     var ctrl = ((ViewContext.RouteData.Values["controller"] as string) ?? "").ToLower();
     var typeQ = Context.Request.Query["type"].ToString().ToLower();
     var pageTitle = ViewData["Title"] as string ?? "لوحة التحكم";
-    var userName = User.Identity?.IsAuthenticated == true ? User.Identity!.Name! : "المدير";
+    var userName = User.FindFirst("FullName")?.Value ?? User.Identity?.Name ?? "";
+    var userRole = User.FindFirst(ClaimTypes.Role)?.Value ?? "";
 
-    var menu = new[]
+    var allMenu = new[]
     {
-        new MG("الطلاب", "bi-people-fill", "students", new[] { new MI("قائمة الطلاب", "Students", "Index") }),
-        new MG("المجموعات", "bi-collection-fill", "groups", new[] { new MI("المجموعات والمواعيد", "Groups", "Index") }),
-        new MG("الحضور", "bi-qr-code-scan", "sessions", new[] { new MI("الحصص والتحضير", "Sessions", "Index") }),
-        new MG("الحسابات", "bi-cash-coin", "invoices", new[] { new MI("الفواتير والتحصيل", "Invoices", "Index") }),
-        new MG("البيانات الأساسية", "bi-gear-fill", "lookups", new[]
+        new MG("الطلاب", "bi-people-fill", new[] { new MI("قائمة الطلاب", "Students", "Index", Screens.Students) }),
+        new MG("المجموعات", "bi-collection-fill", new[] { new MI("المجموعات والمواعيد", "Groups", "Index", Screens.Groups) }),
+        new MG("الحضور", "bi-qr-code-scan", new[] { new MI("الحصص والتحضير", "Sessions", "Index", Screens.Sessions) }),
+        new MG("الحسابات", "bi-cash-coin", new[] { new MI("الفواتير والتحصيل", "Invoices", "Index", Screens.Invoices) }),
+        new MG("البيانات الأساسية", "bi-gear-fill", new[]
         {
-            new MI("المدرسين", "Lookups", "Index", "teachers"),
-            new MI("المواد", "Lookups", "Index", "subjects"),
-            new MI("المراحل الدراسية", "Lookups", "Index", "gradelevels")
+            new MI("المدرسين", "Lookups", "Index", Screens.Lookups, "teachers"),
+            new MI("المواد", "Lookups", "Index", Screens.Lookups, "subjects"),
+            new MI("المراحل الدراسية", "Lookups", "Index", Screens.Lookups, "gradelevels")
+        }),
+        new MG("الإدارة", "bi-shield-lock-fill", new[]
+        {
+            new MI("المستخدمين", "Users", "Index", Screens.Users),
+            new MI("الأدوار والصلاحيات", "Roles", "Index", Screens.Roles)
         })
     };
+
+    // القايمة بتظهر الشاشات اللي المستخدم ليه صلاحية "عرض" عليها بس
+    var menu = allMenu
+        .Select(g => g with { Items = g.Items.Where(i => Perm.Has(User, i.Screen, PermissionAction.View)).ToArray() })
+        .Where(g => g.Items.Length > 0)
+        .ToArray();
 }
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
@@ -56,7 +70,7 @@
 
             @foreach (var g in menu)
             {
-                var open = ctrl == g.Ctrl;
+                var open = g.Items.Any(i => ctrl == i.C.ToLower());
                 <div class="mg @(open ? "open" : "")">
                     <button type="button" class="mg-head">
                         <i class="bi @g.Icon mg-ico"></i>
@@ -97,12 +111,19 @@
 
                 <div class="tb-lang"><span class="lang-code">AR</span> العربية</div>
 
-                <div class="tb-user">
-                    <div class="tb-user-txt">
-                        <div class="tb-user-name">@userName</div>
-                        <div class="tb-user-role">مدير</div>
+                <div class="tb-dd">
+                    <button type="button" class="tb-user" data-pop="popUser">
+                        <div class="tb-user-txt">
+                            <div class="tb-user-name">@userName</div>
+                            <div class="tb-user-role">@userRole</div>
+                        </div>
+                        <div class="avatar">@(userName.Length > 0 ? userName.Substring(0, 1) : "؟")</div>
+                    </button>
+                    <div class="tb-pop" id="popUser" style="width:200px">
+                        <form asp-controller="Account" asp-action="Logout" method="post">
+                            <button type="submit" class="btn btn-outline-danger w-100"><i class="bi bi-box-arrow-right"></i> تسجيل الخروج</button>
+                        </form>
                     </div>
-                    <div class="avatar">@userName.Substring(0, 1)</div>
                 </div>
             </div>
         </header>

@@ -1,11 +1,15 @@
 ﻿using CenterApp.Entity.Center;
+using CenterApp.Entity.Security;
 using CenterApp.Service;
+using CenterApp.Web.Security;
 using Microsoft.AspNetCore.Mvc;
 using System.Globalization;
 
 namespace CenterApp.Web.Controllers;
 
-public class InvoicesController : Controller
+[RequirePermission(Screens.Invoices, PermissionAction.View)]
+
+public class InvoicesController : AppController
 {
     private readonly IInvoiceService _s;
     private readonly IGroupService _g;
@@ -29,12 +33,13 @@ public class InvoicesController : Controller
         return View(await _s.ListAsync(y, m, groupId, status));
     }
 
-    [HttpPost]
+    [HttpPost, RequirePermission(Screens.Invoices, PermissionAction.Add)]
     public async Task<IActionResult> Generate(string month, long groupId)
     {
         var (y, m) = ParseMonth(month);
         return Json(await _s.GenerateAsync(y, m, groupId));
     }
+    [RequirePermission(Screens.Invoices, PermissionAction.Edit)]
 
     public async Task<IActionResult> Pay(long id)
     {
@@ -43,7 +48,8 @@ public class InvoicesController : Controller
         return PartialView(vm);
     }
 
-    [HttpPost]
+    [HttpPost, RequirePermission(Screens.Invoices, PermissionAction.Edit)]
+
     public async Task<IActionResult> Pay(long invoiceId, decimal amount, decimal discount, PaymentMethod method, string? note)
         => Json(await _s.PayAsync(invoiceId, amount, discount, method, note));
 }

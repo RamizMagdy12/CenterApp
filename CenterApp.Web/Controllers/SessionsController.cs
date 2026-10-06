@@ -1,11 +1,15 @@
-﻿using CenterApp.Service.Models;
+﻿using CenterApp.Entity.Security;
 using CenterApp.Service;
+using CenterApp.Service.Models;
+using CenterApp.Web.Security;
 using Microsoft.AspNetCore.Mvc;
 using System.Globalization;
 
 namespace CenterApp.Web.Controllers;
 
-public class SessionsController : Controller
+[RequirePermission(Screens.Sessions, PermissionAction.View)]
+
+public class SessionsController : AppController
 {
     private readonly ISessionService _s;
     private readonly IGroupService _g;
@@ -28,14 +32,16 @@ public class SessionsController : Controller
         return View(await _s.ListAsync(groupId, y, m));
     }
 
-    [HttpPost]
+    [HttpPost, RequirePermission(Screens.Sessions, PermissionAction.Add)]
     public async Task<IActionResult> Generate(long groupId, string month)
     {
         var (y, m) = ParseMonth(month);
         return Json(await _s.GenerateAsync(groupId, y, m));
     }
 
-    [HttpPost] public async Task<IActionResult> Cancel(long id) => Json(await _s.CancelAsync(id));
+    [HttpPost, RequirePermission(Screens.Sessions, PermissionAction.Edit)]
+    public async Task<IActionResult> Cancel(long id) => Json(await _s.CancelAsync(id));
+    [RequirePermission(Screens.Sessions, PermissionAction.Edit)]
 
     public async Task<IActionResult> Attendance(long id)
     {
@@ -44,9 +50,10 @@ public class SessionsController : Controller
         if (vm.LockReason != null) return Conflict(vm.LockReason);   // بيظهر كـ SweetAlert
         return PartialView(vm);
     }
-    [HttpPost] public async Task<IActionResult> Restore(long id) => Json(await _s.RestoreAsync(id));
+    [HttpPost, RequirePermission(Screens.Sessions, PermissionAction.Edit)]
+    public async Task<IActionResult> Restore(long id) => Json(await _s.RestoreAsync(id));
 
-    [HttpPost]
+    [HttpPost, RequirePermission(Screens.Sessions, PermissionAction.Edit)]
     public async Task<IActionResult> SaveAttendance([FromBody] AttendanceSaveDto dto)
         => Json(await _s.SaveAttendanceAsync(dto));
 

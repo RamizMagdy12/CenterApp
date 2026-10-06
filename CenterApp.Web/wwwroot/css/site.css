@@ -748,3 +748,11 @@ body.sb-collapsed .sidebar {
 .swal2-title {
     font-size: 1.15rem;
 }
+.tb-user {
+    background: none;
+    border: 0;
+    cursor: pointer;
+    font-family: inherit;
+    color: inherit;
+    padding: 0;
+}

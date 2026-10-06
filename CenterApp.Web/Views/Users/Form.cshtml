@@ -1,0 +1,49 @@
+﻿@model UserVm
+@{
+    var roles = (List<string>)ViewBag.Roles;
+    var isNew = string.IsNullOrEmpty(Model.Id);
+}
+<form id="userForm" onsubmit="return false;" autocomplete="off">
+    <input type="hidden" asp-for="Id" />
+    <div class="row g-3">
+        <div class="col-md-6">
+            <label class="form-label">اسم المستخدم (إنجليزي)</label>
+            <input asp-for="UserName" class="form-control" autocomplete="off" />
+        </div>
+        <div class="col-md-6">
+            <label class="form-label">الاسم بالكامل</label>
+            <input asp-for="FullName" class="form-control" />
+        </div>
+        <div class="col-md-6">
+            <label class="form-label">الإيميل (اختياري)</label>
+            <input asp-for="Email" type="email" class="form-control" />
+        </div>
+        <div class="col-md-6">
+            <label class="form-label">الموبايل</label>
+            <input asp-for="PhoneNumber" class="form-control" />
+        </div>
+        @if (isNew)
+        {
+            <div class="col-md-6">
+                <label class="form-label">كلمة المرور (6 حروف على الأقل)</label>
+                <input asp-for="Password" type="password" class="form-control" autocomplete="new-password" />
+            </div>
+        }
+        <div class="col-md-6">
+            <label class="form-label">الدور</label>
+            <select name="RoleName" class="form-select">
+                <option value="">-- اختر --</option>
+                @foreach (var r in roles)
+                {
+                    <option value="@r" selected="@(r == Model.RoleName)">@r</option>
+                }
+            </select>
+        </div>
+        <div class="col-12 form-check ms-3">
+            <input asp-for="IsActive" class="form-check-input" /><label class="form-check-label">نشط (يقدر يسجّل دخول)</label>
+        </div>
+        <div class="col-12">
+            <button class="btn btn-success" onclick="submitForm('#userForm', '@Url.Action("Save", "Users")')">حفظ</button>
+        </div>
+    </div>
+</form>

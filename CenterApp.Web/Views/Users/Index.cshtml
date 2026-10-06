@@ -1,0 +1,54 @@
+﻿@model List<UserRow>
+@inject CenterApp.Service.Services.IPermissionService Perm
+@{
+    ViewData["Title"] = "المستخدمين";
+    var canAdd = Perm.Has(User, Screens.Users, PermissionAction.Add);
+    var canEdit = Perm.Has(User, Screens.Users, PermissionAction.Edit);
+    var canDelete = Perm.Has(User, Screens.Users, PermissionAction.Delete);
+}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3>المستخدمين <span class="badge bg-secondary">@Model.Count</span></h3>
+    @if (canAdd)
+    {
+        <button class="btn btn-primary" onclick="openForm('@Url.Action("Form", "Users")', 'مستخدم جديد', true)">+ مستخدم جديد</button>
+    }
+</div>
+
+<form method="get" class="row g-2 mb-3">
+    <div class="col-md-5"><input name="q" value="@ViewBag.Q" class="form-control" placeholder="بحث بالاسم / اسم المستخدم / الإيميل / الموبايل" /></div>
+    <div class="col-auto"><button class="btn btn-outline-primary">بحث</button></div>
+</form>
+
+<table class="table table-striped table-hover align-middle">
+    <thead><tr><th>اسم المستخدم</th><th>الاسم</th><th>الدور</th><th>الإيميل / الموبايل</th><th>الحالة</th><th></th></tr></thead>
+    <tbody>
+        @foreach (var u in Model)
+        {
+            <tr>
+                <td><strong>@u.UserName</strong></td>
+                <td>@u.FullName</td>
+                <td><span class="badge @(u.IsAdmin ? "bg-danger" : "bg-primary")">@u.Role</span></td>
+                <td>@u.Email <small class="text-muted">@u.Phone</small></td>
+                <td>@if (u.IsActive) {
+                    <span class="badge bg-success">نشط</span>
+                } else
+                {
+
+                    <span class="badge bg-secondary">متوقف</span>
+                }
+            </td>
+            <td class="text-nowrap">
+                @if (canEdit)
+                {
+                    <button class="btn btn-sm btn-outline-primary" onclick="openForm('@Url.Action("Form", "Users", new { id = u.Id })', 'تعديل مستخدم', true)">تعديل</button>
+                    <button class="btn btn-sm btn-outline-dark" onclick="openForm('@Url.Action("ResetForm", "Users", new { id = u.Id })', 'تغيير كلمة المرور')">كلمة المرور</button>
+                }
+                @if (canDelete)
+                {
+                    <button class="btn btn-sm btn-outline-danger" onclick="confirmPost('@Url.Action("Delete", "Users")', { id: '@u.Id' }, 'حذف المستخدم @u.UserName؟')">حذف</button>
+                }
+            </td>
+        </tr>
+    }
+</tbody>
+</table>

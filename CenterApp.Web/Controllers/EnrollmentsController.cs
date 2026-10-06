@@ -1,9 +1,13 @@
-﻿using CenterApp.Service;
+﻿using CenterApp.Entity.Security;
+using CenterApp.Service;
+using CenterApp.Web.Security;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CenterApp.Web.Controllers;
 
-public class EnrollmentsController : Controller
+[RequirePermission(Screens.Groups, PermissionAction.View)]
+
+public class EnrollmentsController : AppController
 {
     private readonly IEnrollmentService _s;
     public EnrollmentsController(IEnrollmentService s) => _s = s;
@@ -15,10 +19,10 @@ public class EnrollmentsController : Controller
         return PartialView(vm);
     }
 
-    [HttpPost]
+    [HttpPost, RequirePermission(Screens.Groups, PermissionAction.Edit)]
     public async Task<IActionResult> Add(long groupId, long studentId, decimal? customFee)
         => Json(await _s.AddAsync(groupId, studentId, customFee));
 
-    [HttpPost]
+    [HttpPost, RequirePermission(Screens.Groups, PermissionAction.Edit)]
     public async Task<IActionResult> Remove(long id) => Json(await _s.RemoveAsync(id));
 }

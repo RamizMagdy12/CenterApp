@@ -1,0 +1,60 @@
+﻿@model RoleVm
+@using System.Text.Json
+<form id="roleForm" onsubmit="return false;">
+    <div class="mb-3">
+        <label class="form-label">اسم الدور</label>
+        <input id="rName" class="form-control" value="@Model.Name" placeholder="مثال: استقبال" />
+    </div>
+
+    <table class="table table-sm align-middle text-center">
+        <thead>
+            <tr><th class="text-start">الشاشة</th><th>عرض</th><th>إضافة</th><th>تعديل</th><th>حذف</th><th>الكل</th></tr>
+        </thead>
+        <tbody>
+            @foreach (var p in Model.Perms)
+            {
+                <tr class="perm-row" data-code="@p.Code">
+                    <td class="text-start">@p.Name</td>
+                    <td><input type="checkbox" class="form-check-input pv" @(p.View ? "checked" : "") /></td>
+                    <td><input type="checkbox" class="form-check-input pa" @(p.Add ? "checked" : "") /></td>
+                    <td><input type="checkbox" class="form-check-input pe" @(p.Edit ? "checked" : "") /></td>
+                    <td><input type="checkbox" class="form-check-input pd" @(p.Delete ? "checked" : "") /></td>
+                    <td><input type="checkbox" class="form-check-input pall" /></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <button class="btn btn-success" onclick="saveRole()">حفظ</button>
+</form>
+
+<script>
+    // أي صلاحية (إضافة/تعديل/حذف) تفعّل "عرض" معاها، وإلغاء "عرض" يلغي الباقي
+    $('.perm-row').on('change', 'input', function () {
+        var $r = $(this).closest('tr');
+        if ($(this).hasClass('pall')) {
+            $r.find('.pv, .pa, .pe, .pd').prop('checked', this.checked);
+        } else if ($(this).hasClass('pv')) {
+            if (!this.checked) $r.find('.pa, .pe, .pd, .pall').prop('checked', false);
+        } else if (this.checked) {
+            $r.find('.pv').prop('checked', true);
+        }
+        $r.find('.pall').prop('checked', $r.find('.pv, .pa, .pe, .pd').length === $r.find('.pv:checked, .pa:checked, .pe:checked, .pd:checked').length);
+    });
+    $('.perm-row').each(function () { $(this).find('.pv').trigger('change'); });
+
+    function saveRole() {
+        var perms = $('.perm-row').map(function () {
+            var $r = $(this);
+            return {
+                Code: $r.data('code'),
+                View: $r.find('.pv').is(':checked'),
+                Add: $r.find('.pa').is(':checked'),
+                Edit: $r.find('.pe').is(':checked'),
+                Delete: $r.find('.pd').is(':checked')
+            };
+        }).get();
+
+        postBody('@Url.Action("Save", "Roles")', { Id: @Html.Raw(JsonSerializer.Serialize(Model.Id)), Name: $('#rName').val(), Perms: perms });
+    }
+</script>
