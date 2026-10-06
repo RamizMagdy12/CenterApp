@@ -1,10 +1,14 @@
-﻿using CenterApp.Service.Models;
+﻿using CenterApp.Entity.Security;
 using CenterApp.Service;
+using CenterApp.Service.Models;
+using CenterApp.Web.Security;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CenterApp.Web.Controllers;
 
-public class LookupsController : Controller
+[RequirePermission(Screens.Lookups, PermissionAction.View)]
+
+public class LookupsController : AppController
 {
     private readonly ICatalogService _s;
     public LookupsController(ICatalogService s) => _s = s;
@@ -27,6 +31,13 @@ public class LookupsController : Controller
     public async Task<IActionResult> Form(string type, long id = 0)
         => PartialView(await _s.GetAsync(type, id));
 
-    [HttpPost] public async Task<IActionResult> Save(LookupVm vm) => Json(await _s.SaveAsync(vm));
-    [HttpPost] public async Task<IActionResult> Delete(string type, long id) => Json(await _s.DeleteAsync(type, id));
+    [HttpPost]
+    public async Task<IActionResult> Save(LookupVm vm)
+    {
+        if (!Can(Screens.Lookups, vm.Id == 0 ? PermissionAction.Add : PermissionAction.Edit)) return NoPermission();
+        return Json(await _s.SaveAsync(vm));
+    }
+
+    [HttpPost, RequirePermission(Screens.Lookups, PermissionAction.Delete)]
+    public async Task<IActionResult> Delete(string type, long id) => Json(await _s.DeleteAsync(type, id));
 }

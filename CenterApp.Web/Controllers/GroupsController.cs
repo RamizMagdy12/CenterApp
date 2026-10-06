@@ -1,10 +1,14 @@
-﻿using CenterApp.Service.Models;
+﻿using CenterApp.Entity.Security;
 using CenterApp.Service;
+using CenterApp.Service.Models;
+using CenterApp.Web.Security;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CenterApp.Web.Controllers;
 
-public class GroupsController : Controller
+[RequirePermission(Screens.Groups, PermissionAction.View)]
+
+public class GroupsController : AppController
 {
     private readonly IGroupService _s;
     private readonly ICatalogService _c;
@@ -24,6 +28,12 @@ public class GroupsController : Controller
         return PartialView(await _s.GetAsync(id));
     }
 
-    [HttpPost] public async Task<IActionResult> Save([FromBody] GroupSaveDto dto) => Json(await _s.SaveAsync(dto));
-    [HttpPost] public async Task<IActionResult> Delete(long id) => Json(await _s.DeleteAsync(id));
+    [HttpPost]
+    public async Task<IActionResult> Save([FromBody] GroupSaveDto dto)
+    {
+        if (!Can(Screens.Groups, dto.Id == 0 ? PermissionAction.Add : PermissionAction.Edit)) return NoPermission();
+        return Json(await _s.SaveAsync(dto));
+    }
+    [HttpPost, RequirePermission(Screens.Groups, PermissionAction.Delete)]
+    public async Task<IActionResult> Delete(long id) => Json(await _s.DeleteAsync(id));
 }

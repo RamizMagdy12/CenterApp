@@ -1,12 +1,16 @@
-﻿using CenterApp.Service.Models;
+﻿using CenterApp.Entity.Security;
 using CenterApp.Service;
+using CenterApp.Service.Models;
+using CenterApp.Web.Security;
 using Microsoft.AspNetCore.Mvc;
 using QRCoder;
 
 
 namespace CenterApp.Web.Controllers;
 
-public class StudentsController : Controller
+[RequirePermission(Screens.Students, PermissionAction.View)]
+
+public class StudentsController : AppController
 {
     private readonly IStudentService _s;
     private readonly ICatalogService _c;
@@ -28,9 +32,14 @@ public class StudentsController : Controller
         return PartialView(await _s.GetAsync(id));
     }
 
-    [HttpPost] public async Task<IActionResult> Save(StudentVm vm) => Json(await _s.SaveAsync(vm));
-    [HttpPost] public async Task<IActionResult> Delete(long id) => Json(await _s.DeleteAsync(id));
-
+    [HttpPost]
+    public async Task<IActionResult> Save(StudentVm vm)
+    {
+        if (!Can(Screens.Students, vm.Id == 0 ? PermissionAction.Add : PermissionAction.Edit)) return NoPermission();
+        return Json(await _s.SaveAsync(vm));
+    }
+    [HttpPost, RequirePermission(Screens.Students, PermissionAction.Delete)]
+    public async Task<IActionResult> Delete(long id) => Json(await _s.DeleteAsync(id));
     // صورة QR
     [HttpGet]
     public IActionResult Qr(string code)

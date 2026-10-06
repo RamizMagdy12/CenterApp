@@ -1,0 +1,208 @@
+﻿@model LoginVm
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>تسجيل الدخول - السنتر</title>
+    <link rel="stylesheet" href="~/lib/fontsource-cairo/400.css" />
+    <link rel="stylesheet" href="~/lib/fontsource-cairo/600.css" />
+    <link rel="stylesheet" href="~/lib/fontsource-cairo/700.css" />
+    <link rel="stylesheet" href="~/lib/bootstrap-icons/font/bootstrap-icons.min.css" />
+    <style>
+            * {
+                box-sizing: border-box;
+            }
+
+            body {
+                margin: 0;
+                min-height: 100vh;
+                display: grid;
+                place-items: center;
+                padding: 20px;
+                font-family: 'Cairo', Tahoma, Arial, sans-serif;
+                color: #1d2147;
+                background: linear-gradient(rgba(20, 16, 50, .55), rgba(20, 16, 50, .55)), url('/img/login-bg.jpg') center / cover no-repeat, linear-gradient(135deg, #2b2663, #4b2fd0);
+            }
+
+            .login-card {
+                width: 100%;
+                max-width: 540px;
+                background: rgba(255, 255, 255, .93);
+                border-radius: 12px;
+                padding: 34px 44px 40px;
+                box-shadow: 0 20px 60px rgba(0, 0, 0, .35);
+            }
+
+            .brand {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 12px;
+                margin-bottom: 18px;
+            }
+
+            .brand-logo {
+                width: 48px;
+                height: 48px;
+                border-radius: 14px;
+                color: #fff;
+                font-size: 26px;
+                display: grid;
+                place-items: center;
+                background: linear-gradient(135deg, #4b2fd0, #8f73f1);
+            }
+
+            .brand-name {
+                font-size: 34px;
+                font-weight: 700;
+                color: #1d1a52;
+            }
+
+            h1 {
+                text-align: center;
+                font-size: 24px;
+                font-weight: 700;
+                margin: 0 0 4px;
+            }
+
+            .sub {
+                text-align: center;
+                color: #555;
+                margin: 0 0 22px;
+            }
+
+            label {
+                display: block;
+                font-size: 15px;
+                margin-bottom: 6px;
+            }
+
+            .row-label {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+                .row-label a {
+                    font-size: 12.5px;
+                    color: #6b6f8d;
+                    text-decoration: none;
+                }
+
+            .field {
+                width: 100%;
+                height: 46px;
+                border: 1px solid #e3e3ea;
+                border-radius: 4px;
+                padding: 0 14px;
+                font-size: 14px;
+                font-family: inherit;
+                background: #fff;
+                outline: none;
+                margin-bottom: 18px;
+            }
+
+                .field:focus {
+                    border-color: #4b2fd0;
+                }
+
+            .pw {
+                position: relative;
+            }
+
+                .pw button {
+                    position: absolute;
+                    inset-inline-start: 10px;
+                    top: 0;
+                    height: 46px;
+                    border: 0;
+                    background: none;
+                    color: #777;
+                    cursor: pointer;
+                    font-size: 18px;
+                }
+
+                .pw .field {
+                    padding-inline-start: 40px;
+                }
+
+            .btn-login {
+                width: 100%;
+                height: 52px;
+                border: 0;
+                border-radius: 4px;
+                color: #fff;
+                font-size: 18px;
+                font-weight: 600;
+                font-family: inherit;
+                cursor: pointer;
+                background: linear-gradient(90deg, #1d5a6b, #6b4fa5);
+            }
+
+                .btn-login:hover {
+                    filter: brightness(1.08);
+                }
+
+            .err {
+                background: #fde8e8;
+                color: #b42318;
+                border-radius: 6px;
+                padding: 10px 14px;
+                font-size: 14px;
+                margin-bottom: 16px;
+            }
+    </style>
+</head>
+<body>
+    <div class="login-card">
+        <div class="brand">
+            <span class="brand-logo"><i class="bi bi-mortarboard-fill"></i></span>
+            <span class="brand-name">السنتر</span>
+        </div>
+
+        <h1>تسجيل الدخول</h1>
+        <p class="sub">ادخل على لوحة التحكم</p>
+
+        @if (!string.IsNullOrEmpty(Model.Error))
+        {
+            <div class="err">@Model.Error</div>
+        }
+
+        <form asp-action="Login" method="post">
+            <input type="hidden" asp-for="ReturnUrl" />
+
+            <label for="UserName">اسم المستخدم أو البريد الإلكتروني</label>
+            <input asp-for="UserName" class="field" placeholder="اسم المستخدم أو البريد" autocomplete="username" autofocus />
+
+            <div class="row-label">
+                <label for="Password">كلمة المرور</label>
+                <a href="#" onclick="forgot(); return false;">نسيت كلمة المرور؟</a>
+            </div>
+            <div class="pw">
+                <input asp-for="Password" type="password" class="field" autocomplete="current-password" />
+                <button type="button" id="togglePw" aria-label="إظهار كلمة المرور"><i class="bi bi-eye"></i></button>
+            </div>
+
+            <button type="submit" class="btn-login">دخول</button>
+        </form>
+    </div>
+
+    <script src="~/lib/sweetalert2/dist/sweetalert2.all.min.js"></script>
+    <script>
+            document.getElementById('togglePw').addEventListener('click', function () {
+                var i = document.getElementById('Password');
+                var show = i.type === 'password';
+                i.type = show ? 'text' : 'password';
+                this.innerHTML = show ? '<i class="bi bi-eye-slash"></i>' : '<i class="bi bi-eye"></i>';
+            });
+
+            function forgot() {
+                Swal.fire({ icon: 'info', title: 'نسيت كلمة المرور؟', text: 'كلّم مدير النظام وهو يغيّرها لك.', confirmButtonText: 'حسناً', confirmButtonColor: '#4b2fd0' });
+            }
+    </script>
+</body>
+</html>

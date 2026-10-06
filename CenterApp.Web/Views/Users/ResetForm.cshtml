@@ -1,0 +1,10 @@
+﻿@model UserVm
+<form id="resetForm" onsubmit="return false;" autocomplete="off">
+    <input type="hidden" name="id" value="@Model.Id" />
+    <p>المستخدم: <strong>@Model.UserName</strong> @Model.FullName</p>
+    <div class="mb-3">
+        <label class="form-label">كلمة المرور الجديدة (6 حروف على الأقل)</label>
+        <input name="password" type="password" class="form-control" autocomplete="new-password" />
+    </div>
+    <button class="btn btn-success" onclick="submitForm('#resetForm', '@Url.Action("ResetPassword", "Users")', function (r) { appModal().hide(); notify('success', r.message); })">حفظ</button>
+</form>

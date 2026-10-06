@@ -5,7 +5,7 @@
     var ar = new System.Globalization.CultureInfo("ar-EG");
     var gradesTotal = Model.Grades.Sum(g => g.Count);
     var colors = new[] { "#4b2fd0", "#8f73f1", "#2b2663", "#b7a4f7", "#6b4ee0", "#d8cffb" };
-    var userName = User.Identity?.IsAuthenticated == true ? User.Identity!.Name! : "المدير";
+    var userName = User.FindFirst("FullName")?.Value ?? User.Identity?.Name ?? "";
     var hasAtt = Model.Last7.Any(d => d.Rate.HasValue);
     var collectedPct = Model.MonthDue > 0 ? (int)Math.Round(100 * Model.MonthCollected / Model.MonthDue) : 0;
 }
