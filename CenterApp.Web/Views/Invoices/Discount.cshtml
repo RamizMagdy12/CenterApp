@@ -1,0 +1,63 @@
+@model DiscountFormVm
+<p class="mb-2"><strong>@Model.StudentName</strong></p>
+<p class="text-muted small">يُطبَّق الخصم الدائم على الفترات القادمة. السجلات المدفوعة والشهور السابقة تبقى كما هي. فترة الشهر الحالي غير المدفوعة تُحدَّث فقط إذا لم تُسجَّل عليها أي دفعة.</p>
+@if (Model.BasePrices.Count > 0)
+{
+    <p class="small mb-3">سعر الاشتراك الحالي: @string.Join("، ", Model.BasePrices.Select(p => p.ToString("N2") + " ج.م"))</p>
+}
+
+<form id="discountForm" onsubmit="return false;">
+    <input type="hidden" name="studentId" value="@Model.StudentId" />
+    <div class="row g-3">
+        <div class="col-md-6">
+            <label class="form-label">نوع الخصم</label>
+            <select name="kind" id="discountKind" class="form-select" onchange="previewDiscount()">
+                <option value="0" selected="@(Model.Kind == DiscountKind.None)">بدون</option>
+                <option value="1" selected="@(Model.Kind == DiscountKind.Percentage)">نسبة مئوية</option>
+                <option value="2" selected="@(Model.Kind == DiscountKind.Fixed)">مبلغ ثابت</option>
+            </select>
+        </div>
+        <div class="col-md-6">
+            <label class="form-label">قيمة الخصم</label>
+            <input name="value" id="discountValue" type="number" min="0" step="0.01" class="form-control" value="@Model.Value.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)" oninput="previewDiscount()" />
+        </div>
+        <div class="col-12">
+            <div class="alert alert-light border mb-0" id="discountPreview">ستظهر المعاينة هنا.</div>
+        </div>
+        <div class="col-12 d-flex gap-2">
+            <button type="button" class="btn btn-primary" onclick="submitForm('#discountForm', '@Url.Action("Discount", "Invoices")')">حفظ الخصم</button>
+            <button type="button" class="btn btn-outline-danger" onclick="removeDiscount()">إزالة الخصم</button>
+        </div>
+    </div>
+</form>
+<script>
+    var discountBases = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.BasePrices));
+    function previewDiscount() {
+        var kind = document.getElementById('discountKind').value;
+        var value = parseFloat(document.getElementById('discountValue').value);
+        if (isNaN(value)) value = 0;
+        var box = document.getElementById('discountPreview');
+        if (kind === '0' || value <= 0) {
+            box.textContent = 'لا يوجد خصم دائم. يدفع الطالب سعر الاشتراك كاملاً.';
+            return;
+        }
+        if (!discountBases.length) {
+            box.textContent = kind === '1'
+                ? 'ستُطبَّق نسبة ' + value + '% عند إصدار فاتورة بسعر.'
+                : 'سيُطبَّق مبلغ ' + value.toFixed(2) + ' ج.م عند إصدار فاتورة بسعر.';
+            return;
+        }
+        var lines = discountBases.map(function (base) {
+            var discount = kind === '1' ? Math.round(base * value) / 100 : value;
+            if (discount > base) discount = base;
+            if (discount < 0) discount = 0;
+            var net = base - discount;
+            return 'سعر الاشتراك ' + base.toFixed(2) + ' ج.م − الخصم ' + discount.toFixed(2) + ' ج.م = الصافي ' + net.toFixed(2) + ' ج.م';
+        });
+        box.textContent = lines.join(' | ');
+    }
+    function removeDiscount() {
+        postJson('@Url.Action("Discount", "Invoices")', { studentId: @Model.StudentId, kind: 0, value: 0 });
+    }
+    previewDiscount();
+</script>

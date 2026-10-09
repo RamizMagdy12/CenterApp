@@ -6,7 +6,12 @@ using Microsoft.EntityFrameworkCore;
 public class StudentService : IStudentService
 {
     private readonly IUnitOfWork _u;
-    public StudentService(IUnitOfWork u) => _u = u;
+    private readonly IInvoiceService _invoices;
+    public StudentService(IUnitOfWork u, IInvoiceService invoices)
+    {
+        _u = u;
+        _invoices = invoices;
+    }
 
     public async Task<PagedResult<Student>> SearchAsync(string? q, long? gradeId, int page, int pageSize = 15)
     {
@@ -92,6 +97,7 @@ public class StudentService : IStudentService
 
         // ── تسجيل الطالب في المجموعات المختارة
         var warnings = new List<string>();
+        var addedEnrollment = false;
         var ids = (vm.GroupIds ?? new()).Distinct().ToList();
         if (ids.Count > 0)
         {
@@ -116,10 +122,13 @@ public class StudentService : IStudentService
                     continue;
                 }
                 s.Enrollments.Add(new GroupEnrollment { GroupId = g.Id, JoinedAt = DateTime.Today, IsActive = true });
+                addedEnrollment = true;
             }
         }
 
         await _u.SaveAsync();
+        if (addedEnrollment)
+            await _invoices.EnsureCurrentMonthForStudentAsync(s.Id);
 
         var msg = warnings.Count == 0 ? "تم الحفظ" : "تم الحفظ، لكن: " + string.Join("، ", warnings);
         return new OpResult(true, msg, s.Id, s.Code);

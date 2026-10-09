@@ -32,6 +32,8 @@ public class Student : BaseEntity
     public DateTime? BirthDate { get; set; }
     public string? Notes { get; set; }
     public bool IsActive { get; set; } = true;
+    public DiscountKind DiscountKind { get; set; }
+    public decimal DiscountValue { get; set; }
 
     public virtual GradeLevel? GradeLevel { get; set; }
     public virtual ICollection<GroupEnrollment> Enrollments { get; set; } = new List<GroupEnrollment>();

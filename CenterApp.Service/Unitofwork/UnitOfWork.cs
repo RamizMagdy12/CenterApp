@@ -3,6 +3,7 @@ using CenterApp.Entity.Center;
 using CenterApp.Service.Data;
 using CenterApp.Service.IRepository;
 using CenterApp.Service.Repository;
+using Microsoft.EntityFrameworkCore;
 
 namespace CenterApp.Service.Unitofwork;
 
@@ -38,5 +39,19 @@ public class UnitOfWork : IUnitOfWork
     public IRepository<Payment> Payment { get; }
 
     public Task<int> SaveAsync() => _db.SaveChangesAsync();
+
+    public async Task<int> SaveInTransactionAsync()
+    {
+        if (_db.Database.CurrentTransaction != null)
+            return await SaveAsync();
+
+        await using var tx = await _db.Database.BeginTransactionAsync();
+        var count = await SaveAsync();
+        await tx.CommitAsync();
+        return count;
+    }
+
+    public void Detach(object entity) => _db.Entry(entity).State = EntityState.Detached;
+
     public void Dispose() => _db.Dispose();
 }
