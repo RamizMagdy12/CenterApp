@@ -173,22 +173,37 @@ public class PaymentRow
     public decimal Amount { get; set; }
     public PaymentMethod Method { get; set; }
     public string? Note { get; set; }
+    public string? RecordedBy { get; set; }
 }
 
 public class InvoiceRow
 {
     public long Id { get; set; }
+    public long StudentId { get; set; }
     public string StudentName { get; set; } = "";
     public string GroupName { get; set; } = "";
     public int Year { get; set; }
     public int Month { get; set; }
     public decimal Amount { get; set; }
     public decimal Discount { get; set; }
+    public DiscountKind DiscountKind { get; set; }
+    public decimal DiscountValue { get; set; }
     public decimal Paid { get; set; }
-    public decimal Remaining => Amount - Discount - Paid;
+    public decimal NetDue => BillingMath.NetDue(Amount, Discount);
+    public decimal Remaining => BillingMath.Remaining(Amount, Discount, Paid);
     public InvoiceStatus Status { get; set; }
     public DateTime DueDate { get; set; }
+    public DateTime? LastPaymentDate { get; set; }
     public List<PaymentRow> Payments { get; set; } = new();
+}
+
+public class DiscountFormVm
+{
+    public long StudentId { get; set; }
+    public string StudentName { get; set; } = "";
+    public DiscountKind Kind { get; set; }
+    public decimal Value { get; set; }
+    public List<decimal> BasePrices { get; set; } = new();
 }
 // ── Dashboard
 public record DayRate(string Label, double? Rate);

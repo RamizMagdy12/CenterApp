@@ -1,47 +1,104 @@
 ﻿@model InvoiceRow
 <div class="mb-3">
     <div><strong>@Model.StudentName</strong> — @Model.GroupName</div>
-    <div>فاتورة @Model.Month/@Model.Year — المبلغ: @Model.Amount.ToString("N2") — المدفوع: @Model.Paid.ToString("N2")</div>
+    <div class="text-muted">@Model.Month/@Model.Year · الاستحقاق @Model.DueDate.ToString("yyyy-MM-dd")</div>
 </div>
 
+<div class="row g-2 mb-3">
+    <div class="col-6 col-md-4"><div class="border rounded p-2"><div class="text-muted small">سعر الاشتراك</div><strong>@Money(Model.Amount)</strong></div></div>
+    <div class="col-6 col-md-4"><div class="border rounded p-2"><div class="text-muted small">قيمة الخصم</div><strong>@Money(Model.Discount)</strong></div></div>
+    <div class="col-6 col-md-4"><div class="border rounded p-2"><div class="text-muted small">صافي المستحق</div><strong>@Money(Model.NetDue)</strong></div></div>
+    <div class="col-6 col-md-4"><div class="border rounded p-2"><div class="text-muted small">إجمالي المدفوع</div><strong>@Money(Model.Paid)</strong></div></div>
+    <div class="col-6 col-md-4"><div class="border rounded p-2"><div class="text-muted small">المتبقي</div><strong>@Money(Model.Remaining)</strong></div></div>
+    <div class="col-6 col-md-4"><div class="border rounded p-2"><div class="text-muted small">الخصم الدائم</div><strong>@PermanentDiscount(Model)</strong></div></div>
+</div>
+
+<h6>سجل الدفعات</h6>
 @if (Model.Payments.Any())
 {
-    <table class="table table-sm">
-        <thead><tr><th>التاريخ</th><th>المبلغ</th><th>الطريقة</th><th>ملاحظة</th></tr></thead>
-        <tbody>
-            @foreach (var p in Model.Payments)
-            {
-                <tr>
-                    <td>@p.PaidAt.ToString("yyyy-MM-dd HH:mm")</td>
-                    <td>@p.Amount.ToString("N2")</td>
-                    <td>@(p.Method == PaymentMethod.Cash ? "نقدي" : p.Method == PaymentMethod.Wallet ? "محفظة" : "تحويل")</td>
-                    <td>@p.Note</td>
-                </tr>
-            }
-        </tbody>
-    </table>
+    <div class="table-responsive mb-3">
+        <table class="table table-sm align-middle">
+            <thead><tr><th>التاريخ</th><th>المبلغ</th><th>الطريقة</th><th>سجّلها</th><th>ملاحظة</th></tr></thead>
+            <tbody>
+                @foreach (var p in Model.Payments)
+                {
+                    <tr>
+                        <td class="text-nowrap">@p.PaidAt.ToString("yyyy-MM-dd HH:mm")</td>
+                        <td>@Money(p.Amount)</td>
+                        <td>@MethodName(p.Method)</td>
+                        <td>@(string.IsNullOrWhiteSpace(p.RecordedBy) ? "—" : p.RecordedBy)</td>
+                        <td>@p.Note</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+    <p class="text-muted">لا توجد دفعات مسجلة.</p>
 }
 
-<form id="payForm" onsubmit="return false;">
-    <input type="hidden" name="invoiceId" value="@Model.Id" />
-    <div class="row g-3">
-        <div class="col-md-4">
-            <label class="form-label">الخصم</label>
-            <input name="discount" type="number" min="0" step="0.01" class="form-control" value="@Model.Discount.ToString("0.##")" />
+@if (Model.Remaining > 0)
+{
+    <form id="payForm" onsubmit="return false;">
+        <input type="hidden" name="invoiceId" value="@Model.Id" />
+        <div class="row g-3">
+            <div class="col-md-4">
+                <label class="form-label">مبلغ الدفعة</label>
+                <input name="amount" type="number" min="0.01" step="0.01" class="form-control" value="@Model.Remaining.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)" />
+                <div class="form-text">المتبقي @Money(Model.Remaining). يمكن تسجيل دفعة جزئية.</div>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">طريقة الدفع</label>
+                <select name="method" class="form-select">
+                    <option value="0">نقدي</option>
+                    <option value="1">محفظة</option>
+                    <option value="2">تحويل بنكي</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">ملاحظة</label>
+                <input name="note" class="form-control" />
+            </div>
+            <div class="col-12">
+                <button type="button" id="payBtn" class="btn btn-success" onclick="submitPayment(this)">حفظ الدفعة</button>
+            </div>
         </div>
-        <div class="col-md-4">
-            <label class="form-label">المبلغ المدفوع الآن (المتبقي @Model.Remaining.ToString("N2"))</label>
-            <input name="amount" type="number" min="0" step="0.01" class="form-control" value="@Model.Remaining.ToString("0.##")" />
-        </div>
-        <div class="col-md-4">
-            <label class="form-label">طريقة الدفع</label>
-            <select name="method" class="form-select">
-                <option value="0">نقدي</option>
-                <option value="1">محفظة</option>
-                <option value="2">تحويل</option>
-            </select>
-        </div>
-        <div class="col-12"><label class="form-label">ملاحظة</label><input name="note" class="form-control" /></div>
-        <div class="col-12"><button class="btn btn-success" onclick="submitForm('#payForm', '@Url.Action("Pay", "Invoices")')">حفظ التحصيل</button></div>
-    </div>
-</form>
+    </form>
+    <script>
+        function submitPayment(btn) {
+            if (btn.disabled) return;
+            btn.disabled = true;
+            $.ajax({ url: '@Url.Action("Pay", "Invoices")', type: 'POST', data: $('#payForm').serialize() })
+                .done(function (r) {
+                    if (!(r && r.ok)) btn.disabled = false;
+                    handleResult(r);
+                })
+                .fail(function (xhr) { btn.disabled = false; ajaxFail(xhr); });
+        }
+    </script>
+}
+else
+{
+    <div class="alert alert-success mb-0">هذه الفترة مدفوعة بالكامل.</div>
+}
+
+@functions {
+    string Money(decimal amount) => $"{amount:N2} ج.م";
+
+    string PermanentDiscount(InvoiceRow r) => r.DiscountKind switch
+    {
+        DiscountKind.Percentage => $"{r.DiscountValue:0.##}%",
+        DiscountKind.Fixed => Money(r.DiscountValue),
+        _ => "بدون"
+    };
+
+    string MethodName(PaymentMethod method) => method switch
+    {
+        PaymentMethod.Cash => "نقدي",
+        PaymentMethod.Wallet => "محفظة",
+        PaymentMethod.Transfer => "تحويل بنكي",
+        _ => method.ToString()
+    };
+}

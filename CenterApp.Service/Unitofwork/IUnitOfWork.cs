@@ -19,4 +19,6 @@ public interface IUnitOfWork : IDisposable
     IRepository<Payment> Payment { get; }
 
     Task<int> SaveAsync();
+    Task<int> SaveInTransactionAsync();
+    void Detach(object entity);
 }

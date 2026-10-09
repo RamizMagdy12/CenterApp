@@ -8,7 +8,6 @@ using System.Globalization;
 namespace CenterApp.Web.Controllers;
 
 [RequirePermission(Screens.Invoices, PermissionAction.View)]
-
 public class InvoicesController : AppController
 {
     private readonly IInvoiceService _s;
@@ -23,14 +22,17 @@ public class InvoicesController : AppController
         return (DateTime.Today.Year, DateTime.Today.Month);
     }
 
-    public async Task<IActionResult> Index(string? month = null, long groupId = 0, int status = -1)
+    public async Task<IActionResult> Index(string? month = null, long groupId = 0, int status = -1, string? q = null, string? sort = null)
     {
         var (y, m) = ParseMonth(month);
+        await _s.EnsureMonthAsync(y, m);
         ViewBag.Month = $"{y:D4}-{m:D2}";
         ViewBag.GroupId = groupId;
         ViewBag.Status = status;
+        ViewBag.Search = q ?? "";
+        ViewBag.Sort = sort ?? "";
         ViewBag.Groups = await _g.SelectAsync();
-        return View(await _s.ListAsync(y, m, groupId, status));
+        return View(await _s.ListAsync(y, m, groupId, status, q, sort));
     }
 
     [HttpPost, RequirePermission(Screens.Invoices, PermissionAction.Add)]
@@ -39,8 +41,8 @@ public class InvoicesController : AppController
         var (y, m) = ParseMonth(month);
         return Json(await _s.GenerateAsync(y, m, groupId));
     }
-    [RequirePermission(Screens.Invoices, PermissionAction.Edit)]
 
+    [RequirePermission(Screens.Invoices, PermissionAction.Edit)]
     public async Task<IActionResult> Pay(long id)
     {
         var vm = await _s.GetAsync(id);
@@ -49,7 +51,18 @@ public class InvoicesController : AppController
     }
 
     [HttpPost, RequirePermission(Screens.Invoices, PermissionAction.Edit)]
+    public async Task<IActionResult> Pay(long invoiceId, decimal amount, PaymentMethod method, string? note)
+        => Json(await _s.PayAsync(invoiceId, amount, method, note));
 
-    public async Task<IActionResult> Pay(long invoiceId, decimal amount, decimal discount, PaymentMethod method, string? note)
-        => Json(await _s.PayAsync(invoiceId, amount, discount, method, note));
+    [RequirePermission(Screens.Invoices, PermissionAction.Edit)]
+    public async Task<IActionResult> Discount(long studentId)
+    {
+        var vm = await _s.GetDiscountAsync(studentId);
+        if (vm == null) return NotFound();
+        return PartialView(vm);
+    }
+
+    [HttpPost, RequirePermission(Screens.Invoices, PermissionAction.Edit)]
+    public async Task<IActionResult> Discount(long studentId, DiscountKind kind, decimal value)
+        => Json(await _s.SaveDiscountAsync(studentId, kind, value));
 }

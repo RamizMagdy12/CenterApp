@@ -6,7 +6,12 @@ using Microsoft.EntityFrameworkCore;
 public class EnrollmentService : IEnrollmentService
 {
     private readonly IUnitOfWork _u;
-    public EnrollmentService(IUnitOfWork u) => _u = u;
+    private readonly IInvoiceService _invoices;
+    public EnrollmentService(IUnitOfWork u, IInvoiceService invoices)
+    {
+        _u = u;
+        _invoices = invoices;
+    }
 
     public async Task<ManageEnrollmentsVm?> GetManageAsync(long groupId)
     {
@@ -62,6 +67,7 @@ public class EnrollmentService : IEnrollmentService
             IsActive = true
         });
         await _u.SaveAsync();
+        await _invoices.EnsureCurrentMonthForStudentAsync(studentId);
         return OpResult.Success("تم التسجيل");
     }
 
