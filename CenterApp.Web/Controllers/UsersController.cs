@@ -21,6 +21,7 @@ public class UsersController : AppController
     public async Task<IActionResult> Form(string? id)
     {
         ViewBag.Roles = await _s.RoleNamesAsync(IsAdmin);
+        ViewBag.Teachers = await _s.TeacherOptionsAsync();
         return PartialView(await _s.GetAsync(id));
     }
 

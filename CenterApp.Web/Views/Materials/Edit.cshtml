@@ -1,0 +1,162 @@
+﻿@model MaterialEditVm
+@{
+    ViewData["Title"] = Model.Id == 0 ? "ماتريال جديد" : "تعديل ماتريال";
+}
+
+<div class="panel">
+    <div class="row g-3">
+        <div class="col-md-6">
+            <label class="form-label">العنوان</label>
+            <input id="mTitle" class="form-control" value="@Model.Title" />
+        </div>
+        <div class="col-12">
+            <label class="form-label">الوصف (اختياري)</label>
+            <textarea id="mDesc" class="form-control" rows="3">@Model.Description</textarea>
+        </div>
+
+        <div class="col-12">
+            <label class="form-label">إتاحة الماتريال لـ</label>
+            <div class="form-check mb-1">
+                <input type="checkbox" class="form-check-input" id="gAll" />
+                <label for="gAll" class="form-check-label fw-bold">كل المجموعات</label>
+            </div>
+            <div class="border rounded p-2" style="max-height:200px;overflow:auto">
+                @if (Model.Groups.Count == 0)
+                {
+                    <span class="text-muted">مفيش مجموعات</span>
+                }
+                @foreach (var g in Model.Groups)
+                {
+                    <div class="form-check">
+                        <input class="form-check-input g-chk" type="checkbox" id="g_@g.Id" value="@g.Id" @(g.Selected ? "checked" : "") />
+                        <label class="form-check-label" for="g_@g.Id">@g.Name</label>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="col-12">
+            <label class="form-label">الملفات (فيديو mp4/webm حتى 200 ميجا — PDF — Word — صور، والمستندات حتى 25 ميجا)</label>
+            <div id="existingFiles">
+                @foreach (var f in Model.Files)
+                {
+                    <div class="d-flex align-items-center gap-2 border rounded p-2 mb-1">
+                        <i class="bi @(f.Kind == MaterialFileKind.Video ? "bi-camera-video" : f.Kind == MaterialFileKind.Pdf ? "bi-file-earmark-pdf" : "bi-image")"></i>
+                        <span>@f.Name</span><small class="text-muted">@f.Size@(f.Kind == MaterialFileKind.Pdf ? $" — {f.PageCount} صفحة" : "")</small>
+                        <button type="button" class="btn btn-sm btn-outline-danger ms-auto" onclick="delFile(@f.Id, this)">حذف</button>
+                    </div>
+                }
+            </div>
+            <input type="file" id="fileInput" multiple accept=".mp4,.webm,.pdf,.doc,.docx,.jpg,.jpeg,.png" class="form-control mt-2" />
+            <div id="staged" class="mt-2"></div>
+            <div class="progress mt-2" style="display:none"><div id="pbar" class="progress-bar" style="width:0%"></div></div>
+            <div id="pmsg" class="small text-muted mt-1"></div>
+        </div>
+
+        <div class="col-12 d-flex gap-2">
+            <button class="btn btn-outline-primary" id="btnDraft" onclick="saveAll(false)">حفظ كمسودة</button>
+            <button class="btn btn-success" id="btnPub" onclick="saveAll(true)">حفظ ونشر</button>
+            <a class="btn btn-light" asp-action="Index">رجوع</a>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        var matId = @Model.Id;
+        var existingCount = @Model.Files.Count;
+        var staged = [];
+
+        $('#gAll').on('change', function () { $('.g-chk').prop('checked', this.checked); });
+        $('.g-chk').on('change', function () { $('#gAll').prop('checked', $('.g-chk').length === $('.g-chk:checked').length); });
+        $('#gAll').prop('checked', $('.g-chk').length > 0 && $('.g-chk').length === $('.g-chk:checked').length);
+
+        $('#fileInput').on('change', function () {
+            Array.from(this.files).forEach(function (f) {
+                if (!staged.some(function (s) { return s.name === f.name && s.size === f.size; })) staged.push(f);
+            });
+            this.value = '';
+            renderStaged();
+        });
+
+        function renderStaged() {
+            $('#staged').html(staged.map(function (f, i) {
+                return '<div class="d-flex align-items-center gap-2 border rounded p-2 mb-1"><i class="bi bi-file-earmark-arrow-up"></i><span>' + $('<i>').text(f.name).html() +
+                    '</span><small class="text-muted">' + (f.size / 1048576).toFixed(1) + ' MB</small>' +
+                    '<button type="button" class="btn btn-sm btn-outline-secondary ms-auto" onclick="staged.splice(' + i + ',1);renderStaged()">إزالة</button></div>';
+            }).join(''));
+        }
+
+        function setBusy(b) { $('#btnDraft,#btnPub,#fileInput').prop('disabled', b); }
+
+        function uploadOne(id, file) {
+            return new Promise(function (resolve, reject) {
+                var fd = new FormData();
+                fd.append('materialId', id);
+                fd.append('file', file);
+                var xhr = new XMLHttpRequest();
+                xhr.open('POST', '@Url.Action("Upload", "Materials")');
+                xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+                xhr.upload.onprogress = function (e) {
+                    if (e.lengthComputable) $('#pbar').css('width', Math.round(e.loaded * 100 / e.total) + '%');
+                };
+                xhr.onload = function () {
+                    var r;
+                    try { r = JSON.parse(xhr.responseText); } catch (x) { r = { ok: false, message: 'حصل خطأ (' + xhr.status + ')' }; }
+                    r.ok ? resolve(r) : reject(r.message);
+                };
+                xhr.onerror = function () { reject('فشل الاتصال بالسيرفر'); };
+                xhr.send(fd);
+            });
+        }
+
+        async function saveAll(publish) {
+            var title = $.trim($('#mTitle').val());
+            var groups = $('.g-chk:checked').map(function () { return parseInt(this.value); }).get();
+            if (!title) return notify('warning', 'اكتب عنوان الماتريال');
+            if (!groups.length) return notify('warning', 'اختار مجموعة واحدة على الأقل');
+            if (publish && existingCount + staged.length === 0) return notify('warning', 'ارفع ملف واحد على الأقل قبل النشر');
+
+            setBusy(true);
+            $('.progress').show();
+            try {
+                var res = await $.ajax({
+                    url: '@Url.Action("Save", "Materials")', type: 'POST', contentType: 'application/json',
+                    data: JSON.stringify({ Id: matId, Title: title, Description: $('#mDesc').val(), GroupIds: groups })
+                });
+                if (!res.ok) throw res.message;
+                matId = res.id;
+
+                var total = staged.length;
+                for (var i = 0; i < total; i++) {
+                    $('#pmsg').text('رفع ملف ' + (i + 1) + ' من ' + total + ': ' + staged[0].name);
+                    $('#pbar').css('width', '0%');
+                    await uploadOne(matId, staged[0]);
+                    staged.shift(); existingCount++; renderStaged();
+                }
+
+                if (publish) {
+                    var p = await $.post('@Url.Action("Publish", "Materials")', { id: matId });
+                    if (!p.ok) throw p.message;
+                }
+
+                await Swal.fire({ icon: 'success', title: publish ? 'تم النشر' : 'تم الحفظ كمسودة', timer: 1200, showConfirmButton: false, heightAuto: false });
+                location.href = '@Url.Action("Index", "Materials")';
+            } catch (e) {
+                setBusy(false);
+                $('.progress').hide();
+                if (e && e.status && handleHttpError(e)) return;
+                notify('error', typeof e === 'string' ? e : 'حصل خطأ، جرّب تاني');
+            }
+        }
+
+        function delFile(id, btn) {
+            askConfirm('حذف الملف ده؟', 'نعم').then(function (ok) {
+                if (!ok) return;
+                postJson('@Url.Action("DeleteFile", "Materials")', { id: id }, function () {
+                    $(btn).closest('.d-flex').remove(); existingCount--;
+                });
+            });
+        }
+    </script>
+}

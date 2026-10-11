@@ -8,4 +8,5 @@ public interface IUserAdminService
     Task<OpResult> SaveAsync(UserVm vm, bool actorIsAdmin, string actorId);
     Task<OpResult> ResetPasswordAsync(string id, string newPassword, bool actorIsAdmin);
     Task<OpResult> DeleteAsync(string id, bool actorIsAdmin, string actorId);
+    Task<List<SimpleItem>> TeacherOptionsAsync();
 }

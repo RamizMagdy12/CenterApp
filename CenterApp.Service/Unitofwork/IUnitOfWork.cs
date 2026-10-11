@@ -17,6 +17,10 @@ public interface IUnitOfWork : IDisposable
     IRepository<SessionAttendance> SessionAttendance { get; }
     IRepository<MonthlyInvoice> MonthlyInvoice { get; }
     IRepository<Payment> Payment { get; }
+    IRepository<Material> Material { get; }
+    IRepository<MaterialGroup> MaterialGroup { get; }
+    IRepository<MaterialFile> MaterialFile { get; }
+    IRepository<AccessGrace> AccessGrace { get; }
 
     Task<int> SaveAsync();
     Task<int> SaveInTransactionAsync();

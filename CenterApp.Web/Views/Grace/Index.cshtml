@@ -1,0 +1,47 @@
+﻿@model List<GraceRow>
+@{
+    ViewData["Title"] = "سماح الوصول للماتريال";
+}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3>سماح الوصول للماتريال</h3>
+    <button class="btn btn-primary" onclick="openForm('@Url.Action("Form", "Grace")', 'سماح جديد')">+ سماح جديد</button>
+</div>
+
+<table class="table table-striped align-middle">
+    <thead><tr><th>الطالب</th><th>الكود</th><th>المجموعة</th><th>الأيام</th><th>آخر يوم</th><th>السبب</th><th>الحالة</th><th></th></tr></thead>
+    <tbody>
+        @foreach (var g in Model)
+        {
+            <tr>
+                <td>@g.StudentName</td>
+                <td>@g.StudentCode</td>
+                <td>@g.GroupName</td>
+                <td>@g.Days</td>
+                <td>@g.ExpiresAt.AddDays(-1).ToString("yyyy-MM-dd")</td>
+                <td>@g.Reason</td>
+                <td>
+                    @if (g.IsRevoked)
+                    {
+                        <span class="badge bg-secondary">ملغي</span>
+                    }
+                    else if (g.IsActive)
+                    {
+
+                        <span class="badge bg-success">ساري</span>
+                    }
+                    else
+                    {
+
+                        <span class="badge bg-light text-dark border">انتهى</span>
+                    }
+                </td>
+                <td>
+                    @if (g.IsActive)
+                    {
+                        <button class="btn btn-sm btn-outline-danger" onclick="confirmPost('@Url.Action("Revoke", "Grace")', { id: @g.Id }, 'إلغاء السماح ده؟')">إلغاء</button>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

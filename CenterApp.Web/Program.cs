@@ -1,7 +1,10 @@
 using CenterApp.Entity.Identity;
 using CenterApp.Service.Data;
+using CenterApp.Service.IRepository;
+using CenterApp.Service.Repository;
 using CenterApp.Service.Services;
 using CenterApp.Service.Unitofwork;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
@@ -73,6 +76,16 @@ builder.Services.AddScoped<IDashboardService, DashboardService>();
 builder.Services.AddScoped<IPermissionService, PermissionService>();
 builder.Services.AddScoped<IUserAdminService, UserAdminService>();
 builder.Services.AddScoped<IRoleAdminService, RoleAdminService>();
+builder.Services.AddScoped<IMaterialService, MaterialService>();
+builder.Services.AddScoped<IPortalService, PortalService>();
+builder.Services.AddScoped<IGraceService, GraceService>();
+builder.Services.AddScoped<IStudentAccountService, StudentAccountService>();
+builder.Services.AddSingleton<IMaterialStorage, MaterialStorage>();
+builder.Services.AddSingleton<IMediaTokenService, MediaTokenService>();
+
+// رفع الفيديوهات (حد أقصى 250 ميجا للطلب)
+builder.Services.Configure<FormOptions>(o => o.MultipartBodyLengthLimit = 262144000);
+builder.WebHost.ConfigureKestrel(o => o.Limits.MaxRequestBodySize = 262144000);
 
 var app = builder.Build();
 

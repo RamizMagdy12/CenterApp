@@ -1,4 +1,6 @@
 ﻿@model List<InvoiceRow>
+@inject CenterApp.Service.Services.IPermissionService Perm
+
 @{
     ViewData["Title"] = "التحصيل";
     var groups = (List<SelectListItem>)ViewBag.Groups;
@@ -107,13 +109,32 @@
                         <div class="d-flex gap-1 flex-wrap">
                             @if (r.Remaining > 0)
                             {
-                                <button type="button" class="btn btn-sm btn-outline-success" onclick="openForm('@Url.Action("Pay", "Invoices", new { id = r.Id })', 'تسجيل دفعة')">تسجيل دفعة</button>
+                                <button type="button" class="btn btn-sm btn-outline-success"
+                                        onclick="openForm('@Url.Action("Pay", "Invoices", new { id = r.Id })', 'تسجيل دفعة')">
+                                    تسجيل دفعة
+                                </button>
                             }
                             else
                             {
-                                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="openForm('@Url.Action("Pay", "Invoices", new { id = r.Id })', 'سجل الدفعات')">السجل</button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary"
+                                        onclick="openForm('@Url.Action("Pay", "Invoices", new { id = r.Id })', 'سجل الدفعات')">
+                                    السجل
+                                </button>
                             }
-                            <button type="button" class="btn btn-sm btn-outline-primary" onclick="openForm('@Url.Action("Discount", "Invoices", new { studentId = r.StudentId })', 'الخصم الدائم', true)">الخصم</button>
+
+                            <button type="button" class="btn btn-sm btn-outline-primary"
+                                    onclick="openForm('@Url.Action("Discount", "Invoices", new { studentId = r.StudentId })', 'الخصم الدائم', true)">
+                                الخصم
+                            </button>
+
+                            @if (r.Status != InvoiceStatus.Paid &&
+                                 Perm.Has(User, Screens.Grace, PermissionAction.Add))
+                            {
+                                <button type="button" class="btn btn-sm btn-outline-warning"
+                                        onclick="openForm('@Url.Action("Form", "Grace", new { studentId = r.StudentId, groupId = r.GroupId })', 'سماح وصول للماتريال')">
+                                    سماح
+                                </button>
+                            }
                         </div>
                     </td>
                 </tr>

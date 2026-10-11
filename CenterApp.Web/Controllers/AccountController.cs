@@ -1,4 +1,5 @@
 ﻿using CenterApp.Entity.Identity;
+using CenterApp.Entity.Security;
 using CenterApp.Web.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -16,7 +17,13 @@ public class AccountController : Controller
     [AllowAnonymous, HttpGet]
     public IActionResult Login(string? returnUrl = null)
     {
-        if (User.Identity?.IsAuthenticated == true) return RedirectToAction("Index", "Home");
+        if (User.Identity?.IsAuthenticated == true)
+        {
+            return User.IsInRole(RoleNames.Student)
+                ? RedirectToAction("Index", "Portal")
+                : RedirectToAction("Index", "Home");
+        }
+
         return View(new LoginVm { ReturnUrl = returnUrl });
     }
 
@@ -46,9 +53,14 @@ public class AccountController : Controller
         var result = await _sm.PasswordSignInAsync(user, vm.Password, isPersistent: true, lockoutOnFailure: true);
 
         if (result.Succeeded)
+        {
+            if (await _um.IsInRoleAsync(user, RoleNames.Student))
+                return RedirectToAction("Index", "Portal");
+
             return !string.IsNullOrEmpty(vm.ReturnUrl) && Url.IsLocalUrl(vm.ReturnUrl)
                 ? Redirect(vm.ReturnUrl)
                 : RedirectToAction("Index", "Home");
+        }
 
         vm.Error = result.IsLockedOut
             ? "الحساب اتقفل مؤقتاً بسبب محاولات غلط كتير، جرّب بعد 5 دقايق"

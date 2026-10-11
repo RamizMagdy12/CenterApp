@@ -16,7 +16,12 @@
         new MG("الطلاب", "bi-people-fill", new[] { new MI("قائمة الطلاب", "Students", "Index", Screens.Students) }),
         new MG("المجموعات", "bi-collection-fill", new[] { new MI("المجموعات والمواعيد", "Groups", "Index", Screens.Groups) }),
         new MG("الحضور", "bi-qr-code-scan", new[] { new MI("الحصص والتحضير", "Sessions", "Index", Screens.Sessions) }),
-        new MG("الحسابات", "bi-cash-coin", new[] { new MI("الفواتير والتحصيل", "Invoices", "Index", Screens.Invoices) }),
+        new MG("المحتوى", "bi-collection-play-fill", new[] { new MI("الماتريال", "Materials", "Index", Screens.Materials) }),
+        new MG("الحسابات", "bi-cash-coin", new[]
+        {
+            new MI("الفواتير والتحصيل", "Invoices", "Index", Screens.Invoices),
+            new MI("سماح الوصول", "Grace", "Index", Screens.Grace)
+        }),
         new MG("البيانات الأساسية", "bi-gear-fill", new[]
         {
             new MI("المدرسين", "Lookups", "Index", Screens.Lookups, "teachers"),
@@ -28,6 +33,7 @@
             new MI("المستخدمين", "Users", "Index", Screens.Users),
             new MI("الأدوار والصلاحيات", "Roles", "Index", Screens.Roles)
         })
+
     };
 
     // القايمة بتظهر الشاشات اللي المستخدم ليه صلاحية "عرض" عليها بس

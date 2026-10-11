@@ -60,6 +60,19 @@ public class UserAdminService : IUserAdminService
             };
         }).ToList();
     }
+    public async Task<List<SimpleItem>> TeacherOptionsAsync()
+    => await _db.Teachers.OrderBy(t => t.Name).Select(t => new SimpleItem(t.Id, t.Name)).ToListAsync();
+
+    private async Task LinkTeacherAsync(string userId, long? teacherId)
+    {
+        foreach (var old in await _db.Teachers.Where(t => t.UserId == userId && t.Id != teacherId).ToListAsync()) old.UserId = null;
+        if (teacherId.HasValue)
+        {
+            var t = await _db.Teachers.FirstOrDefaultAsync(x => x.Id == teacherId.Value);
+            if (t != null) t.UserId = userId;
+        }
+        await _db.SaveChangesAsync();
+    }
 
     public async Task<UserVm> GetAsync(string? id)
     {
@@ -70,6 +83,10 @@ public class UserAdminService : IUserAdminService
         return new UserVm
         {
             Id = u.Id,
+            TeacherId = await _db.Teachers
+             .Where(t => t.UserId == u.Id)
+             .Select(t => (long?)t.Id)
+             .FirstOrDefaultAsync() ?? 0,
             UserName = u.UserName ?? "",
             FullName = u.FullName,
             Email = u.Email,
@@ -96,6 +113,15 @@ public class UserAdminService : IUserAdminService
         if (email != null && await _um.Users.AnyAsync(u => u.Email == email && u.Id != vm.Id))
             return OpResult.Fail("الإيميل مستخدم قبل كده");
 
+        if (vm.TeacherId > 0 &&
+            await _db.Teachers.AnyAsync(t =>
+         t.Id == vm.TeacherId &&
+         t.UserId != null &&
+         t.UserId != vm.Id))
+        {
+            return OpResult.Fail("المدرس ده مربوط بمستخدم تاني");
+        }
+
         // ── مستخدم جديد
         if (string.IsNullOrEmpty(vm.Id))
         {
@@ -115,6 +141,9 @@ public class UserAdminService : IUserAdminService
             if (!cr.Succeeded) return OpResult.Fail(Errors(cr));
 
             await _um.AddToRoleAsync(nu, vm.RoleName);
+
+            await LinkTeacherAsync(nu.Id, vm.TeacherId);
+
             return OpResult.Success("تم إنشاء المستخدم");
         }
 
@@ -133,6 +162,7 @@ public class UserAdminService : IUserAdminService
         if (wasAdmin && (vm.RoleName != RoleNames.Admin || !vm.IsActive) && await OtherActiveAdminsAsync(user.Id) == 0)
             return OpResult.Fail("ده آخر أدمن نشط في النظام");
 
+
         user.UserName = userName;
         user.FullName = vm.FullName?.Trim() ?? "";
         user.Email = email;
@@ -148,7 +178,10 @@ public class UserAdminService : IUserAdminService
             await _um.AddToRoleAsync(user, vm.RoleName);
         }
 
-        if (!vm.IsActive) await _um.UpdateSecurityStampAsync(user);   // يطلّعه من الجلسة فوراً
+        if (!vm.IsActive)
+            await _um.UpdateSecurityStampAsync(user);
+
+        await LinkTeacherAsync(user.Id, vm.TeacherId);
 
         return OpResult.Success();
     }
@@ -186,4 +219,5 @@ public class UserAdminService : IUserAdminService
         var r = await _um.DeleteAsync(user);
         return r.Succeeded ? OpResult.Success("تم الحذف") : OpResult.Fail(Errors(r));
     }
+
 }

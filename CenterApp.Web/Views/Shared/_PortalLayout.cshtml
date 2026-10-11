@@ -1,0 +1,164 @@
+﻿@using System.Security.Claims
+@{
+    var name = User.FindFirst("FullName")?.Value ?? User.Identity?.Name ?? "";
+    var title = ViewData["Title"] as string ?? "";
+}
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@title - السنتر</title>
+    <link rel="stylesheet" href="~/lib/fontsource-cairo/400.css" />
+    <link rel="stylesheet" href="~/lib/fontsource-cairo/600.css" />
+    <link rel="stylesheet" href="~/lib/fontsource-cairo/700.css" />
+    <link rel="stylesheet" href="~/lib/fontsource-cairo/800.css" />
+    <link rel="stylesheet" href="~/lib/bootstrap-icons/font/bootstrap-icons.min.css" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <style>
+            body {
+                font-family: 'Cairo', Tahoma, sans-serif;
+                background: var(--bg);
+                color: var(--text);
+            }
+
+            .pnav {
+                background: #fff;
+                border-bottom: 1px solid var(--line);
+                padding: 10px 22px;
+                display: flex;
+                align-items: center;
+                gap: 18px;
+                position: sticky;
+                top: 0;
+                z-index: 50;
+            }
+
+                .pnav .brand {
+                    font-weight: 800;
+                    font-size: 22px;
+                    color: var(--text);
+                    display: flex;
+                    gap: 8px;
+                    align-items: center;
+                }
+
+                .pnav a.lnk {
+                    color: var(--text);
+                    font-weight: 600;
+                }
+
+                .pnav .me {
+                    margin-inline-start: auto;
+                    display: flex;
+                    gap: 12px;
+                    align-items: center;
+                }
+
+            .tiles {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+                gap: 18px;
+                margin: 20px 0;
+            }
+
+            .tile {
+                background: #fff;
+                border: 1px solid var(--line);
+                border-radius: 16px;
+                padding: 22px;
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+                color: var(--text);
+                position: relative;
+            }
+
+                .tile i {
+                    font-size: 30px;
+                    color: var(--primary);
+                }
+
+                .tile b {
+                    font-size: 18px;
+                }
+
+                .tile .pill {
+                    position: absolute;
+                    top: 16px;
+                    inset-inline-end: 16px;
+                }
+
+                .tile.soon {
+                    opacity: .6;
+                }
+
+            a.tile:hover {
+                border-color: var(--primary);
+                box-shadow: 0 6px 20px rgba(75,47,208,.12);
+            }
+
+            .mgrid {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+                gap: 16px;
+            }
+
+            .mcard {
+                background: #fff;
+                border: 1px solid var(--line);
+                border-radius: 14px;
+                padding: 16px;
+                display: flex;
+                gap: 14px;
+                color: var(--text);
+            }
+
+                .mcard:hover {
+                    border-color: var(--primary);
+                }
+
+            .mcard-ico {
+                font-size: 34px;
+                color: var(--primary);
+            }
+
+            .mcard.locked .mcard-ico {
+                color: #c53030;
+            }
+
+            .mcard-body {
+                display: flex;
+                flex-direction: column;
+                gap: 4px;
+                min-width: 0;
+            }
+
+                .mcard-body small {
+                    color: var(--muted);
+                }
+    </style>
+</head>
+<body>
+    <header class="pnav">
+        <a class="brand" asp-controller="Portal" asp-action="Index"><i class="bi bi-mortarboard-fill" style="color:var(--primary)"></i> السنتر</a>
+        <a class="lnk" asp-controller="Portal" asp-action="Index">الرئيسية</a>
+        <a class="lnk" asp-controller="Portal" asp-action="Materials">الماتريال</a>
+        <div class="me">
+            <span>@name</span>
+            <form asp-controller="Account" asp-action="Logout" method="post">
+                <button class="btn btn-sm btn-outline-danger"><i class="bi bi-box-arrow-right"></i> خروج</button>
+            </form>
+        </div>
+    </header>
+
+    <main class="container py-4">@RenderBody()</main>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/sweetalert2/dist/sweetalert2.all.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

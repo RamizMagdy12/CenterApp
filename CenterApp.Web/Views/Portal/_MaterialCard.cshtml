@@ -1,0 +1,18 @@
+﻿@model PortalMaterialRow
+<a class="mcard @(Model.IsLocked ? "locked" : "")" href="@Url.Action("Material", "Portal", new { id = Model.Id })">
+    <div class="mcard-ico"><i class="bi @(Model.IsLocked ? "bi-lock-fill" : "bi-play-circle-fill")"></i></div>
+    <div class="mcard-body">
+        <b>@Model.Title</b>
+        <small>@Model.Groups • @Model.PublishedAt.ToString("yyyy-MM-dd")</small>
+        <small><i class="bi bi-camera-video"></i> @Model.Videos &nbsp; <i class="bi bi-file-earmark-text"></i> @Model.Docs</small>
+        @if (Model.IsLocked)
+        {
+            <span class="pill pill-danger">@Model.Reason</span>
+        }
+        else if (Model.GraceUntil.HasValue)
+        {
+
+            <span class="pill pill-warn">سماح لحد @Model.GraceUntil.Value.AddDays(-1).ToString("yyyy-MM-dd")</span>
+        }
+    </div>
+</a>
