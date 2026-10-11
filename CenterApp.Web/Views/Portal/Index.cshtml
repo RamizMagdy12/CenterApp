@@ -1,0 +1,39 @@
+﻿@model PortalHomeVm
+@{
+    Layout = "_PortalLayout"; ViewData["Title"] = "الرئيسية";
+}
+
+<div class="hello">
+    <div class="avatar">@Model.Student.Name.Substring(0, 1)</div>
+    <div>
+        <h2>أهلاً، @Model.Student.Name 👋</h2>
+        <p>كودك: <b dir="ltr">@Model.Student.Code</b></p>
+    </div>
+</div>
+
+@if (Model.Locked > 0)
+{
+    <div class="alert alert-warning"><i class="bi bi-lock-fill"></i> عندك @Model.Locked ماتريال مقفولة لحد ما يتسدد الحساب. كلّم الإدارة.</div>
+}
+
+<div class="tiles">
+    <a class="tile" asp-action="Materials"><i class="bi bi-collection-play"></i><b>الماتريال</b><span class="pill pill-primary">@Model.Total</span></a>
+    <div class="tile soon"><i class="bi bi-calendar-check"></i><b>الحضور</b><span class="pill pill-gray">قريباً</span></div>
+    <div class="tile soon"><i class="bi bi-journal-check"></i><b>الواجبات</b><span class="pill pill-gray">قريباً</span></div>
+    <div class="tile soon"><i class="bi bi-patch-question"></i><b>الاختبارات</b><span class="pill pill-gray">قريباً</span></div>
+</div>
+
+<div class="panel">
+    <h3>آخر الماتريال</h3>
+    <div class="sub">أحدث 5</div>
+    @if (Model.Latest.Count == 0)
+    {
+        <div class="empty-box">مفيش ماتريال لسه</div>
+    }
+    <div class="mgrid">
+        @foreach (var m in Model.Latest)
+        {
+            <partial name="_MaterialCard" model="m" />
+        }
+    </div>
+</div>

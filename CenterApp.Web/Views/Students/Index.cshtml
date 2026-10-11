@@ -46,6 +46,7 @@
             <td class="text-nowrap">
                 <button class="btn btn-sm btn-outline-primary" onclick="openForm('@Url.Action("Form", "Students", new { id = s.Id })', 'تعديل طالب', true)">تعديل</button>
                     <a class="btn btn-sm btn-outline-dark" target="_blank" href="@Url.Action("Card", "Students", new { id = s.Id })">كارت QR</a>
+                    <button class="btn btn-sm btn-outline-success" onclick="studentAccount(@s.Id)">حساب الدخول</button>
                 <button class="btn btn-sm btn-outline-danger" onclick="confirmPost('@Url.Action("Delete", "Students")', { id: @s.Id }, 'تأكيد الحذف؟')">حذف</button>
             </td>
         </tr>
@@ -65,4 +66,21 @@
             }
         </ul>
     </nav>
+}
+@section Scripts {
+    <script>
+        function studentAccount(id) {
+            askConfirm('إنشاء حساب دخول للطالب (أو إعادة ضبط كلمة المرور لو عنده حساب)؟', 'نعم').then(function (ok) {
+                if (!ok) return;
+                postJson('@Url.Action("Account", "Students")', { id: id }, function (r) {
+                    var p = (r.extra || '').split('|');
+                    swalShow({
+                        icon: 'success', title: 'بيانات دخول الطالب',
+                        html: '<div style="font-size:18px;line-height:2">اسم المستخدم: <b dir="ltr">' + p[0] + '</b><br>كلمة المرور: <b dir="ltr">' + p[1] + '</b></div>' +
+                            '<small class="text-muted">سجّلها وسلّمها للطالب، مش هتظهر تاني</small>'
+                    });
+                });
+            });
+        }
+    </script>
 }

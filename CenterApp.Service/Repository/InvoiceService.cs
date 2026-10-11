@@ -27,6 +27,7 @@ public class InvoiceService : IInvoiceService
             Status = i.Status,
             DueDate = i.DueDate,
             LastPaymentDate = payments.Count == 0 ? null : payments.Max(p => p.PaidAt),
+            GroupId = i.Enrollment.GroupId,
             Payments = payments.Select(p => new PaymentRow
             {
                 PaidAt = p.PaidAt,

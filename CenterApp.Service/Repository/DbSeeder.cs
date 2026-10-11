@@ -15,13 +15,23 @@ public static class DbSeeder
         using var scope = services.CreateScope();
         var sp = scope.ServiceProvider;
 
-        await sp.GetRequiredService<AppDbContext>().Database.MigrateAsync();
+        var db = sp.GetRequiredService<AppDbContext>();
+        await db.Database.MigrateAsync();
 
         var rm = sp.GetRequiredService<RoleManager<IdentityRole>>();
         var um = sp.GetRequiredService<UserManager<AppUser>>();
 
-        if (!await rm.RoleExistsAsync(RoleNames.Admin))
-            await rm.CreateAsync(new IdentityRole(RoleNames.Admin));
+        foreach (var r in new[] { RoleNames.Admin, RoleNames.Teacher, RoleNames.Student })
+            if (!await rm.RoleExistsAsync(r)) await rm.CreateAsync(new IdentityRole(r));
+
+        // المدرس: صلاحيات الماتريال كاملة (وبيشوف ماتريال مجموعاته بس)
+        var teacher = await rm.FindByNameAsync(RoleNames.Teacher);
+        if (teacher != null && !await db.RolePermissions.AnyAsync(p => p.RoleId == teacher.Id))
+        {
+            db.RolePermissions.Add(new RolePermission
+            { RoleId = teacher.Id, ScreenCode = Screens.Materials, CanView = true, CanAdd = true, CanEdit = true, CanDelete = true });
+            await db.SaveChangesAsync();
+        }
 
         var adminName = config["Seed:AdminUserName"] ?? "admin";
         if (await um.FindByNameAsync(adminName) == null)

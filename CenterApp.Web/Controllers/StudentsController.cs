@@ -1,5 +1,6 @@
 ﻿using CenterApp.Entity.Security;
 using CenterApp.Service;
+using CenterApp.Service.IRepository;
 using CenterApp.Service.Models;
 using CenterApp.Web.Security;
 using Microsoft.AspNetCore.Mvc;
@@ -15,7 +16,8 @@ public class StudentsController : AppController
     private readonly IStudentService _s;
     private readonly ICatalogService _c;
     private readonly IGroupService _g;
-    public StudentsController(IStudentService s, ICatalogService c, IGroupService g) { _s = s; _c = c; _g = g; }
+    private readonly IStudentAccountService _acc;
+    public StudentsController(IStudentService s, ICatalogService c, IGroupService g, IStudentAccountService acc) { _s = s; _c = c; _g = g; _acc = acc; }
 
     public async Task<IActionResult> Index(string? q, long? gradeId, int page = 1)
     {
@@ -58,4 +60,6 @@ public class StudentsController : AppController
     // كروت مجموعة كاملة
     public async Task<IActionResult> Cards(long groupId)
         => View("Cards", await _s.GetCardsAsync(null, groupId));
+    [HttpPost, RequirePermission(Screens.Students, PermissionAction.Edit)]
+    public async Task<IActionResult> Account(long id) => Json(await _acc.EnsureAsync(id));
 }

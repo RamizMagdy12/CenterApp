@@ -1,0 +1,67 @@
+﻿@model ViewerVm
+<style>
+    .viewer .vpage { width: 100%; max-width: 900px; display: block; margin: 0 auto 12px; border: 1px solid var(--line); border-radius: 6px; background: #fff; user-select: none; -webkit-user-drag: none; pointer-events: none; }
+    .viewer .vfile { margin-bottom: 30px; }
+    .viewer .vfile-title { font-weight: 700; margin-bottom: 10px; }
+    .vwrap { position: relative; max-width: 960px; margin: 0 auto; background: #000; border-radius: 10px; overflow: hidden; }
+    .vwrap video { width: 100%; display: block; max-height: 70vh; }
+    .vwm { position: absolute; z-index: 5; color: rgba(255,255,255,.45); font-weight: 700; font-size: 15px; pointer-events: none; text-shadow: 0 0 4px rgba(0,0,0,.6); transition: all 1.5s ease; white-space: nowrap; direction: ltr; }
+    .vfs { position: absolute; z-index: 6; top: 8px; inset-inline-end: 8px; }
+    @@media print { .viewer { display: none !important; } }
+</style>
+
+<div class="viewer" id="viewer" data-wm="@Model.Watermark">
+    @if (!string.IsNullOrWhiteSpace(Model.Description))
+    {
+        <p class="text-muted">@Model.Description</p>
+    }
+
+    @foreach (var f in Model.Files)
+    {
+        <div class="vfile">
+            <div class="vfile-title">@f.Name</div>
+            @if (f.Kind == MaterialFileKind.Video)
+            {
+                <div class="vwrap">
+                    <video controls controlsList="nodownload nofullscreen noremoteplayback" disablePictureInPicture disableRemotePlayback
+                           playsinline preload="metadata" src="@Url.Action("Video", "Media", new { id = f.Id, t = f.Token })"></video>
+                    <button type="button" class="vfs btn btn-sm btn-dark">ملء الشاشة</button>
+                </div>
+            }
+            else
+            {
+                for (var p = 1; p <= f.PageCount; p++)
+                {
+                    <img class="vpage" loading="lazy" draggable="false" alt="" src="@Url.Action("Page", "Media", new { id = f.Id, n = p, t = f.Token })" />
+                }
+            }
+        </div>
+    }
+</div>
+
+<script>
+    (function () {
+        var v = document.getElementById('viewer');
+        if (!v) return;
+        var wm = v.getAttribute('data-wm');
+
+        ['contextmenu', 'dragstart', 'copy', 'cut', 'selectstart'].forEach(function (ev) {
+            v.addEventListener(ev, function (e) { e.preventDefault(); });
+        });
+        document.addEventListener('keydown', function (e) {
+            var k = (e.key || '').toLowerCase();
+            if ((e.ctrlKey || e.metaKey) && ['s', 'p', 'u', 'c', 'a'].indexOf(k) > -1) { e.preventDefault(); return false; }
+            if (e.key === 'PrintScreen') { try { navigator.clipboard.writeText(' '); } catch (x) { } }
+        });
+
+        document.querySelectorAll('.vwrap').forEach(function (w) {
+            var s = document.createElement('div');
+            s.className = 'vwm'; s.textContent = wm; w.appendChild(s);
+            function move() { s.style.top = (8 + Math.random() * 78) + '%'; s.style.left = (4 + Math.random() * 60) + '%'; }
+            move(); setInterval(move, 6000);
+
+            var b = w.querySelector('.vfs');
+            if (b) b.addEventListener('click', function () { (w.requestFullscreen || w.webkitRequestFullscreen).call(w); });
+        });
+    })();
+</script>

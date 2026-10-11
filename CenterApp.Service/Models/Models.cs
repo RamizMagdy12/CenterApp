@@ -181,6 +181,7 @@ public class InvoiceRow
     public long Id { get; set; }
     public long StudentId { get; set; }
     public string StudentName { get; set; } = "";
+    public long GroupId { get; set; }
     public string GroupName { get; set; } = "";
     public int Year { get; set; }
     public int Month { get; set; }

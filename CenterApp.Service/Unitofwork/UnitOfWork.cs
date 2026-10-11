@@ -24,6 +24,11 @@ public class UnitOfWork : IUnitOfWork
         SessionAttendance = new Repository<SessionAttendance>(db);
         MonthlyInvoice = new Repository<MonthlyInvoice>(db);
         Payment = new Repository<Payment>(db);
+        Material = new Repository<Material>(db);
+        MaterialGroup = new Repository<MaterialGroup>(db);
+        MaterialFile = new Repository<MaterialFile>(db);
+        AccessGrace = new Repository<AccessGrace>(db);
+
     }
 
     public IRepository<GradeLevel> GradeLevel { get; }
@@ -37,6 +42,10 @@ public class UnitOfWork : IUnitOfWork
     public IRepository<SessionAttendance> SessionAttendance { get; }
     public IRepository<MonthlyInvoice> MonthlyInvoice { get; }
     public IRepository<Payment> Payment { get; }
+    public IRepository<Material> Material { get; }
+    public IRepository<MaterialGroup> MaterialGroup { get; }
+    public IRepository<MaterialFile> MaterialFile { get; }
+    public IRepository<AccessGrace> AccessGrace { get; }
 
     public Task<int> SaveAsync() => _db.SaveChangesAsync();
 

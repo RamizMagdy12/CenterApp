@@ -30,6 +30,16 @@
             </div>
         }
         <div class="col-md-6">
+            <label class="form-label">مدرس مرتبط (لو المستخدم ده مدرس)</label>
+            <select name="TeacherId" class="form-select">
+                <option value="">-- لا --</option>
+                @foreach (var t in (List<SimpleItem>)ViewBag.Teachers)
+                {
+                    <option value="@t.Id" selected="@(t.Id == Model.TeacherId)">@t.Text</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-6">
             <label class="form-label">الدور</label>
             <select name="RoleName" class="form-select">
                 <option value="">-- اختر --</option>

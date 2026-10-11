@@ -31,6 +31,10 @@ public class AppDbContext : IdentityDbContext<AppUser>
     public DbSet<MonthlyInvoice> MonthlyInvoices => Set<MonthlyInvoice>();
     public DbSet<Payment> Payments => Set<Payment>();
     public DbSet<RolePermission> RolePermissions => Set<RolePermission>();
+    public DbSet<Material> Materials => Set<Material>();
+    public DbSet<MaterialGroup> MaterialGroups => Set<MaterialGroup>();
+    public DbSet<MaterialFile> MaterialFiles => Set<MaterialFile>();
+    public DbSet<AccessGrace> AccessGraces => Set<AccessGrace>();
 
     protected override void ConfigureConventions(ModelConfigurationBuilder b)
     {
@@ -58,6 +62,13 @@ public class AppDbContext : IdentityDbContext<AppUser>
         mb.Entity<Session>().HasIndex(x => new { x.GroupId, x.Date });
         mb.Entity<SessionAttendance>().HasIndex(x => new { x.SessionId, x.StudentId }).IsUnique();
         mb.Entity<MonthlyInvoice>().HasIndex(x => new { x.EnrollmentId, x.Year, x.Month }).IsUnique();
+        mb.Entity<Student>().HasIndex(x => x.UserId);
+        mb.Entity<Teacher>().HasIndex(x => x.UserId);
+        mb.Entity<Material>().Property(x => x.Description).HasMaxLength(2000);
+        mb.Entity<Material>().HasIndex(x => new { x.Status, x.PublishedAt });
+        mb.Entity<MaterialGroup>().HasIndex(x => new { x.MaterialId, x.GroupId });
+        mb.Entity<MaterialFile>().Property(x => x.StoredName).HasMaxLength(100);
+        mb.Entity<AccessGrace>().HasIndex(x => new { x.StudentId, x.ExpiresAt });
 
         // منع Cascade غير مقصود (على جداول السنتر بس، مش جداول الـ Identity)
         foreach (var fk in mb.Model.GetEntityTypes()

@@ -19,6 +19,7 @@ public class Teacher : BaseEntity
     public string Name { get; set; } = null!;
     public string? Phone { get; set; }
     public bool IsActive { get; set; } = true;
+    public string? UserId { get; set; }
 }
 
 public class Student : BaseEntity
@@ -34,6 +35,7 @@ public class Student : BaseEntity
     public bool IsActive { get; set; } = true;
     public DiscountKind DiscountKind { get; set; }
     public decimal DiscountValue { get; set; }
+    public string? UserId { get; set; }
 
     public virtual GradeLevel? GradeLevel { get; set; }
     public virtual ICollection<GroupEnrollment> Enrollments { get; set; } = new List<GroupEnrollment>();
