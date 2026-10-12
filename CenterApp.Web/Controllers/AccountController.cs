@@ -15,7 +15,7 @@ public class AccountController : Controller
     public AccountController(SignInManager<AppUser> sm, UserManager<AppUser> um) { _sm = sm; _um = um; }
 
     [AllowAnonymous, HttpGet]
-    public IActionResult Login(string? returnUrl = null)
+    public IActionResult Login(string? returnUrl = null, bool replaced = false)
     {
         if (User.Identity?.IsAuthenticated == true)
         {
@@ -24,7 +24,11 @@ public class AccountController : Controller
                 : RedirectToAction("Index", "Home");
         }
 
-        return View(new LoginVm { ReturnUrl = returnUrl });
+        return View(new LoginVm
+        {
+            ReturnUrl = returnUrl,
+            Error = replaced ? "الحساب اتفتح من جهاز تاني، والجلسة هنا اتقفلت." : null
+        });
     }
 
     [AllowAnonymous, HttpPost, ValidateAntiForgeryToken]
@@ -50,10 +54,14 @@ public class AccountController : Controller
             return View(vm);
         }
 
-        var result = await _sm.PasswordSignInAsync(user, vm.Password, isPersistent: true, lockoutOnFailure: true);
+        var result = await _sm.CheckPasswordSignInAsync(user, vm.Password, lockoutOnFailure: true);
 
         if (result.Succeeded)
         {
+            // ختم جديد بيلغي أي جلسة مفتوحة لنفس الحساب على جهاز تاني
+            await _um.UpdateSecurityStampAsync(user);
+            await _sm.SignInAsync(user, isPersistent: true);
+
             if (await _um.IsInRoleAsync(user, RoleNames.Student))
                 return RedirectToAction("Index", "Portal");
 

@@ -46,11 +46,26 @@ builder.Services.ConfigureApplicationCookie(o =>
     o.ExpireTimeSpan = TimeSpan.FromHours(12);
     o.SlidingExpiration = true;
 
+    o.Events.OnValidatePrincipal = async ctx =>
+    {
+        await SecurityStampValidator.ValidatePrincipalAsync(ctx);
+        if (ctx.Principal?.Identity?.IsAuthenticated != true)
+            ctx.HttpContext.Items["SessionReplaced"] = true;
+    };
+
     // طلبات الـ Ajax ترجع 401 / 403 بدل ما تعمل Redirect لصفحة HTML
     o.Events.OnRedirectToLogin = ctx =>
     {
-        if (IsAjax(ctx.Request)) ctx.Response.StatusCode = 401;
-        else ctx.Response.Redirect(ctx.RedirectUri);
+        if (IsAjax(ctx.Request))
+        {
+            ctx.Response.StatusCode = 401;
+            return Task.CompletedTask;
+        }
+
+        var target = ctx.RedirectUri;
+        if (ctx.HttpContext.Items.ContainsKey("SessionReplaced"))
+            target += (target.Contains('?') ? "&" : "?") + "replaced=1";
+        ctx.Response.Redirect(target);
         return Task.CompletedTask;
     };
     o.Events.OnRedirectToAccessDenied = ctx =>
