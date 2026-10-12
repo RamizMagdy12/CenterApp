@@ -35,6 +35,7 @@ public class AppDbContext : IdentityDbContext<AppUser>
     public DbSet<MaterialGroup> MaterialGroups => Set<MaterialGroup>();
     public DbSet<MaterialFile> MaterialFiles => Set<MaterialFile>();
     public DbSet<AccessGrace> AccessGraces => Set<AccessGrace>();
+    public DbSet<StudentTransfer> StudentTransfers => Set<StudentTransfer>();
 
     protected override void ConfigureConventions(ModelConfigurationBuilder b)
     {
@@ -69,6 +70,11 @@ public class AppDbContext : IdentityDbContext<AppUser>
         mb.Entity<MaterialGroup>().HasIndex(x => new { x.MaterialId, x.GroupId });
         mb.Entity<MaterialFile>().Property(x => x.StoredName).HasMaxLength(100);
         mb.Entity<AccessGrace>().HasIndex(x => new { x.StudentId, x.ExpiresAt });
+        mb.Entity<Group>().Property(x => x.Code).HasMaxLength(3);
+        mb.Entity<Group>().HasIndex(x => x.Code).IsUnique();
+        mb.Entity<Group>().Property(x => x.LastStudentNumber).IsConcurrencyToken();   // يمنع رقمين متشابهين لو اتسجّل طالبين في نفس اللحظة
+        mb.Entity<Student>().HasIndex(x => x.QrToken).IsUnique();
+        mb.Entity<StudentTransfer>().HasIndex(x => x.StudentId);
 
         // منع Cascade غير مقصود (على جداول السنتر بس، مش جداول الـ Identity)
         foreach (var fk in mb.Model.GetEntityTypes()

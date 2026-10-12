@@ -3,6 +3,8 @@ using CenterApp.Service.Models;
 using CenterApp.Service.Unitofwork;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System.Text.RegularExpressions;
+using Group = CenterApp.Entity.Center.Group; // يحل التعارض مع System.Text.RegularExpressions.Group
 
 public class GroupService : IGroupService
 {
@@ -18,6 +20,7 @@ public class GroupService : IGroupService
         return groups.Select(g => new GroupRow
         {
             Id = g.Id,
+            Code = g.Code ?? "",
             Name = g.Name,
             Teacher = g.Teacher?.Name ?? "",
             Subject = g.Subject?.Name ?? "",
@@ -39,6 +42,8 @@ public class GroupService : IGroupService
         return new GroupSaveDto
         {
             Id = g.Id,
+            Code = g.Code ?? "",
+            CodeLocked = g.LastStudentNumber > 0,
             Name = g.Name,
             TeacherId = g.TeacherId,
             SubjectId = g.SubjectId,
@@ -62,6 +67,12 @@ public class GroupService : IGroupService
         if (dto.TeacherId <= 0 || dto.SubjectId <= 0) return OpResult.Fail("اختار المدرس والمادة");
         if (dto.Schedules == null || dto.Schedules.Count == 0) return OpResult.Fail("أضف ميعاد واحد على الأقل");
 
+        var code = (dto.Code ?? "").Trim().ToUpperInvariant();
+        if (!Regex.IsMatch(code, "^[A-Z]{1,3}$"))
+            return OpResult.Fail("كود المجموعة لازم يكون حروف إنجليزي من 1 لـ 3 (مثال: A)");
+        if (await _u.Group.GetAll(x => x.Code == code && x.Id != dto.Id).IgnoreQueryFilters().AnyAsync())
+            return OpResult.Fail("كود المجموعة مستخدم قبل كده");
+
         var schedules = new List<GroupSchedule>();
         foreach (var s in dto.Schedules)
         {
@@ -80,9 +91,12 @@ public class GroupService : IGroupService
         {
             g = await _u.Group.GetAll(x => x.Id == dto.Id, "Schedules", tracking: true).FirstOrDefaultAsync();
             if (g == null) return OpResult.Fail("المجموعة غير موجودة");
+            if (g.LastStudentNumber > 0 && g.Code != code)
+                return OpResult.Fail("مينفعش تغيّر كود مجموعة اتسجّل فيها طلاب بالكود ده");
             foreach (var old in g.Schedules.ToList()) _u.GroupSchedule.Remove(old);
         }
 
+        g.Code = code;
         g.Name = dto.Name.Trim();
         g.TeacherId = dto.TeacherId;
         g.SubjectId = dto.SubjectId;

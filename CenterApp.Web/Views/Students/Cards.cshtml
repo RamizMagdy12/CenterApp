@@ -87,7 +87,7 @@
         @foreach (var s in Model)
         {
             <div class="id-card">
-                <img src="@Url.Action("Qr", "Students", new { code = s.Code })" alt="QR" />
+                <img src="@Url.Action("Qr", "Students", new { code = s.QrToken })" alt="QR" />
                 <div class="info">
                     <div class="nm">@s.Name</div>
                     <div class="cd">@s.Code</div>

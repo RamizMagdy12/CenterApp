@@ -8,7 +8,12 @@
 <form id="groupForm" onsubmit="return false;">
     <input type="hidden" id="gId" value="@Model.Id" />
     <div class="row g-3">
-        <div class="col-md-6"><label class="form-label">اسم المجموعة</label><input id="gName" class="form-control" value="@Model.Name" /></div>
+        <div class="col-md-4"><label class="form-label">اسم المجموعة</label><input id="gName" class="form-control" value="@Model.Name" /></div>
+        <div class="col-md-2">
+            <label class="form-label">الكود <span class="text-danger">*</span></label>
+            <input id="gCode" class="form-control text-uppercase" dir="ltr" maxlength="3" value="@Model.Code" @(Model.CodeLocked ? "readonly" : "") placeholder="A" />
+        </div>
+        <div class="col-12"><small class="text-muted">كود المجموعة بيتحط جنب رقم الطالب (مثال: 001A). مينفعش يتغيّر بعد ما يتسجّل فيها طلاب.</small></div>
         <div class="col-md-3">
             <label class="form-label">المدرس</label>
             <select asp-for="TeacherId" id="gTeacher" asp-items="teachers" class="form-select"><option value="">-- اختر --</option></select>
@@ -72,6 +77,7 @@
 
         postBody('@Url.Action("Save", "Groups")', {
             Id: parseInt($('#gId').val()) || 0,
+            Code: $('#gCode').val(),
             Name: $('#gName').val(),
             TeacherId: parseInt($('#gTeacher').val()) || 0,
             SubjectId: parseInt($('#gSubject').val()) || 0,

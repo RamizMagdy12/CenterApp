@@ -115,6 +115,7 @@ public class SessionService : ISessionService
                 StudentCode = e.Student.Code ?? "",
                 StudentName = e.Student.Name,
                 IsRecorded = recorded.ContainsKey(e.StudentId),
+                QrToken = e.Student.QrToken ?? e.Student.Code ?? "",
                 Status = recorded.TryGetValue(e.StudentId, out var st) ? st : AttendanceStatus.Present
             }).ToList()
         };

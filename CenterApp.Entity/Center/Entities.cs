@@ -33,6 +33,8 @@ public class Student : BaseEntity
     public DateTime? BirthDate { get; set; }
     public string? Notes { get; set; }
     public bool IsActive { get; set; } = true;
+    public string? QrToken { get; set; }           // ثابت مدى الحياة، ده اللي جوه الـ QR
+    public long? CodeGroupId { get; set; }         // المجموعة اللي كود الطالب مبني عليها
     public DiscountKind DiscountKind { get; set; }
     public decimal DiscountValue { get; set; }
     public string? UserId { get; set; }
@@ -43,6 +45,9 @@ public class Student : BaseEntity
 
 public class Group : BaseEntity
 {
+    public string? Code { get; set; }              // A, B, AB ...
+    public int LastStudentNumber { get; set; } 
+    // عدّاد أرقام الطلاب (مبيرجعش للخلف)
     public string Name { get; set; } = null!;
     public long TeacherId { get; set; }
     public long SubjectId { get; set; }
@@ -131,4 +136,13 @@ public class Payment : BaseEntity
     public string? Note { get; set; }
 
     public virtual MonthlyInvoice Invoice { get; set; } = null!;
+}
+public class StudentTransfer : BaseEntity
+{
+    public long StudentId { get; set; }
+    public long FromGroupId { get; set; }
+    public long ToGroupId { get; set; }
+    public string? OldCode { get; set; }
+    public string? NewCode { get; set; }
+    public DateTime TransferDate { get; set; }
 }

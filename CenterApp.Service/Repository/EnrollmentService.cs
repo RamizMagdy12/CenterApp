@@ -36,6 +36,7 @@ public class EnrollmentService : IEnrollmentService
             Enrolled = enrolled.Select(e => new EnrolledRow
             {
                 EnrollmentId = e.Id,
+                StudentId = e.StudentId,
                 StudentName = e.Student.Name,
                 Phone = e.Student.Phone,
                 JoinedAt = e.JoinedAt,

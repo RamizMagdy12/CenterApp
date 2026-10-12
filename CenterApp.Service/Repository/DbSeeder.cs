@@ -17,6 +17,9 @@ public static class DbSeeder
 
         var db = sp.GetRequiredService<AppDbContext>();
         await db.Database.MigrateAsync();
+        await db.Students.IgnoreQueryFilters()
+                         .Where(s => s.QrToken == null && s.Code != null)
+                         .ExecuteUpdateAsync(x => x.SetProperty(s => s.QrToken, s => s.Code));
 
         var rm = sp.GetRequiredService<RoleManager<IdentityRole>>();
         var um = sp.GetRequiredService<UserManager<AppUser>>();

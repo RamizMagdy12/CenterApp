@@ -2,6 +2,7 @@
 using CenterApp.Service.Models;
 using CenterApp.Service.Unitofwork;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Cryptography;
 
 public class StudentService : IStudentService
 {
@@ -39,8 +40,8 @@ public class StudentService : IStudentService
         var s = await _u.Student.GetAll(x => x.Id == id).FirstOrDefaultAsync();
         if (s == null) return new StudentVm();
 
-        var enrolled = await _u.GroupEnrollment.GetAll(e => e.StudentId == id && e.IsActive)
-            .Select(e => e.GroupId).ToListAsync();
+        var groups = await _u.GroupEnrollment.GetAll(e => e.StudentId == id && e.IsActive, "Group")
+            .Select(e => new { e.GroupId, e.Group.Name, e.Group.Code }).ToListAsync();
 
         return new StudentVm
         {
@@ -54,7 +55,8 @@ public class StudentService : IStudentService
             BirthDate = s.BirthDate,
             Notes = s.Notes,
             IsActive = s.IsActive,
-            EnrolledGroupIds = enrolled
+            EnrolledGroupIds = groups.Select(g => g.GroupId).ToList(),
+            GroupNames = groups.Select(g => string.IsNullOrEmpty(g.Code) ? g.Name : $"{g.Name} ({g.Code})").ToList()
         };
     }
 
@@ -63,27 +65,37 @@ public class StudentService : IStudentService
         if (string.IsNullOrWhiteSpace(vm.Name)) return OpResult.Fail("اسم الطالب مطلوب");
 
         var isNew = vm.Id == 0;
-        var code = vm.Code?.Trim();
-        Student? s;
+        Student s;
 
         if (isNew)
         {
-            s = new Student();
-            if (string.IsNullOrWhiteSpace(code))
-                code = await NewCodeAsync();
+            if (!vm.GroupId.HasValue)
+                return OpResult.Fail("لازم تختار المجموعة، الطالب مينفعش يتسجّل من غير مجموعة");
+
+            var group = await _u.Group.GetAll(g => g.Id == vm.GroupId && g.IsActive, tracking: true).FirstOrDefaultAsync();
+            if (group == null) return OpResult.Fail("المجموعة غير موجودة أو متوقفة");
+            if (string.IsNullOrWhiteSpace(group.Code))
+                return OpResult.Fail("المجموعة دي ملهاش كود، افتحها من شاشة المجموعات وحط لها كود الأول");
+
+            var taken = await _u.GroupEnrollment.GetAll(e => e.GroupId == group.Id && e.IsActive).CountAsync();
+            if (group.Capacity > 0 && taken >= group.Capacity) return OpResult.Fail("المجموعة مكتملة العدد");
+
+            group.LastStudentNumber++;
+            s = new Student
+            {
+                Code = $"{group.LastStudentNumber:D3}{group.Code}",
+                CodeGroupId = group.Id,
+                QrToken = await NewTokenAsync()
+            };
+            s.Enrollments.Add(new GroupEnrollment { GroupId = group.Id, JoinedAt = DateTime.Today, IsActive = true });
+            _u.Student.Add(s);
         }
         else
         {
-            s = _u.Student.GetFirstOrDefault(x => x.Id == vm.Id);
+            s = _u.Student.GetFirstOrDefault(x => x.Id == vm.Id)!;
             if (s == null) return OpResult.Fail("الطالب غير موجود");
-            code = s.Code;   // الكود ثابت ومبيتغيرش
         }
 
-        if (!string.IsNullOrWhiteSpace(code) &&
-            await _u.Student.GetAll(x => x.Code == code && x.Id != vm.Id).AnyAsync())
-            return OpResult.Fail("الكود ده مستخدم لطالب تاني");
-
-        s.Code = code;
         s.Name = vm.Name.Trim();
         s.Phone = vm.Phone;
         s.ParentName = vm.ParentName;
@@ -93,45 +105,13 @@ public class StudentService : IStudentService
         s.Notes = vm.Notes;
         s.IsActive = vm.IsActive;
 
-        if (isNew) _u.Student.Add(s);
+        try { await _u.SaveAsync(); }
+        catch (DbUpdateConcurrencyException) { return OpResult.Fail("فيه طالب اتسجّل في نفس اللحظة، اضغط حفظ تاني"); }
+        catch (DbUpdateException) { return OpResult.Fail("حصل تعارض في الكود، اضغط حفظ تاني"); }
 
-        // ── تسجيل الطالب في المجموعات المختارة
-        var warnings = new List<string>();
-        var addedEnrollment = false;
-        var ids = (vm.GroupIds ?? new()).Distinct().ToList();
-        if (ids.Count > 0)
-        {
-            var groups = await _u.Group.GetAll(g => ids.Contains(g.Id) && g.IsActive).ToListAsync();
+        // لو عندك هنا في نسختك نداء لـ EnsureCurrentMonthForStudentAsync أو أي منطق بعد الحفظ، سيبه
 
-            var counts = (await _u.GroupEnrollment.GetAll(e => ids.Contains(e.GroupId) && e.IsActive)
-                .GroupBy(e => e.GroupId).Select(g => new { g.Key, C = g.Count() }).ToListAsync())
-                .ToDictionary(x => x.Key, x => x.C);
-
-            var already = isNew
-                ? new HashSet<long>()
-                : (await _u.GroupEnrollment.GetAll(e => e.StudentId == s.Id && e.IsActive && ids.Contains(e.GroupId))
-                    .Select(e => e.GroupId).ToListAsync()).ToHashSet();
-
-            foreach (var g in groups)
-            {
-                if (already.Contains(g.Id)) continue;
-                counts.TryGetValue(g.Id, out var c);
-                if (g.Capacity > 0 && c >= g.Capacity)
-                {
-                    warnings.Add($"المجموعة \"{g.Name}\" مكتملة العدد");
-                    continue;
-                }
-                s.Enrollments.Add(new GroupEnrollment { GroupId = g.Id, JoinedAt = DateTime.Today, IsActive = true });
-                addedEnrollment = true;
-            }
-        }
-
-        await _u.SaveAsync();
-        if (addedEnrollment)
-            await _invoices.EnsureCurrentMonthForStudentAsync(s.Id);
-
-        var msg = warnings.Count == 0 ? "تم الحفظ" : "تم الحفظ، لكن: " + string.Join("، ", warnings);
-        return new OpResult(true, msg, s.Id, s.Code);
+        return new OpResult(true, "تم الحفظ", s.Id, $"{s.Code}|{s.QrToken}");
     }
 
     public async Task<OpResult> DeleteAsync(long id)
@@ -157,20 +137,19 @@ public class StudentService : IStudentService
         else return new List<StudentCardVm>();
 
         return await q.OrderBy(x => x.Name)
-            .Select(x => new StudentCardVm { Id = x.Id, Name = x.Name, Code = x.Code ?? "" })
-            .ToListAsync();
+                      .Select(x => new StudentCardVm { Id = x.Id, Name = x.Name, Code = x.Code ?? "", QrToken = x.QrToken ?? x.Code ?? "" })
+                      .ToListAsync();
     }
-    private async Task<string> NewCodeAsync()
+    private async Task<string> NewTokenAsync()
     {
         const string chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
         while (true)
         {
-            var code = new string(Enumerable.Range(0, 8)
-                .Select(_ => chars[System.Security.Cryptography.RandomNumberGenerator.GetInt32(chars.Length)])
-                .ToArray());
+            var t = new string(Enumerable.Range(0, 12)
+                .Select(_ => chars[RandomNumberGenerator.GetInt32(chars.Length)]).ToArray());
 
-            if (!await _u.Student.GetAll(x => x.Code == code).IgnoreQueryFilters().AnyAsync())
-                return code;
+            if (!await _u.Student.GetAll(x => x.QrToken == t || x.Code == t).IgnoreQueryFilters().AnyAsync())
+                return t;
         }
     }
 }
