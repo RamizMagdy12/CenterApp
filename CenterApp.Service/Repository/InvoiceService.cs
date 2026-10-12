@@ -28,14 +28,8 @@ public class InvoiceService : IInvoiceService
             DueDate = i.DueDate,
             LastPaymentDate = payments.Count == 0 ? null : payments.Max(p => p.PaidAt),
             GroupId = i.Enrollment.GroupId,
-            Payments = payments.Select(p => new PaymentRow
-            {
-                PaidAt = p.PaidAt,
-                Amount = p.Amount,
-                Method = p.Method,
-                Note = p.Note,
-                RecordedBy = p.CreatedByName
-            }).ToList()
+            Payments = i.Payments.OrderBy(p => p.PaidAt)
+            .Select(p => new PaymentRow { Id = p.Id, PaidAt = p.PaidAt, Amount = p.Amount, Method = p.Method, Note = p.Note }).ToList()
         };
     }
 
@@ -170,6 +164,36 @@ public class InvoiceService : IInvoiceService
         };
     }
 
+    public async Task<OpResult> RecalculateDiscountsAsync(int year, int month, long groupId)
+    {
+        var invoices = await _u.MonthlyInvoice.GetAll(
+            i => i.Year == year && i.Month == month && (groupId == 0 || i.Enrollment.GroupId == groupId),
+            "Enrollment.Student,Payments",
+            tracking: true).ToListAsync();
+
+        int updated = 0, withPayments = 0, waived = 0;
+
+        foreach (var inv in invoices)
+        {
+            if (inv.Status == InvoiceStatus.Waived) { waived++; continue; }
+            if (inv.Payments.Count > 0) { withPayments++; continue; }
+
+            var student = inv.Enrollment.Student;
+            var discount = BillingMath.DiscountAmount(inv.Amount, student.DiscountKind, student.DiscountValue);
+            if (discount == inv.Discount) continue;
+
+            inv.Discount = discount;
+            inv.Status = BillingMath.Status(BillingMath.NetDue(inv.Amount, discount), 0);
+            updated++;
+        }
+
+        if (updated > 0) await _u.SaveInTransactionAsync();
+
+        var parts = new List<string> { updated == 0 ? "مفيش فواتير محتاجة تحديث" : $"تم تحديث {updated} فاتورة" };
+        if (withPayments > 0) parts.Add($"اتخطّينا {withPayments} فاتورة عليها تحصيل");
+        if (waived > 0) parts.Add($"{waived} فاتورة معفاة");
+        return OpResult.Success(string.Join("، ", parts));
+    }
     public async Task<OpResult> SaveDiscountAsync(long studentId, DiscountKind kind, decimal value)
     {
         var student = await _u.Student.GetAll(s => s.Id == studentId, tracking: true).FirstOrDefaultAsync();
@@ -205,17 +229,22 @@ public class InvoiceService : IInvoiceService
     private async Task RefreshOpenInvoicesAsync(Student student, DiscountKind kind, decimal value)
     {
         var today = DateTime.Today;
+        var fromMonth = today.Year * 12 + today.Month;
+
         var invoices = await _u.MonthlyInvoice.GetAll(
             i => i.Enrollment.StudentId == student.Id
-                 && i.Year == today.Year && i.Month == today.Month
-                 && i.Status == InvoiceStatus.Unpaid,
+                 && i.Status != InvoiceStatus.Waived
+                 && (i.Year * 12 + i.Month) >= fromMonth,
             "Payments",
             tracking: true).ToListAsync();
 
         foreach (var inv in invoices)
         {
-            if (inv.Payments.Count > 0) continue;
+            if (inv.Payments.Count > 0) continue;      // عليها تحصيل: متتغيّرش
+
             var discount = BillingMath.DiscountAmount(inv.Amount, kind, value);
+            if (discount == inv.Discount) continue;
+
             inv.Discount = discount;
             inv.Status = BillingMath.Status(BillingMath.NetDue(inv.Amount, discount), 0);
         }
@@ -229,6 +258,53 @@ public class InvoiceService : IInvoiceService
             .Select(e => e.CustomMonthlyFee ?? e.Group.MonthlyFee)
             .Where(fee => fee > 0)
             .ToListAsync();
+    }
+    private static void Recalc(MonthlyInvoice inv, decimal paid)
+    {
+        if (inv.Status == InvoiceStatus.Waived) return;
+        var due = inv.Amount - inv.Discount;
+        inv.Status = paid >= due ? InvoiceStatus.Paid : paid > 0 ? InvoiceStatus.PartiallyPaid : InvoiceStatus.Unpaid;
+    }
+
+    public async Task<OpResult> UpdatePaymentAsync(long paymentId, decimal amount, DateTime? paidAt, PaymentMethod method, string? note)
+    {
+        if (amount <= 0) return OpResult.Fail("المبلغ لازم يكون أكبر من صفر");
+        if (paidAt.HasValue && paidAt.Value.Date > DateTime.Today) return OpResult.Fail("تاريخ التحصيل مينفعش يكون في المستقبل");
+
+        var pay = await _u.Payment.GetAll(p => p.Id == paymentId, tracking: true).FirstOrDefaultAsync();
+        if (pay == null) return OpResult.Fail("التحصيل غير موجود");
+
+        var inv = await _u.MonthlyInvoice.GetAll(i => i.Id == pay.InvoiceId, "Payments", tracking: true).FirstOrDefaultAsync();
+        if (inv == null) return OpResult.Fail("الفاتورة غير موجودة");
+
+        var others = inv.Payments.Where(p => p.Id != pay.Id).Sum(p => p.Amount);
+        var due = inv.Amount - inv.Discount;
+        if (others + amount > due) return OpResult.Fail($"المبلغ أكبر من المسموح (أقصى مبلغ {due - others:N2})");
+
+        pay.Amount = amount;
+        pay.Method = method;
+        pay.Note = note?.Trim();
+        if (paidAt.HasValue) pay.PaidAt = paidAt.Value.Date.Add(pay.PaidAt.TimeOfDay);
+
+        Recalc(inv, others + amount);
+        await _u.SaveAsync();
+        return OpResult.Success("تم تعديل التحصيل");
+    }
+
+    public async Task<OpResult> DeletePaymentAsync(long paymentId)
+    {
+        var pay = await _u.Payment.GetAll(p => p.Id == paymentId, tracking: true).FirstOrDefaultAsync();
+        if (pay == null) return OpResult.Fail("التحصيل غير موجود");
+
+        var inv = await _u.MonthlyInvoice.GetAll(i => i.Id == pay.InvoiceId, "Payments", tracking: true).FirstOrDefaultAsync();
+        if (inv == null) return OpResult.Fail("الفاتورة غير موجودة");
+
+        var remaining = inv.Payments.Where(p => p.Id != pay.Id).Sum(p => p.Amount);
+
+        _u.Payment.Remove(pay);          
+        Recalc(inv, remaining);
+        await _u.SaveAsync();
+        return OpResult.Success("تم حذف التحصيل");
     }
 
     private static MonthlyInvoice? BuildInvoice(GroupEnrollment e, int year, int month)

@@ -3,18 +3,21 @@
     .viewer .vpage { width: 100%; max-width: 900px; display: block; margin: 0 auto 12px; border: 1px solid var(--line); border-radius: 6px; background: #fff; user-select: none; -webkit-user-drag: none; pointer-events: none; }
     .viewer .vfile { margin-bottom: 30px; }
     .viewer .vfile-title { font-weight: 700; margin-bottom: 10px; }
-    .vwrap { position: relative; max-width: 960px; margin: 0 auto; background: #000; border-radius: 10px; overflow: hidden; }
-    .vwrap video { width: 100%; display: block; max-height: 70vh; }
+
+    .vwrap { position: relative; width: 100%; max-width: 1180px; margin: 0 auto; background: #000; border-radius: 10px; overflow: hidden; aspect-ratio: 16 / 9; max-height: 88vh; }
+    .vwrap video { width: 100%; height: 100%; display: block; object-fit: contain; background: #000; }
+
+    .vwrap:fullscreen { max-width: none; max-height: none; width: 100vw; height: 100vh; border-radius: 0; aspect-ratio: auto; }
+    .vwrap:-webkit-full-screen { max-width: none; max-height: none; width: 100vw; height: 100vh; border-radius: 0; aspect-ratio: auto; }
+    .vwrap.vfake { position: fixed; inset: 0; z-index: 2000; max-width: none; max-height: none; width: 100vw; height: 100vh; height: 100dvh; border-radius: 0; aspect-ratio: auto; }
+
     .vwm { position: absolute; z-index: 5; color: rgba(255,255,255,.45); font-weight: 700; font-size: 15px; pointer-events: none; text-shadow: 0 0 4px rgba(0,0,0,.6); transition: all 1.5s ease; white-space: nowrap; direction: ltr; }
     .vfs { position: absolute; z-index: 6; top: 8px; inset-inline-end: 8px; }
     @@media print { .viewer { display: none !important; } }
 </style>
 
 <div class="viewer" id="viewer" data-wm="@Model.Watermark">
-    @if (!string.IsNullOrWhiteSpace(Model.Description))
-    {
-        <p class="text-muted">@Model.Description</p>
-    }
+    @if (!string.IsNullOrWhiteSpace(Model.Description)) { <p class="text-muted">@Model.Description</p> }
 
     @foreach (var f in Model.Files)
     {
@@ -48,20 +51,78 @@
         ['contextmenu', 'dragstart', 'copy', 'cut', 'selectstart'].forEach(function (ev) {
             v.addEventListener(ev, function (e) { e.preventDefault(); });
         });
+
         document.addEventListener('keydown', function (e) {
             var k = (e.key || '').toLowerCase();
             if ((e.ctrlKey || e.metaKey) && ['s', 'p', 'u', 'c', 'a'].indexOf(k) > -1) { e.preventDefault(); return false; }
             if (e.key === 'PrintScreen') { try { navigator.clipboard.writeText(' '); } catch (x) { } }
+            if (e.key === 'Escape') document.querySelectorAll('.vwrap.vfake').forEach(function (w) { setFake(w, false); });
         });
 
+        // ───── ملء الشاشة (على الحاوية عشان العلامة المائية تفضل ظاهرة)
+        function fsEl() { return document.fullscreenElement || document.webkitFullscreenElement || null; }
+
+        function label(w) {
+            var b = w.querySelector('.vfs');
+            if (b) b.textContent = (fsEl() === w || w.classList.contains('vfake')) ? 'تصغير' : 'ملء الشاشة';
+        }
+
+        function setFake(w, on) {
+            w.classList.toggle('vfake', on);
+            document.body.style.overflow = on ? 'hidden' : '';
+            label(w);
+        }
+
+        function enter(w) {
+            var f = w.requestFullscreen || w.webkitRequestFullscreen;
+            if (!f) { setFake(w, true); return; }
+            try {
+                var p = f.call(w);
+                if (p && p.catch) p.catch(function () { setFake(w, true); });
+            } catch (e) { setFake(w, true); }
+        }
+
+        function leave() {
+            var x = document.exitFullscreen || document.webkitExitFullscreen;
+            if (x) x.call(document);
+        }
+
+        function toggle(w) {
+            if (fsEl() === w) leave();
+            else if (w.classList.contains('vfake')) setFake(w, false);
+            else enter(w);
+        }
+
+        function onFsChange() {
+            var el = fsEl();
+            // المتصفح فتح ملء شاشة الفيديو نفسه (هتختفي العلامة المائية): نلغيه وندخل ملء شاشة الحاوية
+            if (el && el.tagName === 'VIDEO' && v.contains(el)) {
+                var w = el.closest('.vwrap');
+                var x = document.exitFullscreen || document.webkitExitFullscreen;
+                Promise.resolve(x.call(document)).then(function () { enter(w); });
+                return;
+            }
+            document.querySelectorAll('.vwrap').forEach(label);
+        }
+        document.addEventListener('fullscreenchange', onFsChange);
+        document.addEventListener('webkitfullscreenchange', onFsChange);
+
         document.querySelectorAll('.vwrap').forEach(function (w) {
+            // علامة مائية متحركة
             var s = document.createElement('div');
             s.className = 'vwm'; s.textContent = wm; w.appendChild(s);
             function move() { s.style.top = (8 + Math.random() * 78) + '%'; s.style.left = (4 + Math.random() * 60) + '%'; }
             move(); setInterval(move, 6000);
 
             var b = w.querySelector('.vfs');
-            if (b) b.addEventListener('click', function () { (w.requestFullscreen || w.webkitRequestFullscreen).call(w); });
+            if (b) b.addEventListener('click', function () { toggle(w); });
+
+            var vid = w.querySelector('video');
+            vid.addEventListener('dblclick', function (e) { e.preventDefault(); toggle(w); });
+            vid.addEventListener('webkitbeginfullscreen', function () {   // آيفون
+                try { vid.webkitExitFullscreen(); } catch (e) { }
+                setFake(w, true);
+            });
         });
     })();
 </script>

@@ -65,4 +65,18 @@ public class InvoicesController : AppController
     [HttpPost, RequirePermission(Screens.Invoices, PermissionAction.Edit)]
     public async Task<IActionResult> Discount(long studentId, DiscountKind kind, decimal value)
         => Json(await _s.SaveDiscountAsync(studentId, kind, value));
+    [HttpPost, RequirePermission(Screens.Invoices, PermissionAction.Edit)]
+
+    [HttpPost, RequirePermission(Screens.Invoices, PermissionAction.Edit)]
+    public async Task<IActionResult> RecalculateDiscounts(string month, long groupId)
+    {
+        var (y, m) = ParseMonth(month);
+        return Json(await _s.RecalculateDiscountsAsync(y, m, groupId));
+    }
+    public async Task<IActionResult> UpdatePayment(long id, decimal amount, DateTime? paidAt, PaymentMethod method, string? note)
+    => Json(await _s.UpdatePaymentAsync(id, amount, paidAt, method, note));
+
+    [HttpPost, RequirePermission(Screens.Invoices, PermissionAction.Delete)]
+    public async Task<IActionResult> DeletePayment(long id)
+        => Json(await _s.DeletePaymentAsync(id));
 }
