@@ -86,7 +86,8 @@ public class InvoiceService : IInvoiceService
         var end = from.AddMonths(1).AddDays(-1);
 
         var enrollments = await _u.GroupEnrollment.GetAll(
-            e => e.JoinedAt <= end && (e.LeftAt == null || e.LeftAt >= from)
+            e => e.IsActive
+                 && e.JoinedAt <= end && (e.LeftAt == null || e.LeftAt >= from)
                  && e.Group.IsActive
                  && (groupId == 0 || e.GroupId == groupId)
                  && (studentId == 0 || e.StudentId == studentId),

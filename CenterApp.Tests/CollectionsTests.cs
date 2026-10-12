@@ -211,6 +211,58 @@ public class CollectionsTests
     }
 
     [Fact]
+    public async Task Removing_a_student_from_a_group_drops_unpaid_invoices_from_accounts()
+    {
+        await using var lab = await BillingLab.Open();
+        var groupId = await lab.AddGroup("Math", 1000m);
+        var student = new Student { Name = "Mona Ali", IsActive = true, Code = "001A" };
+        lab.Uow.Student.Add(student);
+        await lab.Uow.SaveAsync();
+
+        var added = await lab.Enrollments.AddAsync(groupId, student.Id, null);
+        Assert.True(added.Ok, added.Message);
+
+        var today = DateTime.Today;
+        var future = new DateTime(today.Year, today.Month, 1).AddMonths(1);
+        await lab.Invoices.EnsureMonthAsync(future.Year, future.Month, studentId: student.Id);
+
+        var enrollment = lab.Uow.GroupEnrollment.GetFirstOrDefault(e => e.StudentId == student.Id && e.IsActive);
+        Assert.NotNull(enrollment);
+
+        var removed = await lab.Enrollments.RemoveAsync(enrollment!.Id);
+        Assert.True(removed.Ok, removed.Message);
+
+        Assert.DoesNotContain(await lab.Invoices.ListAsync(today.Year, today.Month, 0, -1), r => r.StudentId == student.Id);
+        Assert.DoesNotContain(await lab.Invoices.ListAsync(future.Year, future.Month, 0, -1), r => r.StudentId == student.Id);
+
+        await lab.Invoices.EnsureMonthAsync(today.Year, today.Month, studentId: student.Id);
+        Assert.DoesNotContain(await lab.Invoices.ListAsync(today.Year, today.Month, 0, -1), r => r.StudentId == student.Id);
+    }
+
+    [Fact]
+    public async Task Removing_a_student_keeps_an_invoice_that_already_has_a_payment()
+    {
+        await using var lab = await BillingLab.Open();
+        var groupId = await lab.AddGroup("Math", 1000m);
+        var student = new Student { Name = "Karim Adel", IsActive = true, Code = "002A" };
+        lab.Uow.Student.Add(student);
+        await lab.Uow.SaveAsync();
+
+        Assert.True((await lab.Enrollments.AddAsync(groupId, student.Id, null)).Ok);
+
+        var row = await lab.CurrentInvoice(student.Id);
+        Assert.True((await lab.Invoices.PayAsync(row.Id, 200m, PaymentMethod.Cash, null)).Ok);
+
+        var enrollment = lab.Uow.GroupEnrollment.GetFirstOrDefault(e => e.StudentId == student.Id && e.IsActive);
+        Assert.NotNull(enrollment);
+        Assert.True((await lab.Enrollments.RemoveAsync(enrollment!.Id)).Ok);
+
+        var still = await lab.CurrentInvoice(student.Id);
+        Assert.Equal(200m, still.Paid);
+        Assert.Equal(InvoiceStatus.PartiallyPaid, still.Status);
+    }
+
+    [Fact]
     public async Task Search_filters_by_full_name()
     {
         await using var lab = await BillingLab.Open();

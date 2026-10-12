@@ -83,7 +83,28 @@ public class EnrollmentService : IEnrollmentService
         if (e == null) return OpResult.Fail("غير موجود");
         e.IsActive = false;
         e.LeftAt = DateTime.Today;
+
+        var today = DateTime.Today;
+        var fromMonth = today.Year * 12 + today.Month;
+        var invoices = await _u.MonthlyInvoice.GetAll(
+            i => i.EnrollmentId == e.Id && (i.Year * 12 + i.Month) >= fromMonth,
+            "Payments",
+            tracking: true).ToListAsync();
+
+        var keptBecausePaid = 0;
+        foreach (var inv in invoices)
+        {
+            if (inv.Payments.Count > 0)
+            {
+                keptBecausePaid++;
+                continue;
+            }
+            _u.MonthlyInvoice.Remove(inv);
+        }
+
         await _u.SaveAsync();
-        return OpResult.Success("تم إلغاء التسجيل");
+        return keptBecausePaid > 0
+            ? OpResult.Success("تم إلغاء التسجيل. الفاتورة اللي عليها تحصيل فضلت في الحسابات")
+            : OpResult.Success("تم إلغاء التسجيل ومسحه من الحسابات");
     }
 }

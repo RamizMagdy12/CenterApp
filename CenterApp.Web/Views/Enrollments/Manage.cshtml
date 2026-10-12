@@ -53,7 +53,7 @@
     }
 
     function removeEnrollment(id) {
-        askConfirm('إلغاء تسجيل الطالب من المجموعة؟', 'نعم، إلغاء التسجيل').then(function (ok) {
+        askConfirm('إلغاء تسجيل الطالب من المجموعة؟ هيتشال من حسابات الشهر الحالي والجاي، إلا لو الفاتورة عليها تحصيل.', 'نعم، إلغاء التسجيل').then(function (ok) {
             if (ok) postJson('@Url.Action("Remove", "Enrollments")', { id: id }, reopen);
         });
     }
