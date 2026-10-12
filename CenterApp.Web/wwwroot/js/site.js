@@ -40,6 +40,12 @@ function askConfirm(text, okText) {
 // أي alert قديمة بتتحول لـ SweetAlert
 if (window.Swal) window.alert = function (m) { notify('info', String(m)); };
 
+function sessionReplaced(xhr) {
+    if (xhr.status !== 401) return false;
+    location.href = '/Account/Login?replaced=1';
+    return true;
+}
+
 function openForm(url, title, large) {
     $.get(url).done(function (html) {
         $('#appModalTitle').text(title || '');
@@ -47,6 +53,7 @@ function openForm(url, title, large) {
         $('#appModalDialog').toggleClass('modal-lg', !!large);
         appModal().show();
     }).fail(function (xhr) {
+        if (sessionReplaced(xhr)) return;
         if (xhr.status === 409) notify('warning', xhr.responseText);
         else notify('error', 'تعذر التحميل (' + xhr.status + ')');
     });
@@ -64,6 +71,7 @@ function handleResult(r, onOk) {
 }
 
 function ajaxFail(xhr) {
+    if (sessionReplaced(xhr)) return;
     notify('error', 'حصل خطأ في السيرفر (' + xhr.status + ')');
 }
 
