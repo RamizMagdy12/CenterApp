@@ -11,6 +11,12 @@
 }
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h3 class="mb-0">التحصيل</h3>
+    @if (Perm.Has(User, Screens.Invoices, PermissionAction.Edit))
+    {
+        <button type="button" class="btn btn-outline-primary" onclick="recalcDiscounts()">
+            <i class="bi bi-arrow-repeat"></i> إعادة حساب الخصم
+        </button>
+    }
 </div>
 
 <form method="get" class="row g-2 mb-3 align-items-end">
@@ -142,7 +148,18 @@
         </tbody>
     </table>
 </div>
-
+@section Scripts {
+    <script>
+        function recalcDiscounts() {
+            askConfirm('إعادة حساب الخصم لفواتير الشهر ده حسب الخصم الدائم الحالي للطلاب؟ الفواتير اللي عليها تحصيل مش هتتغيّر.', 'نعم، أعد الحساب').then(function (ok) {
+                if (!ok) return;
+                postJson('@Url.Action("RecalculateDiscounts", "Invoices")',
+                    { month: '@ViewBag.Month', groupId: '@gid' },
+                    function (r) { notify('success', r.message, function () { location.reload(); }); });
+            });
+        }
+    </script>
+}
 @functions {
     string Money(decimal amount) => $"{amount:N2} ج.م";
 

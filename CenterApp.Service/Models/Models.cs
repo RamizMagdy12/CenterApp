@@ -169,13 +169,12 @@ public class AttendanceSaveDto
 // ── Invoices
 public class PaymentRow
 {
+    public long Id { get; set; }
     public DateTime PaidAt { get; set; }
     public decimal Amount { get; set; }
     public PaymentMethod Method { get; set; }
     public string? Note { get; set; }
-    public string? RecordedBy { get; set; }
 }
-
 public class InvoiceRow
 {
     public long Id { get; set; }

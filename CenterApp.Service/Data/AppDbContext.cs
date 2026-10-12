@@ -110,6 +110,7 @@ public class AppDbContext : IdentityDbContext<AppUser>
                 case EntityState.Deleted:          // Soft delete
                     e.State = EntityState.Modified;
                     e.Entity.SetDeleted(audit);
+                    e.Entity.SetModified(audit);   // بيسجّل اسم اللي حذف
                     break;
             }
         }

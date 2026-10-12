@@ -1,104 +1,112 @@
 ﻿@model InvoiceRow
+@inject CenterApp.Service.Services.IPermissionService Perm
+@using System.Globalization
+@functions {
+    static string MethodName(PaymentMethod m) => m == PaymentMethod.Cash ? "نقدي" : m == PaymentMethod.Wallet ? "محفظة" : "تحويل";
+}
+@{
+    var inv = CultureInfo.InvariantCulture;
+    var canDelete = Perm.Has(User, Screens.Invoices, PermissionAction.Delete);
+    var payUrl = Url.Action("Pay", "Invoices", new { id = Model.Id });
+}
+
 <div class="mb-3">
     <div><strong>@Model.StudentName</strong> — @Model.GroupName</div>
-    <div class="text-muted">@Model.Month/@Model.Year · الاستحقاق @Model.DueDate.ToString("yyyy-MM-dd")</div>
+    <div>فاتورة @Model.Month/@Model.Year — المبلغ: @Model.Amount.ToString("N2") — الخصم: @Model.Discount.ToString("N2") — المدفوع: @Model.Paid.ToString("N2") — <b>المتبقي: @Model.Remaining.ToString("N2")</b></div>
 </div>
 
-<div class="row g-2 mb-3">
-    <div class="col-6 col-md-4"><div class="border rounded p-2"><div class="text-muted small">سعر الاشتراك</div><strong>@Money(Model.Amount)</strong></div></div>
-    <div class="col-6 col-md-4"><div class="border rounded p-2"><div class="text-muted small">قيمة الخصم</div><strong>@Money(Model.Discount)</strong></div></div>
-    <div class="col-6 col-md-4"><div class="border rounded p-2"><div class="text-muted small">صافي المستحق</div><strong>@Money(Model.NetDue)</strong></div></div>
-    <div class="col-6 col-md-4"><div class="border rounded p-2"><div class="text-muted small">إجمالي المدفوع</div><strong>@Money(Model.Paid)</strong></div></div>
-    <div class="col-6 col-md-4"><div class="border rounded p-2"><div class="text-muted small">المتبقي</div><strong>@Money(Model.Remaining)</strong></div></div>
-    <div class="col-6 col-md-4"><div class="border rounded p-2"><div class="text-muted small">الخصم الدائم</div><strong>@PermanentDiscount(Model)</strong></div></div>
-</div>
-
-<h6>سجل الدفعات</h6>
 @if (Model.Payments.Any())
 {
-    <div class="table-responsive mb-3">
-        <table class="table table-sm align-middle">
-            <thead><tr><th>التاريخ</th><th>المبلغ</th><th>الطريقة</th><th>سجّلها</th><th>ملاحظة</th></tr></thead>
-            <tbody>
-                @foreach (var p in Model.Payments)
-                {
-                    <tr>
-                        <td class="text-nowrap">@p.PaidAt.ToString("yyyy-MM-dd HH:mm")</td>
-                        <td>@Money(p.Amount)</td>
-                        <td>@MethodName(p.Method)</td>
-                        <td>@(string.IsNullOrWhiteSpace(p.RecordedBy) ? "—" : p.RecordedBy)</td>
-                        <td>@p.Note</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div>
-}
-else
-{
-    <p class="text-muted">لا توجد دفعات مسجلة.</p>
+    <h6>التحصيلات السابقة</h6>
+    <table class="table table-sm align-middle">
+        <thead><tr><th>التاريخ</th><th>المبلغ</th><th>الطريقة</th><th>ملاحظة</th><th></th></tr></thead>
+        <tbody>
+            @foreach (var p in Model.Payments)
+            {
+                <tr class="pay-row" data-id="@p.Id" data-date="@p.PaidAt.ToString("yyyy-MM-dd")"
+                    data-amount="@p.Amount.ToString("0.##", inv)" data-method="@((int)p.Method)" data-note="@p.Note">
+                    <td class="c-date">@p.PaidAt.ToString("yyyy-MM-dd HH:mm")</td>
+                    <td class="c-amount">@p.Amount.ToString("N2")</td>
+                    <td class="c-method">@MethodName(p.Method)</td>
+                    <td class="c-note">@p.Note</td>
+                    <td class="c-act text-nowrap">
+                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="editPay(this)">تعديل</button>
+                        @if (canDelete)
+                        {
+                            <button type="button" class="btn btn-sm btn-outline-danger" onclick="delPay(@p.Id)">حذف</button>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <hr />
 }
 
-@if (Model.Remaining > 0)
-{
-    <form id="payForm" onsubmit="return false;">
-        <input type="hidden" name="invoiceId" value="@Model.Id" />
-        <div class="row g-3">
-            <div class="col-md-4">
-                <label class="form-label">مبلغ الدفعة</label>
-                <input name="amount" type="number" min="0.01" step="0.01" class="form-control" value="@Model.Remaining.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)" />
-                <div class="form-text">المتبقي @Money(Model.Remaining). يمكن تسجيل دفعة جزئية.</div>
-            </div>
-            <div class="col-md-4">
-                <label class="form-label">طريقة الدفع</label>
-                <select name="method" class="form-select">
-                    <option value="0">نقدي</option>
-                    <option value="1">محفظة</option>
-                    <option value="2">تحويل بنكي</option>
-                </select>
-            </div>
-            <div class="col-md-4">
-                <label class="form-label">ملاحظة</label>
-                <input name="note" class="form-control" />
-            </div>
-            <div class="col-12">
-                <button type="button" id="payBtn" class="btn btn-success" onclick="submitPayment(this)">حفظ الدفعة</button>
-            </div>
+<h6>تحصيل جديد</h6>
+<form id="payForm" onsubmit="return false;">
+    <input type="hidden" name="invoiceId" value="@Model.Id" />
+    <div class="row g-3">
+        <div class="col-md-4">
+            <label class="form-label">الخصم</label>
+            <input name="discount" type="number" min="0" step="0.01" class="form-control" value="@Model.Discount.ToString("0.##", inv)" />
         </div>
-    </form>
-    <script>
-        function submitPayment(btn) {
-            if (btn.disabled) return;
-            btn.disabled = true;
-            $.ajax({ url: '@Url.Action("Pay", "Invoices")', type: 'POST', data: $('#payForm').serialize() })
-                .done(function (r) {
-                    if (!(r && r.ok)) btn.disabled = false;
-                    handleResult(r);
-                })
-                .fail(function (xhr) { btn.disabled = false; ajaxFail(xhr); });
-        }
-    </script>
-}
-else
-{
-    <div class="alert alert-success mb-0">هذه الفترة مدفوعة بالكامل.</div>
-}
+        <div class="col-md-4">
+            <label class="form-label">المبلغ المدفوع الآن (المتبقي @Model.Remaining.ToString("N2"))</label>
+            <input name="amount" type="number" min="0" step="0.01" class="form-control" value="@Model.Remaining.ToString("0.##", inv)" />
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">طريقة الدفع</label>
+            <select name="method" class="form-select">
+                <option value="0">نقدي</option>
+                <option value="1">محفظة</option>
+                <option value="2">تحويل</option>
+            </select>
+        </div>
+        <div class="col-12"><label class="form-label">ملاحظة</label><input name="note" class="form-control" /></div>
+        <div class="col-12"><button class="btn btn-success" onclick="submitForm('#payForm', '@Url.Action("Pay", "Invoices")')">حفظ التحصيل</button></div>
+    </div>
+</form>
 
-@functions {
-    string Money(decimal amount) => $"{amount:N2} ج.م";
+<script>
+    var payUrl = '@payUrl';
+    function reopenPay() { openForm(payUrl, 'تحصيل'); }
 
-    string PermanentDiscount(InvoiceRow r) => r.DiscountKind switch
-    {
-        DiscountKind.Percentage => $"{r.DiscountValue:0.##}%",
-        DiscountKind.Fixed => Money(r.DiscountValue),
-        _ => "بدون"
-    };
+    // أي تعديل بيتعمل جوه النافذة، فنحدّث الصفحة اللي ورا لما النافذة تتقفل
+    $('#appModal').off('hidden.bs.modal.pay').one('hidden.bs.modal.pay', function () { location.reload(); });
 
-    string MethodName(PaymentMethod method) => method switch
-    {
-        PaymentMethod.Cash => "نقدي",
-        PaymentMethod.Wallet => "محفظة",
-        PaymentMethod.Transfer => "تحويل بنكي",
-        _ => method.ToString()
-    };
-}
+    function editPay(btn) {
+        var $r = $(btn).closest('tr');
+        if ($r.hasClass('editing')) return;
+        $r.addClass('editing');
+
+        $r.find('.c-date').html('<input type="date" class="form-control form-control-sm e-date" max="@DateTime.Today.ToString("yyyy-MM-dd")">');
+        $r.find('.c-amount').html('<input type="number" min="0.01" step="0.01" class="form-control form-control-sm e-amount">');
+        $r.find('.c-method').html('<select class="form-select form-select-sm e-method"><option value="0">نقدي</option><option value="1">محفظة</option><option value="2">تحويل</option></select>');
+        $r.find('.c-note').html('<input class="form-control form-control-sm e-note">');
+        $r.find('.c-act').html('<button type="button" class="btn btn-sm btn-success" onclick="savePay(this)">حفظ</button> <button type="button" class="btn btn-sm btn-light" onclick="reopenPay()">إلغاء</button>');
+
+        $r.find('.e-date').val($r.attr('data-date'));
+        $r.find('.e-amount').val($r.attr('data-amount'));
+        $r.find('.e-method').val($r.attr('data-method'));
+        $r.find('.e-note').val($r.attr('data-note') || '');
+    }
+
+    function savePay(btn) {
+        var $r = $(btn).closest('tr');
+        postJson('@Url.Action("UpdatePayment", "Invoices")', {
+            id: $r.attr('data-id'),
+            amount: $r.find('.e-amount').val(),
+            paidAt: $r.find('.e-date').val(),
+            method: $r.find('.e-method').val(),
+            note: $r.find('.e-note').val()
+        }, function (r) { notify('success', r.message, reopenPay); });
+    }
+
+    function delPay(id) {
+        askConfirm('حذف التحصيل ده؟ الفاتورة هترجع للحالة المناسبة، والماتريال ممكن تتقفل لو الحساب مبقاش مدفوع.', 'نعم، احذف').then(function (ok) {
+            if (!ok) return;
+            postJson('@Url.Action("DeletePayment", "Invoices")', { id: id }, function (r) { notify('success', r.message, reopenPay); });
+        });
+    }
+</script>

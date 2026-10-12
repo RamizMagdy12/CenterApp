@@ -11,4 +11,7 @@ public interface IInvoiceService
     Task<OpResult> PayAsync(long invoiceId, decimal amount, PaymentMethod method, string? note);
     Task<DiscountFormVm?> GetDiscountAsync(long studentId);
     Task<OpResult> SaveDiscountAsync(long studentId, DiscountKind kind, decimal value);
+    Task<OpResult> RecalculateDiscountsAsync(int year, int month, long groupId);
+    Task<OpResult> UpdatePaymentAsync(long paymentId, decimal amount, DateTime? paidAt, PaymentMethod method, string? note);
+    Task<OpResult> DeletePaymentAsync(long paymentId);
 }
