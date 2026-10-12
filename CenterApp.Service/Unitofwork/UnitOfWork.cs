@@ -27,6 +27,9 @@ public class UnitOfWork : IUnitOfWork
         Material = new Repository<Material>(db);
         MaterialGroup = new Repository<MaterialGroup>(db);
         MaterialFile = new Repository<MaterialFile>(db);
+        Homework = new Repository<Homework>(db);
+        HomeworkGroup = new Repository<HomeworkGroup>(db);
+        HomeworkFile = new Repository<HomeworkFile>(db);
         AccessGrace = new Repository<AccessGrace>(db);
         StudentTransfer = new Repository<StudentTransfer>(db);
 
@@ -46,6 +49,9 @@ public class UnitOfWork : IUnitOfWork
     public IRepository<Material> Material { get; }
     public IRepository<MaterialGroup> MaterialGroup { get; }
     public IRepository<MaterialFile> MaterialFile { get; }
+    public IRepository<Homework> Homework { get; }
+    public IRepository<HomeworkGroup> HomeworkGroup { get; }
+    public IRepository<HomeworkFile> HomeworkFile { get; }
     public IRepository<AccessGrace> AccessGrace { get; }
     public IRepository<StudentTransfer> StudentTransfer { get; }    
 

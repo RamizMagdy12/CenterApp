@@ -40,17 +40,26 @@ public class PortalService : IPortalService
     }
 
     private static Verdict Evaluate(Material m, Ctx c)
+        => EvaluateAccess(m.Status == MaterialStatus.Published, m.PublishedAt,
+            m.Groups.Select(g => (g.GroupId, g.Group?.Name ?? "")), c);
+
+    private static Verdict Evaluate(Homework h, Ctx c)
+        => EvaluateAccess(h.Status == HomeworkStatus.Published, h.PublishedAt,
+            h.Groups.Select(g => (g.GroupId, g.Group?.Name ?? "")), c);
+
+    private static Verdict EvaluateAccess(bool published, DateTime? publishedAt, IEnumerable<(long GroupId, string Name)> groups, Ctx c)
     {
-        if (m.Status != MaterialStatus.Published || m.PublishedAt == null) return new(false, false, null, null, "");
-        var at = m.PublishedAt.Value;
-        var gids = m.Groups.Select(g => g.GroupId).ToHashSet();
+        var list = groups.ToList();
+        if (!published || publishedAt == null) return new(false, false, null, null, "");
+        var at = publishedAt.Value;
+        var gids = list.Select(g => g.GroupId).ToHashSet();
 
         // الطالب لازم يكون مشترك في المجموعة وقت النشر
         var cand = c.E.Where(e => gids.Contains(e.GroupId) && e.JoinedAt <= at
                                   && (e.LeftAt == null || e.LeftAt.Value.Date >= at.Date)).ToList();
         if (cand.Count == 0) return new(false, false, null, null, "");
 
-        var names = string.Join("، ", m.Groups.Where(g => cand.Any(e => e.GroupId == g.GroupId)).Select(g => g.Group?.Name ?? ""));
+        var names = string.Join("، ", list.Where(g => cand.Any(e => e.GroupId == g.GroupId)).Select(g => g.Name));
 
         var paid = cand.Any(e => c.I.Any(i => i.EnrollmentId == e.Id && i.Year == at.Year && i.Month == at.Month
                                               && (i.Status == InvoiceStatus.Paid || i.Status == InvoiceStatus.Waived)));
@@ -120,4 +129,74 @@ public class PortalService : IPortalService
 
     public async Task<MaterialFile?> FileAsync(long fileId)
         => await _u.MaterialFile.GetAll(f => f.Id == fileId).FirstOrDefaultAsync();
+
+    private static string Size(long b) => b >= 1048576 ? $"{b / 1048576.0:0.#} MB" : $"{Math.Max(1, b / 1024)} KB";
+
+    private static PortalHomeworkRow ToHomework(Homework h, Verdict v) => new()
+    {
+        Id = h.Id,
+        Title = h.Title,
+        Description = h.Description,
+        Groups = v.Groups,
+        PublishedAt = h.PublishedAt!.Value,
+        FilesCount = h.Files.Count,
+        IsLocked = v.Locked,
+        Reason = v.Reason,
+        GraceUntil = v.GraceUntil
+    };
+
+    public async Task<List<PortalHomeworkRow>> ListHomeworkAsync(long studentId)
+    {
+        var ctx = await LoadAsync(studentId);
+        var gids = ctx.E.Select(e => e.GroupId).Distinct().ToList();
+        if (gids.Count == 0) return new();
+
+        var list = await _u.Homework
+            .GetAll(h => h.Status == HomeworkStatus.Published && h.PublishedAt != null && h.Groups.Any(g => gids.Contains(g.GroupId)),
+                    "Groups.Group,Files")
+            .OrderByDescending(h => h.PublishedAt).ToListAsync();
+
+        var rows = new List<PortalHomeworkRow>();
+        foreach (var h in list)
+        {
+            var v = Evaluate(h, ctx);
+            if (v.Visible) rows.Add(ToHomework(h, v));
+        }
+        return rows;
+    }
+
+    public async Task<PortalHomeworkVm?> GetHomeworkAsync(long studentId, long homeworkId)
+    {
+        var h = await _u.Homework.GetAll(x => x.Id == homeworkId, "Groups.Group,Files").FirstOrDefaultAsync();
+        if (h == null) return null;
+
+        var v = Evaluate(h, await LoadAsync(studentId));
+        if (!v.Visible) return null;
+
+        return new PortalHomeworkVm
+        {
+            Row = ToHomework(h, v),
+            Files = v.Locked ? new() : h.Files.OrderBy(f => f.Id).Select(f => new PortalHomeworkFileVm
+            {
+                Id = f.Id,
+                Name = f.FileName,
+                Kind = f.Kind,
+                Size = Size(f.SizeBytes)
+            }).ToList()
+        };
+    }
+
+    public async Task<bool> CanDownloadHomeworkAsync(long studentId, long homeworkId)
+    {
+        var key = $"hw:{studentId}:{homeworkId}";
+        if (_cache.TryGetValue(key, out bool ok)) return ok;
+
+        var vm = await GetHomeworkAsync(studentId, homeworkId);
+        ok = vm != null && !vm.Row.IsLocked;
+        _cache.Set(key, ok, TimeSpan.FromSeconds(30));
+        return ok;
+    }
+
+    public async Task<HomeworkFile?> HomeworkFileAsync(long fileId)
+        => await _u.HomeworkFile.GetAll(f => f.Id == fileId).FirstOrDefaultAsync();
 }

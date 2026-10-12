@@ -20,6 +20,9 @@ public interface IUnitOfWork : IDisposable
     IRepository<Material> Material { get; }
     IRepository<MaterialGroup> MaterialGroup { get; }
     IRepository<MaterialFile> MaterialFile { get; }
+    IRepository<Homework> Homework { get; }
+    IRepository<HomeworkGroup> HomeworkGroup { get; }
+    IRepository<HomeworkFile> HomeworkFile { get; }
     IRepository<AccessGrace> AccessGrace { get; }
     IRepository<StudentTransfer> StudentTransfer { get; }
 

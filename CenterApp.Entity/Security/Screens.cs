@@ -15,6 +15,7 @@ public static class Screens
     public const string Invoices = "invoices";
     public const string Lookups = "lookups";
     public const string Materials = "materials";
+    public const string Homework = "homework";
     public const string Grace = "grace";
     public const string Users = "users";
     public const string Roles = "roles";
@@ -23,7 +24,7 @@ public static class Screens
     {
         (Students, "الطلاب"), (Groups, "المجموعات"), (Sessions, "الحصص والحضور"),
         (Invoices, "الفواتير والتحصيل"), (Lookups, "البيانات الأساسية"),
-        (Materials, "الماتريال"), (Grace, "سماح الوصول للماتريال"),
+        (Materials, "الماتريال"), (Homework, "الواجبات"), (Grace, "سماح الوصول للماتريال"),
         (Users, "المستخدمين"), (Roles, "الأدوار والصلاحيات")
     };
 }

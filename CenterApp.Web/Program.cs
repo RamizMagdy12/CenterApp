@@ -77,10 +77,12 @@ builder.Services.AddScoped<IPermissionService, PermissionService>();
 builder.Services.AddScoped<IUserAdminService, UserAdminService>();
 builder.Services.AddScoped<IRoleAdminService, RoleAdminService>();
 builder.Services.AddScoped<IMaterialService, MaterialService>();
+builder.Services.AddScoped<IHomeworkService, HomeworkService>();
 builder.Services.AddScoped<IPortalService, PortalService>();
 builder.Services.AddScoped<IGraceService, GraceService>();
 builder.Services.AddScoped<IStudentAccountService, StudentAccountService>();
 builder.Services.AddSingleton<IMaterialStorage, MaterialStorage>();
+builder.Services.AddSingleton<IHomeworkStorage, HomeworkStorage>();
 builder.Services.AddSingleton<IMediaTokenService, MediaTokenService>();
 builder.Services.AddScoped<ITransferService, TransferService>();
 

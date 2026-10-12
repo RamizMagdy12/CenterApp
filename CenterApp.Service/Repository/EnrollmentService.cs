@@ -22,8 +22,8 @@ public class EnrollmentService : IEnrollmentService
             .GetAll(e => e.GroupId == groupId && e.IsActive, "Student")
             .OrderBy(e => e.Student.Name).ToListAsync();
 
-        var ids = enrolled.Select(e => e.StudentId).ToList();
-        var free = await _u.Student.GetAll(s => s.IsActive && !ids.Contains(s.Id))
+        var busy = _u.GroupEnrollment.GetAll(e => e.IsActive).Select(e => e.StudentId);
+        var free = await _u.Student.GetAll(s => s.IsActive && !busy.Contains(s.Id))
             .OrderBy(s => s.Name)
             .Select(s => new { s.Id, s.Name, s.Code }).ToListAsync();
 
@@ -51,8 +51,13 @@ public class EnrollmentService : IEnrollmentService
         var g = await _u.Group.GetAll(x => x.Id == groupId).FirstOrDefaultAsync();
         if (g == null) return OpResult.Fail("المجموعة غير موجودة");
 
-        if (await _u.GroupEnrollment.GetAll(e => e.GroupId == groupId && e.StudentId == studentId && e.IsActive).AnyAsync())
-            return OpResult.Fail("الطالب مسجل بالفعل");
+        var current = await _u.GroupEnrollment
+            .GetAll(e => e.StudentId == studentId && e.IsActive, "Group")
+            .Select(e => new { e.GroupId, e.Group.Name }).FirstOrDefaultAsync();
+        if (current != null)
+            return current.GroupId == groupId
+                ? OpResult.Fail("الطالب مسجل بالفعل")
+                : OpResult.Fail($"الطالب مسجل في مجموعة {current.Name}، ومينفعش يكون في أكتر من مجموعة. انقله منها.");
 
         var count = await _u.GroupEnrollment.GetAll(e => e.GroupId == groupId && e.IsActive).CountAsync();
         if (g.Capacity > 0 && count >= g.Capacity) return OpResult.Fail("المجموعة مكتملة العدد");

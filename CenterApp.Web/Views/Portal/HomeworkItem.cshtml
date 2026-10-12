@@ -1,0 +1,44 @@
+@model PortalHomeworkVm
+@{
+    Layout = "_PortalLayout"; ViewData["Title"] = Model.Row.Title;
+}
+
+<a class="btn btn-sm btn-light mb-3" asp-action="Homework">← الواجبات</a>
+<h3>@Model.Row.Title</h3>
+<p class="text-muted">@Model.Row.Groups • @Model.Row.PublishedAt.ToString("yyyy-MM-dd")</p>
+@if (!string.IsNullOrWhiteSpace(Model.Row.Description))
+{
+    <p>@Model.Row.Description</p>
+}
+
+@if (Model.Row.IsLocked)
+{
+    <div class="panel text-center" style="max-width:520px;margin:30px auto;">
+        <div style="font-size:56px;color:#c53030"><i class="bi bi-lock-fill"></i></div>
+        <h4 class="mt-2">الواجب ده مقفول</h4>
+        <p class="text-muted">@Model.Row.Reason</p>
+        <p>سدّد الحساب أو كلّم الإدارة عشان تفتحه.</p>
+    </div>
+}
+else
+{
+    @if (Model.Row.GraceUntil.HasValue)
+    {
+        <div class="alert alert-warning">عندك سماح مؤقت لحد @Model.Row.GraceUntil.Value.AddDays(-1).ToString("yyyy-MM-dd"). بعدها هيتقفل لو الحساب لسه ما اتسددش.</div>
+    }
+    <div class="panel" style="max-width:640px">
+        @if (Model.Files.Count == 0)
+        {
+            <div class="empty-box">مفيش ملفات</div>
+        }
+        @foreach (var f in Model.Files)
+        {
+            <div class="d-flex align-items-center gap-2 border rounded p-2 mb-2">
+                <i class="bi @(f.Kind == HomeworkFileKind.Pdf ? "bi-file-earmark-pdf" : "bi-file-earmark-word")"></i>
+                <span>@f.Name</span>
+                <small class="text-muted">@f.Size</small>
+                <a class="btn btn-sm btn-primary ms-auto" asp-action="Download" asp-route-id="@f.Id"><i class="bi bi-download"></i> تنزيل</a>
+            </div>
+        }
+    </div>
+}
