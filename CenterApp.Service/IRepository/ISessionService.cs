@@ -8,4 +8,5 @@ public interface ISessionService
     Task<AttendanceVm?> GetAttendanceAsync(long sessionId);
     Task<OpResult> SaveAttendanceAsync(AttendanceSaveDto dto);
     Task<OpResult> RestoreAsync(long id);
+    Task<StudentAttendanceVm?> StudentHistoryAsync(long studentId);
 }

@@ -154,4 +154,37 @@ public class SessionService : ISessionService
         await _u.SaveAsync();
         return OpResult.Success("تم استرجاع الحصة");
     }
+
+    public async Task<StudentAttendanceVm?> StudentHistoryAsync(long studentId)
+    {
+        var st = await _u.Student.GetAll(s => s.Id == studentId)
+            .Select(s => new { s.Id, s.Name, s.Code }).FirstOrDefaultAsync();
+        if (st == null) return null;
+
+        var rows = await _u.SessionAttendance
+            .GetAll(a => a.StudentId == studentId && a.Session.Status != SessionStatus.Cancelled, "Session.Group")
+            .OrderByDescending(a => a.Session.Date).ThenByDescending(a => a.Session.StartTime)
+            .ToListAsync();
+
+        return new StudentAttendanceVm
+        {
+            StudentId = st.Id,
+            StudentName = st.Name,
+            StudentCode = st.Code ?? st.Id.ToString(),
+            Present = rows.Count(a => a.Status == AttendanceStatus.Present),
+            Absent = rows.Count(a => a.Status == AttendanceStatus.Absent),
+            Excused = rows.Count(a => a.Status == AttendanceStatus.Excused),
+            Late = rows.Count(a => a.Status == AttendanceStatus.Late),
+            Total = rows.Count,
+            Rows = rows.Select(a => new StudentAttendanceItem
+            {
+                Date = a.Session.Date,
+                Start = a.Session.StartTime,
+                End = a.Session.EndTime,
+                GroupName = a.Session.Group?.Name ?? "",
+                Status = a.Status,
+                Note = a.Note
+            }).ToList()
+        };
+    }
 }

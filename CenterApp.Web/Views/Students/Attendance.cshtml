@@ -1,0 +1,7 @@
+@model StudentAttendanceVm
+@{
+    ViewData["Title"] = "حضور " + Model.StudentName;
+}
+<a class="btn btn-sm btn-light mb-3" asp-action="Index">← الطلاب</a>
+<h3 class="mb-3">@Model.StudentName <small class="text-muted" dir="ltr">@Model.StudentCode</small></h3>
+<partial name="_StudentAttendance" model="Model" />

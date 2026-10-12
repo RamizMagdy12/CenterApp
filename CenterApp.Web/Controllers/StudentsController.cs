@@ -18,8 +18,10 @@ public class StudentsController : AppController
     private readonly IGroupService _g;
     private readonly IStudentAccountService _acc;
     private readonly ITransferService _t;
+    private readonly ISessionService _sessions;
 
-    public StudentsController(IStudentService s, ICatalogService c, IGroupService g, IStudentAccountService acc, ITransferService t) { _s = s; _c = c; _g = g; _acc = acc; _t = t; }
+    public StudentsController(IStudentService s, ICatalogService c, IGroupService g, IStudentAccountService acc, ITransferService t, ISessionService sessions)
+    { _s = s; _c = c; _g = g; _acc = acc; _t = t; _sessions = sessions; }
 
     public async Task<IActionResult> Index(string? q, long? gradeId, int page = 1)
     {
@@ -75,4 +77,10 @@ public class StudentsController : AppController
         => View("Cards", await _s.GetCardsAsync(null, groupId));
     [HttpPost, RequirePermission(Screens.Students, PermissionAction.Edit)]
     public async Task<IActionResult> Account(long id) => Json(await _acc.EnsureAsync(id));
+
+    public async Task<IActionResult> Attendance(long id)
+    {
+        var vm = await _sessions.StudentHistoryAsync(id);
+        return vm == null ? NotFound() : View(vm);
+    }
 }

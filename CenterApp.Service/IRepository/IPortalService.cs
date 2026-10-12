@@ -22,5 +22,9 @@ public interface IPortalService
         Task<(PortalMaterialRow? Row, Material? Material)> GetAsync(long studentId, long materialId);
         Task<bool> CanViewAsync(long studentId, long materialId);
         Task<MaterialFile?> FileAsync(long fileId);
+        Task<List<PortalHomeworkRow>> ListHomeworkAsync(long studentId);
+        Task<PortalHomeworkVm?> GetHomeworkAsync(long studentId, long homeworkId);
+        Task<bool> CanDownloadHomeworkAsync(long studentId, long homeworkId);
+        Task<HomeworkFile?> HomeworkFileAsync(long fileId);
     }
 

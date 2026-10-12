@@ -1,0 +1,55 @@
+@model StudentAttendanceVm
+@{
+    string Badge(AttendanceStatus s) => s switch
+    {
+        AttendanceStatus.Present => "bg-success",
+        AttendanceStatus.Absent => "bg-danger",
+        AttendanceStatus.Excused => "bg-secondary",
+        AttendanceStatus.Late => "bg-warning text-dark",
+        _ => "bg-light"
+    };
+    string Label(AttendanceStatus s) => s switch
+    {
+        AttendanceStatus.Present => "حاضر",
+        AttendanceStatus.Absent => "غائب",
+        AttendanceStatus.Excused => "بعذر",
+        AttendanceStatus.Late => "متأخر",
+        _ => ""
+    };
+    var rate = Model.Total == 0 ? 0 : (int)Math.Round(Model.Attended * 100.0 / Model.Total);
+}
+
+<div class="stats">
+    <div class="stat"><div class="stat-num">@Model.Present</div><div class="stat-label">حاضر</div></div>
+    <div class="stat"><div class="stat-num">@Model.Late</div><div class="stat-label">متأخر</div></div>
+    <div class="stat"><div class="stat-num">@Model.Absent</div><div class="stat-label">غائب</div></div>
+    <div class="stat"><div class="stat-num">@Model.Excused</div><div class="stat-label">بعذر</div></div>
+    <div class="stat"><div class="stat-num">@rate%</div><div class="stat-label">نسبة الحضور</div></div>
+</div>
+
+<div class="panel">
+    @if (Model.Rows.Count == 0)
+    {
+        <div class="empty-box">لسه مفيش حضور متسجل</div>
+    }
+    else
+    {
+        <table class="table table-striped table-hover align-middle mb-0">
+            <thead><tr><th>التاريخ</th><th>اليوم</th><th>المجموعة</th><th>من</th><th>إلى</th><th>الحالة</th><th>ملاحظة</th></tr></thead>
+            <tbody>
+                @foreach (var r in Model.Rows)
+                {
+                    <tr>
+                        <td>@r.Date.ToString("yyyy-MM-dd")</td>
+                        <td>@ArabicDays.Name(r.Date.DayOfWeek)</td>
+                        <td>@r.GroupName</td>
+                        <td>@r.Start.ToString(@"hh\:mm")</td>
+                        <td>@r.End.ToString(@"hh\:mm")</td>
+                        <td><span class="badge @Badge(r.Status)">@Label(r.Status)</span></td>
+                        <td><small class="text-muted">@r.Note</small></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>

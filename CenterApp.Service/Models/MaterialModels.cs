@@ -82,6 +82,11 @@ public class PortalHomeVm
     public List<PortalMaterialRow> Latest { get; set; } = new();
     public int Total { get; set; }
     public int Locked { get; set; }
+    public List<PortalHomeworkRow> LatestHomework { get; set; } = new();
+    public int HomeworkTotal { get; set; }
+    public int HomeworkLocked { get; set; }
+    public int AttendanceTotal { get; set; }
+    public int AttendancePresent { get; set; }
 }
 
 public class PortalViewVm

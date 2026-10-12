@@ -1,0 +1,7 @@
+@model StudentAttendanceVm
+@{
+    Layout = "_PortalLayout";
+    ViewData["Title"] = "الحضور";
+}
+<h3 class="mb-3">حضورك <span class="badge bg-secondary">@Model.Total</span></h3>
+<partial name="_StudentAttendance" model="Model" />

@@ -27,12 +27,21 @@ public static class DbSeeder
         foreach (var r in new[] { RoleNames.Admin, RoleNames.Teacher, RoleNames.Student })
             if (!await rm.RoleExistsAsync(r)) await rm.CreateAsync(new IdentityRole(r));
 
-        // المدرس: صلاحيات الماتريال كاملة (وبيشوف ماتريال مجموعاته بس)
+        // المدرس: صلاحيات الماتريال والواجبات كاملة (وبيشوف مجموعاته بس)
         var teacher = await rm.FindByNameAsync(RoleNames.Teacher);
-        if (teacher != null && !await db.RolePermissions.AnyAsync(p => p.RoleId == teacher.Id))
+        if (teacher != null)
         {
-            db.RolePermissions.Add(new RolePermission
-            { RoleId = teacher.Id, ScreenCode = Screens.Materials, CanView = true, CanAdd = true, CanEdit = true, CanDelete = true });
+            var hasAny = await db.RolePermissions.AnyAsync(p => p.RoleId == teacher.Id);
+            if (!hasAny)
+            {
+                db.RolePermissions.Add(new RolePermission
+                { RoleId = teacher.Id, ScreenCode = Screens.Materials, CanView = true, CanAdd = true, CanEdit = true, CanDelete = true });
+            }
+            if (!await db.RolePermissions.AnyAsync(p => p.RoleId == teacher.Id && p.ScreenCode == Screens.Homework))
+            {
+                db.RolePermissions.Add(new RolePermission
+                { RoleId = teacher.Id, ScreenCode = Screens.Homework, CanView = true, CanAdd = true, CanEdit = true, CanDelete = true });
+            }
             await db.SaveChangesAsync();
         }
 

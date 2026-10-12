@@ -34,6 +34,9 @@ public class AppDbContext : IdentityDbContext<AppUser>
     public DbSet<Material> Materials => Set<Material>();
     public DbSet<MaterialGroup> MaterialGroups => Set<MaterialGroup>();
     public DbSet<MaterialFile> MaterialFiles => Set<MaterialFile>();
+    public DbSet<Homework> Homeworks => Set<Homework>();
+    public DbSet<HomeworkGroup> HomeworkGroups => Set<HomeworkGroup>();
+    public DbSet<HomeworkFile> HomeworkFiles => Set<HomeworkFile>();
     public DbSet<AccessGrace> AccessGraces => Set<AccessGrace>();
     public DbSet<StudentTransfer> StudentTransfers => Set<StudentTransfer>();
 
@@ -69,6 +72,10 @@ public class AppDbContext : IdentityDbContext<AppUser>
         mb.Entity<Material>().HasIndex(x => new { x.Status, x.PublishedAt });
         mb.Entity<MaterialGroup>().HasIndex(x => new { x.MaterialId, x.GroupId });
         mb.Entity<MaterialFile>().Property(x => x.StoredName).HasMaxLength(100);
+        mb.Entity<Homework>().Property(x => x.Description).HasMaxLength(2000);
+        mb.Entity<Homework>().HasIndex(x => new { x.Status, x.PublishedAt });
+        mb.Entity<HomeworkGroup>().HasIndex(x => new { x.HomeworkId, x.GroupId });
+        mb.Entity<HomeworkFile>().Property(x => x.StoredName).HasMaxLength(100);
         mb.Entity<AccessGrace>().HasIndex(x => new { x.StudentId, x.ExpiresAt });
         mb.Entity<Group>().Property(x => x.Code).HasMaxLength(3);
         mb.Entity<Group>().HasIndex(x => x.Code).IsUnique();
