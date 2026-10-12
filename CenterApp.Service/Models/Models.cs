@@ -42,6 +42,7 @@ public class LookupVm
 }
 
 // ── Students
+// ── StudentVm: GroupIds بقت GroupId (إجباري عند التسجيل) + أسماء المجموعات للعرض
 public class StudentVm
 {
     public long Id { get; set; }
@@ -55,17 +56,19 @@ public class StudentVm
     public string? Notes { get; set; }
     public bool IsActive { get; set; } = true;
 
-    public List<long> GroupIds { get; set; } = new();          // مجموعات هتتضاف
-    public List<long> EnrolledGroupIds { get; set; } = new();  // مسجل فيها حالياً (للعرض فقط)
+    public long? GroupId { get; set; }                          // مطلوب لما الطالب يتسجّل لأول مرة
+    public List<long> EnrolledGroupIds { get; set; } = new();
+    public List<string> GroupNames { get; set; } = new();
 }
 
+// ── Cards
 public class StudentCardVm
 {
     public long Id { get; set; }
     public string Name { get; set; } = "";
     public string Code { get; set; } = "";
-}
-// ── Groups
+    public string QrToken { get; set; } = "";
+}// ── Groups
 public class GroupScheduleDto
 {
     public DayOfWeek DayOfWeek { get; set; }
@@ -84,6 +87,8 @@ public class GroupSaveDto
     public decimal MonthlyFee { get; set; }
     public int Capacity { get; set; }
     public bool IsActive { get; set; } = true;
+    public string Code { get; set; } = "";
+    public bool CodeLocked { get; set; }
     public List<GroupScheduleDto> Schedules { get; set; } = new();
 }
 
@@ -99,12 +104,14 @@ public class GroupRow
     public int Enrolled { get; set; }
     public string Schedule { get; set; } = "";
     public bool IsActive { get; set; }
+    public string Code { get; set; } = "";
 }
 
 // ── Enrollment
 public class EnrolledRow
 {
     public long EnrollmentId { get; set; }
+    public long StudentId { get; set; }
     public string StudentName { get; set; } = "";
     public string? Phone { get; set; }
     public DateTime JoinedAt { get; set; }
@@ -113,6 +120,8 @@ public class EnrolledRow
 
 public class ManageEnrollmentsVm
 {
+    public long StudentId { get; set; }
+    
     public long GroupId { get; set; }
     public string GroupName { get; set; } = "";
     public int Capacity { get; set; }
@@ -144,6 +153,7 @@ public class AttendanceRowVm
     public string StudentName { get; set; } = "";
     public AttendanceStatus Status { get; set; } = AttendanceStatus.Present;
     public bool IsRecorded { get; set; }     // اتسجل له حضور/غياب قبل كده
+    public string QrToken { get; set; } = "";
 }
 
 public class AttendanceVm
@@ -244,4 +254,25 @@ public class DashboardVm
 
     public List<TodaySessionRow> TodaySessions { get; set; } = new();
     public List<RecentPaymentRow> RecentPayments { get; set; } = new();
+}
+public class GroupPick
+{
+    public long Id { get; set; }
+    public string Name { get; set; } = "";
+    public string Code { get; set; } = "";
+    public int Free { get; set; }            // الأماكن المتاحة (-1 = بلا حد)
+    public string NextCode { get; set; } = "";
+    public bool Disabled { get; set; }
+    public string? Why { get; set; }
+}
+
+public class TransferFormVm
+{
+    public long StudentId { get; set; }
+    public string StudentName { get; set; } = "";
+    public string Code { get; set; } = "";
+    public long CodeGroupId { get; set; }    // 0 = كوده مش مبني على مجموعة (طالب قديم)
+    public long? FromGroupId { get; set; }
+    public List<SimpleItem> Current { get; set; } = new();
+    public List<GroupPick> Targets { get; set; } = new();
 }

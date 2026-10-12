@@ -1,4 +1,5 @@
 ﻿@model PagedResult<Student>
+@inject CenterApp.Service.Services.IPermissionService Perm
 @{
     ViewData["Title"] = "الطلاب";
     var grades = (List<SelectListItem>)ViewBag.Grades;

@@ -21,6 +21,7 @@ public interface IUnitOfWork : IDisposable
     IRepository<MaterialGroup> MaterialGroup { get; }
     IRepository<MaterialFile> MaterialFile { get; }
     IRepository<AccessGrace> AccessGrace { get; }
+    IRepository<StudentTransfer> StudentTransfer { get; }
 
     Task<int> SaveAsync();
     Task<int> SaveInTransactionAsync();

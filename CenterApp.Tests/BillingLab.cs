@@ -82,7 +82,7 @@ public sealed class BillingLab : IAsyncDisposable
         {
             Name = name,
             IsActive = true,
-            GroupIds = groupIds.ToList()
+            //GroupIds = groupIds.ToList()
         });
         if (!result.Ok || result.Id == null) throw new InvalidOperationException(result.Message);
         return result.Id.Value;

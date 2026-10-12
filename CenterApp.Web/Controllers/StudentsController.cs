@@ -17,7 +17,9 @@ public class StudentsController : AppController
     private readonly ICatalogService _c;
     private readonly IGroupService _g;
     private readonly IStudentAccountService _acc;
-    public StudentsController(IStudentService s, ICatalogService c, IGroupService g, IStudentAccountService acc) { _s = s; _c = c; _g = g; _acc = acc; }
+    private readonly ITransferService _t;
+
+    public StudentsController(IStudentService s, ICatalogService c, IGroupService g, IStudentAccountService acc, ITransferService t) { _s = s; _c = c; _g = g; _acc = acc; _t = t; }
 
     public async Task<IActionResult> Index(string? q, long? gradeId, int page = 1)
     {
@@ -30,9 +32,20 @@ public class StudentsController : AppController
     public async Task<IActionResult> Form(long id = 0)
     {
         ViewBag.Grades = await _c.SelectAsync("gradelevels");
-        ViewBag.Groups = await _g.SelectAsync();
+        ViewBag.Picks = id == 0 ? await _t.PicksAsync(null) : new List<GroupPick>();
         return PartialView(await _s.GetAsync(id));
     }
+
+    [RequirePermission(Screens.Groups, PermissionAction.Edit)]
+    public async Task<IActionResult> TransferForm(long id, long? from)
+    {
+        var vm = await _t.FormAsync(id, from);
+        return vm == null ? NotFound() : PartialView(vm);
+    }
+
+    [HttpPost, RequirePermission(Screens.Groups, PermissionAction.Edit)]
+    public async Task<IActionResult> Transfer(long studentId, long fromGroupId, long toGroupId)
+        => Json(await _t.TransferAsync(studentId, fromGroupId, toGroupId));
 
     [HttpPost]
     public async Task<IActionResult> Save(StudentVm vm)

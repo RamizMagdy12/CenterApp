@@ -1,0 +1,90 @@
+﻿@model TransferFormVm
+@using System.Text.Json
+@functions {
+    static string Label(GroupPick p)
+    {
+        var s = p.Name;
+        if (p.Code.Length > 0) s += $" ({p.Code})";
+        if (p.Free >= 0) s += $" — متبقي {p.Free}";
+        if (p.Why != null) s += $" — {p.Why}";
+        return s;
+    }
+}
+
+<div class="mb-3"><strong>@Model.StudentName</strong> — كود الطالب الحالي: <b dir="ltr">@Model.Code</b></div>
+
+@if (Model.Current.Count == 0)
+{
+    <div class="alert alert-warning">الطالب مش مسجل في أي مجموعة حالياً. سجّله من المجموعات ← الطلاب.</div>
+}
+else
+{
+    <form id="trForm" onsubmit="return false;">
+        <input type="hidden" name="studentId" value="@Model.StudentId" />
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label class="form-label">من مجموعة</label>
+                <select name="fromGroupId" id="trFrom" class="form-select">
+                    @foreach (var c in Model.Current)
+                    {
+                        <option value="@c.Id" selected="@(c.Id == Model.FromGroupId)">@c.Text</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">إلى مجموعة</label>
+                <select name="toGroupId" id="trTo" class="form-select">
+                    <option value="">-- اختر --</option>
+                    @foreach (var t in Model.Targets)
+                    {
+                        <option value="@t.Id" data-next="@t.NextCode" disabled="@t.Disabled">@Label(t)</option>
+                    }
+                </select>
+            </div>
+
+            <div class="col-12"><div id="trPreview" class="alert alert-info mb-0" style="display:none"></div></div>
+
+            <div class="col-12">
+                <small class="text-muted">
+                    الفواتير: لو شهر النقل اتحاسب (ولو جزئي) في المجموعة القديمة، الجديدة بتتحاسب من الشهر الجاي. ولو لسه ما اتحاسبش، فاتورة الشهر بتتنقل للجديدة بسعرها.
+                </small>
+            </div>
+
+            <div class="col-12"><button class="btn btn-success" onclick="doTransfer()">تنفيذ النقل</button></div>
+        </div>
+    </form>
+
+    <script>
+        var codeGroupId = @Model.CodeGroupId;
+        var curCode = @Html.Raw(JsonSerializer.Serialize(Model.Code));
+
+        function preview() {
+            var to = $('#trTo option:selected');
+            if (!to.val()) { $('#trPreview').hide(); return; }
+
+            var from = parseInt($('#trFrom').val());
+            var recode = (codeGroupId === 0 || codeGroupId === from);
+            var msg = recode
+                ? 'كود الطالب هيتغيّر من ' + curCode + ' إلى ' + to.attr('data-next') + '. الـ QR القديم هيفضل شغال، وتقدر تطبع كارت جديد.'
+                : 'كود الطالب هيفضل زي ما هو (' + curCode + ') لأنه مبني على مجموعة تانية.';
+            $('#trPreview').show().text(msg);
+        }
+        $('#trTo, #trFrom').on('change', preview);
+
+        function doTransfer() {
+            if (!$('#trTo').val()) { notify('warning', 'اختار المجموعة الجديدة'); return; }
+
+            askConfirm('تأكيد نقل الطالب؟', 'نعم، انقله').then(function (ok) {
+                if (!ok) return;
+                postJson('@Url.Action("Transfer", "Students")', $('#trForm').serialize(), function (r) {
+                    var safe = $('<div>').text(r.message).html();
+                    swalShow({
+                        icon: 'success', title: 'تم النقل', confirmButtonText: 'تمام',
+                        html: '<div style="line-height:1.9">' + safe + '</div>' +
+                            '<a class="btn btn-primary mt-3" target="_blank" href="@Url.Action("Card", "Students")/' + r.id + '">طباعة كارت الطالب</a>'
+                    }).then(function () { location.reload(); });
+                });
+            });
+        }
+    </script>
+}

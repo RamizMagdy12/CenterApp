@@ -28,6 +28,7 @@ public class UnitOfWork : IUnitOfWork
         MaterialGroup = new Repository<MaterialGroup>(db);
         MaterialFile = new Repository<MaterialFile>(db);
         AccessGrace = new Repository<AccessGrace>(db);
+        StudentTransfer = new Repository<StudentTransfer>(db);
 
     }
 
@@ -46,6 +47,7 @@ public class UnitOfWork : IUnitOfWork
     public IRepository<MaterialGroup> MaterialGroup { get; }
     public IRepository<MaterialFile> MaterialFile { get; }
     public IRepository<AccessGrace> AccessGrace { get; }
+    public IRepository<StudentTransfer> StudentTransfer { get; }    
 
     public Task<int> SaveAsync() => _db.SaveChangesAsync();
 

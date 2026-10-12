@@ -30,7 +30,10 @@
                 <td>@e.Phone</td>
                 <td>@e.JoinedAt.ToString("yyyy-MM-dd")</td>
                 <td>@(e.CustomFee?.ToString("N2") ?? "-")</td>
-                <td><button class="btn btn-sm btn-outline-danger" onclick="removeEnrollment(@e.EnrollmentId)">إلغاء التسجيل</button></td>
+                <td><button class="btn btn-sm btn-outline-danger" onclick="removeEnrollment(@e.EnrollmentId)">إلغاء التسجيل</button>
+                    <button class="btn btn-sm btn-outline-secondary" onclick="openForm('@Url.Action("TransferForm", "Students", new { id = e.StudentId, from = Model.GroupId })', 'نقل طالب', true)">نقل</button>
+                </td>
+
             </tr>
         }
     </tbody>

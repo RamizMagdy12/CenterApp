@@ -82,6 +82,7 @@ builder.Services.AddScoped<IGraceService, GraceService>();
 builder.Services.AddScoped<IStudentAccountService, StudentAccountService>();
 builder.Services.AddSingleton<IMaterialStorage, MaterialStorage>();
 builder.Services.AddSingleton<IMediaTokenService, MediaTokenService>();
+builder.Services.AddScoped<ITransferService, TransferService>();
 
 // رفع الفيديوهات (حد أقصى 250 ميجا للطلب)
 builder.Services.Configure<FormOptions>(o => o.MultipartBodyLengthLimit = 262144000);

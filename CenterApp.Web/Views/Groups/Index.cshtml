@@ -18,7 +18,18 @@
         @foreach (var g in Model)
         {
             <tr class="@(g.IsActive ? "" : "table-secondary")">
-                <td>@g.Name</td>
+                <td>
+                    @g.Name
+                    @if (string.IsNullOrEmpty(g.Code))
+                    {
+                        <span class="badge bg-danger ms-1">بدون كود</span>
+                    }
+                    else
+                    {
+
+                        <span class="badge bg-dark ms-1" dir="ltr">@g.Code</span>
+                    }
+                </td>
                 <td>@g.Teacher</td>
                 <td>@g.Subject</td>
                 <td>@g.Grade</td>

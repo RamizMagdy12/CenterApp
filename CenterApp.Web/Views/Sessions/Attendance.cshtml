@@ -32,7 +32,7 @@ else
         <tbody>
             @foreach (var r in Model.Rows)
             {
-                <tr class="att-row" data-student="@r.StudentId" data-code="@r.StudentCode" data-recorded="@(r.IsRecorded ? "1" : "0")">
+                <tr class="att-row" data-student="@r.StudentId" data-code="@r.StudentCode" data-token="@r.QrToken" data-recorded="@(r.IsRecorded ? "1" : "0")">
                     <td class="text-muted">@r.StudentCode</td>
                     <td>@r.StudentName</td>
                     <td><input type="radio" class="att-present" name="st_@r.StudentId" value="0" @(r.Status == AttendanceStatus.Present ? "checked" : "") /></td>
@@ -111,8 +111,9 @@ else
         var code = norm(raw);
         if (!code) return;
 
-        var $row = $('.att-row').filter(function () { return norm($(this).data('code')) === code; });
-        if ($row.length === 0) {
+        var $row = $('.att-row').filter(function () {
+            return norm($(this).attr('data-code')) === code || norm($(this).attr('data-token')) === code;
+        }); if ($row.length === 0) {
             beep(false);
             showMsg('الكود ' + code + ' مش لطالب مسجل في المجموعة دي', false);
             return;
