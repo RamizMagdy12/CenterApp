@@ -1,0 +1,223 @@
+@model OnlineExamEditVm
+@using System.Text.Json
+@{
+    ViewData["Title"] = Model.Id == 0 ? "اختبار أونلاين جديد" : "تعديل اختبار";
+    var qjson = JsonSerializer.Serialize(Model.Questions, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+}
+<div class="panel">
+    <div class="row g-3">
+        <div class="col-md-8">
+            <label class="form-label">عنوان الاختبار</label>
+            <input id="mTitle" class="form-control" value="@Model.Title" @(Model.Locked ? "disabled" : "") />
+        </div>
+        <div class="col-md-4 d-flex align-items-end">
+            @if (Model.Status == ExamStatus.Published)
+            {
+                <span class="badge bg-success">منشور</span>
+            }
+            else if (Model.Id != 0)
+            {
+                <span class="badge bg-secondary">مسودة</span>
+            }
+        </div>
+        <div class="col-12">
+            <label class="form-label">وصف للطالب (اختياري)</label>
+            <textarea id="mDesc" class="form-control" rows="2" @(Model.Locked ? "disabled" : "")>@Model.Description</textarea>
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">يفتح من</label>
+            <input id="mOpen" type="datetime-local" class="form-control" value="@Model.OpensAt?.ToString("yyyy-MM-ddTHH:mm")" @(Model.Locked ? "disabled" : "") />
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">يقفل في</label>
+            <input id="mClose" type="datetime-local" class="form-control" value="@Model.ClosesAt?.ToString("yyyy-MM-ddTHH:mm")" @(Model.Locked ? "disabled" : "") />
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">النتيجة تظهر لكل الطلاب في</label>
+            <input id="mResult" type="datetime-local" class="form-control" value="@Model.ResultsAt?.ToString("yyyy-MM-ddTHH:mm")" />
+        </div>
+        <div class="col-12">
+            <div class="alert alert-info mb-0">
+                الاختبار يتفتح بس في الفترة دي، وممنوع فيه النسخ واللصق، ولو الطالب خرج من التاب أو من الصفحة الاختبار بيتسلّم لوحده.
+                الدرجة بتتحسب وقت التسليم، والطالب يشوفها هو وزملاؤه في وقت ظهور النتيجة مع بعض.
+            </div>
+        </div>
+        @if (Model.Locked)
+        {
+            <div class="col-12">
+                <div class="alert alert-warning mb-0">الاختبار بدأ أو فيه محاولات، فتقدر تعدّل وقت ظهور النتيجة بس.</div>
+            </div>
+        }
+
+        <div class="col-12">
+            <label class="form-label">المجموعات</label>
+            <div class="form-check mb-1">
+                <input type="checkbox" class="form-check-input" id="gAll" @(Model.Locked ? "disabled" : "") />
+                <label for="gAll" class="form-check-label fw-bold">كل المجموعات</label>
+            </div>
+            <div class="border rounded p-2" style="max-height:200px;overflow:auto">
+                @if (Model.Groups.Count == 0)
+                {
+                    <span class="text-muted">مفيش مجموعات</span>
+                }
+                @foreach (var g in Model.Groups)
+                {
+                    <div class="form-check">
+                        <input class="form-check-input g-chk" type="checkbox" id="g_@g.Id" value="@g.Id" @(g.Selected ? "checked" : "") @(Model.Locked ? "disabled" : "") />
+                        <label class="form-check-label" for="g_@g.Id">@g.Name</label>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="col-12 d-flex justify-content-between align-items-center">
+            <label class="form-label mb-0">الأسئلة <span class="text-muted" id="totalPts"></span></label>
+            @if (!Model.Locked)
+            {
+                <button type="button" class="btn btn-sm btn-outline-primary" onclick="addQuestion()">+ سؤال</button>
+            }
+        </div>
+        <div class="col-12" id="qList"></div>
+
+        <div class="col-12 d-flex gap-2">
+            @if (!Model.Locked)
+            {
+                <button class="btn btn-outline-primary" id="btnDraft" onclick="saveAll(false)">حفظ كمسودة</button>
+                <button class="btn btn-success" id="btnPub" onclick="saveAll(true)">حفظ ونشر</button>
+            }
+            else
+            {
+                <button class="btn btn-primary" id="btnDraft" onclick="saveAll(false)">حفظ وقت النتيجة</button>
+            }
+            <a class="btn btn-light" asp-action="Index">رجوع</a>
+        </div>
+    </div>
+</div>
+<script type="application/json" id="qSeed">@Html.Raw(qjson)</script>
+
+@section Scripts {
+    <script>
+        var examId = @Model.Id;
+        var locked = @(Model.Locked ? "true" : "false");
+        var questions = JSON.parse(document.getElementById('qSeed').textContent || '[]');
+
+        $('#gAll').on('change', function () { $('.g-chk').prop('checked', this.checked); });
+        $('.g-chk').on('change', function () { $('#gAll').prop('checked', $('.g-chk').length > 0 && $('.g-chk').length === $('.g-chk:checked').length); });
+        $('#gAll').prop('checked', $('.g-chk').length > 0 && $('.g-chk').length === $('.g-chk:checked').length);
+
+        function esc(s) { return $('<i>').text(s || '').html(); }
+
+        function addQuestion() {
+            questions.push({ text: '', points: 1, choices: [{ text: '', isCorrect: true }, { text: '', isCorrect: false }] });
+            render();
+        }
+
+        function render() {
+            var total = questions.reduce(function (s, q) { return s + (parseFloat(q.points) || 0); }, 0);
+            $('#totalPts').text(questions.length ? '· المجموع ' + total : '');
+            $('#qList').html(questions.map(function (q, qi) {
+                var choices = (q.choices || []).map(function (c, ci) {
+                    return '<div class="d-flex gap-2 align-items-center mb-2">' +
+                        '<input type="radio" name="ok_' + qi + '" ' + (c.isCorrect ? 'checked' : '') + (locked ? ' disabled' : '') + ' onchange="markCorrect(' + qi + ',' + ci + ')" />' +
+                        '<input class="form-control" placeholder="اختيار" value="' + esc(c.text) + '" ' + (locked ? 'disabled' : '') + ' oninput="questions[' + qi + '].choices[' + ci + '].text=this.value" />' +
+                        (locked ? '' : '<button type="button" class="btn btn-sm btn-outline-danger" onclick="removeChoice(' + qi + ',' + ci + ')">حذف</button>') +
+                        '</div>';
+                }).join('');
+                return '<div class="border rounded p-3 mb-3">' +
+                    '<div class="d-flex justify-content-between mb-2"><strong>سؤال ' + (qi + 1) + '</strong>' +
+                    (locked ? '' : '<button type="button" class="btn btn-sm btn-outline-danger" onclick="questions.splice(' + qi + ',1);render()">حذف السؤال</button>') +
+                    '</div>' +
+                    '<textarea class="form-control mb-2" rows="2" placeholder="نص السؤال" ' + (locked ? 'disabled' : '') + ' oninput="questions[' + qi + '].text=this.value">' + esc(q.text) + '</textarea>' +
+                    '<div class="row g-2 mb-2"><div class="col-md-3"><label class="form-label">درجة السؤال</label>' +
+                    '<input type="number" min="0.5" step="0.5" class="form-control" value="' + (q.points || 1) + '" ' + (locked ? 'disabled' : '') + ' oninput="questions[' + qi + '].points=parseFloat(this.value)||0;renderTotal()" /></div></div>' +
+                    '<div class="small text-muted mb-1">علّم الإجابة الصحيحة</div>' + choices +
+                    (locked ? '' : '<button type="button" class="btn btn-sm btn-outline-secondary" onclick="addChoice(' + qi + ')">+ اختيار</button>') +
+                    '</div>';
+            }).join(''));
+        }
+
+        function renderTotal() {
+            var total = questions.reduce(function (s, q) { return s + (parseFloat(q.points) || 0); }, 0);
+            $('#totalPts').text(questions.length ? '· المجموع ' + total : '');
+        }
+
+        function markCorrect(qi, ci) {
+            questions[qi].choices.forEach(function (c, i) { c.isCorrect = i === ci; });
+        }
+        function addChoice(qi) {
+            questions[qi].choices.push({ text: '', isCorrect: false });
+            render();
+        }
+        function removeChoice(qi, ci) {
+            questions[qi].choices.splice(ci, 1);
+            if (!questions[qi].choices.some(function (c) { return c.isCorrect; }) && questions[qi].choices[0])
+                questions[qi].choices[0].isCorrect = true;
+            render();
+        }
+
+        function setBusy(b) { $('#btnDraft,#btnPub').prop('disabled', b); }
+
+        function collectQuestions() {
+            var list = [];
+            $('#qList > .border').each(function () {
+                var choices = [];
+                $(this).find('.d-flex.gap-2').each(function () {
+                    choices.push({
+                        Text: $(this).find('input.form-control').val(),
+                        IsCorrect: $(this).find('input[type=radio]').prop('checked')
+                    });
+                });
+                list.push({
+                    Text: $(this).find('textarea').val(),
+                    Points: parseFloat($(this).find('input[type=number]').val()) || 0,
+                    Choices: choices
+                });
+            });
+            return list;
+        }
+
+        async function saveAll(publish) {
+            var title = $.trim($('#mTitle').val());
+            var groups = $('.g-chk:checked').map(function () { return parseInt(this.value); }).get();
+            if (!locked) {
+                if (!title) return notify('warning', 'اكتب عنوان الاختبار');
+                if (!$('#mOpen').val() || !$('#mClose').val() || !$('#mResult').val()) return notify('warning', 'حدد موعد الفتح والقفل وظهور النتيجة');
+                if (!groups.length) return notify('warning', 'اختار مجموعة واحدة على الأقل');
+            } else if (!$('#mResult').val()) {
+                return notify('warning', 'حدد وقت ظهور النتيجة');
+            }
+            setBusy(true);
+            try {
+                var res = await $.ajax({
+                    url: '@Url.Action("Save", "Exams")', type: 'POST', contentType: 'application/json',
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                    data: JSON.stringify({
+                        Id: examId,
+                        Title: title,
+                        Description: $('#mDesc').val(),
+                        OpensAt: $('#mOpen').val(),
+                        ClosesAt: $('#mClose').val(),
+                        ResultsAt: $('#mResult').val(),
+                        GroupIds: groups,
+                        Questions: collectQuestions()
+                    })
+                });
+                if (!res.ok) throw res.message;
+                examId = res.id;
+                if (publish) {
+                    var p = await $.post('@Url.Action("Publish", "Exams")', { id: examId });
+                    if (!p.ok) throw p.message;
+                }
+                await Swal.fire({ icon: 'success', title: publish ? 'تم النشر' : 'تم الحفظ', timer: 1200, showConfirmButton: false, heightAuto: false });
+                location.href = '@Url.Action("Index", "Exams")';
+            } catch (e) {
+                setBusy(false);
+                if (e && e.status && sessionReplaced(e)) return;
+                notify('error', typeof e === 'string' ? e : 'حصل خطأ، جرّب تاني');
+            }
+        }
+
+        if (!questions.length && !locked) addQuestion();
+        else render();
+    </script>
+}

@@ -1,0 +1,65 @@
+@model StudentExamsVm
+@{
+    Layout = "_PortalLayout"; ViewData["Title"] = "الاختبارات";
+}
+<h3 class="mb-3">الاختبارات الأونلاين</h3>
+@if (Model.Online.Count == 0)
+{
+    <div class="panel empty-box">مفيش اختبارات أونلاين لمجموعاتك دلوقتي</div>
+}
+<div class="mgrid mb-4">
+    @foreach (var m in Model.Online)
+    {
+        <a class="mcard" asp-action="Exam" asp-route-id="@m.Id">
+            <i class="bi bi-patch-question mcard-ico"></i>
+            <span class="mcard-body">
+                <b>@m.Title</b>
+                <small>@m.OpensAt.ToString("yyyy-MM-dd HH:mm") → @m.ClosesAt.ToString("HH:mm")</small>
+                <small>@m.QuestionsCount سؤال · من @m.MaxScore.ToString("0.##")</small>
+                @if (m.Phase == "result" && m.Score != null)
+                {
+                    <span class="pill pill-ok">درجتك @m.Score.Value.ToString("0.##") / @m.MaxScore.ToString("0.##")</span>
+                }
+                else
+                {
+                    <span class="pill @(m.CanStart || m.CanResume ? "pill-primary" : "pill-gray")">@m.PhaseText</span>
+                }
+            </span>
+        </a>
+    }
+</div>
+
+<h3 class="mb-3">درجات الاختبارات الورقية</h3>
+@if (Model.Offline.Count == 0)
+{
+    <div class="panel empty-box">لسه مفيش درجات أوفلاين</div>
+}
+else
+{
+    <div class="panel">
+        <table class="table table-striped align-middle mb-0">
+            <thead><tr><th>الامتحان</th><th>المجموعة</th><th>التاريخ</th><th>الدرجة</th></tr></thead>
+            <tbody>
+                @foreach (var m in Model.Offline)
+                {
+                    <tr>
+                        <td>@m.Title</td>
+                        <td>@m.GroupName</td>
+                        <td>@m.ExamDate.ToString("yyyy-MM-dd")</td>
+                        <td>
+                            @if (m.Score == null)
+                            {
+                                <span class="text-muted">لسه مترصدتش</span>
+                            }
+                            else
+                            {
+                                <strong>@m.Score.Value.ToString("0.##")</strong>
+                                <span class="text-muted">/ @m.MaxScore.ToString("0.##")</span>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

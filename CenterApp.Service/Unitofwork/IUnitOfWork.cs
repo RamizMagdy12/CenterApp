@@ -25,6 +25,14 @@ public interface IUnitOfWork : IDisposable
     IRepository<HomeworkFile> HomeworkFile { get; }
     IRepository<AccessGrace> AccessGrace { get; }
     IRepository<StudentTransfer> StudentTransfer { get; }
+    IRepository<OnlineExam> OnlineExam { get; }
+    IRepository<OnlineExamGroup> OnlineExamGroup { get; }
+    IRepository<OnlineExamQuestion> OnlineExamQuestion { get; }
+    IRepository<OnlineExamChoice> OnlineExamChoice { get; }
+    IRepository<OnlineExamAttempt> OnlineExamAttempt { get; }
+    IRepository<OnlineExamAnswer> OnlineExamAnswer { get; }
+    IRepository<OfflineExam> OfflineExam { get; }
+    IRepository<OfflineExamGrade> OfflineExamGrade { get; }
 
     Task<int> SaveAsync();
     Task<int> SaveInTransactionAsync();

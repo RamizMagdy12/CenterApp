@@ -1,0 +1,95 @@
+@model OnlineGradesVm
+@{
+    ViewData["Title"] = "درجات الأونلاين";
+}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3>درجات الاختبارات الأونلاين</h3>
+    <a class="btn btn-light" asp-action="Index">الاختبارات</a>
+</div>
+
+@if (Model.Exams.Count == 0)
+{
+    <div class="panel empty-box">لسه مفيش اختبارات عشان نعرض درجاتها</div>
+}
+else
+{
+    <div class="panel mb-3">
+        <div class="row g-3 align-items-end">
+            <div class="col-md-6">
+                <label class="form-label">الاختبار</label>
+                <select class="form-select" onchange="location = '@Url.Action("Grades", "Exams")?id=' + this.value">
+                    @foreach (var e in Model.Exams)
+                    {
+                        <option value="@e.Id" selected="@(e.Id == Model.ExamId)">@e.Title — @e.OpensAt.ToString("yyyy-MM-dd HH:mm")</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-6">
+                <div><strong>@Model.Title</strong></div>
+                <div class="text-muted small">@Model.Groups</div>
+                <div class="text-muted small">من @Model.OpensAt.ToString("yyyy-MM-dd HH:mm") إلى @Model.ClosesAt.ToString("yyyy-MM-dd HH:mm") · الدرجة من @Model.MaxScore.ToString("0.##")</div>
+                @if (Model.ResultsVisible)
+                {
+                    <span class="badge bg-success">الطلاب شايفين النتيجة</span>
+                }
+                else
+                {
+                    <span class="badge bg-warning text-dark">الطلاب هيشوفوا النتيجة @Model.ResultsAt.ToString("yyyy-MM-dd HH:mm")</span>
+                }
+            </div>
+        </div>
+    </div>
+
+    @if (Model.Rows.Count == 0)
+    {
+        <div class="alert alert-warning">مفيش طلاب في مجموعات الاختبار ده.</div>
+    }
+    else
+    {
+        <table class="table table-striped table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>الكود</th>
+                    <th>الطالب</th>
+                    <th>الحالة</th>
+                    <th>وقت التسليم</th>
+                    <th>الدرجة</th>
+                    <th>مخالفات</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var r in Model.Rows)
+                {
+                    <tr>
+                        <td class="text-muted">@r.StudentCode</td>
+                        <td>@r.StudentName</td>
+                        <td>@r.StatusText</td>
+                        <td>@(r.SubmittedAt?.ToString("yyyy-MM-dd HH:mm") ?? "—")</td>
+                        <td>
+                            @if (r.Score == null)
+                            {
+                                <span class="text-muted">—</span>
+                            }
+                            else
+                            {
+                                <strong>@r.Score.Value.ToString("0.##")</strong>
+                                <span class="text-muted">/ @Model.MaxScore.ToString("0.##")</span>
+                            }
+                        </td>
+                        <td>
+                            @if (r.Violations > 0)
+                            {
+                                <span class="badge bg-danger">@r.Violations</span>
+                                <small class="text-muted">@r.EndReason</small>
+                            }
+                            else
+                            {
+                                <span class="text-muted">—</span>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+}

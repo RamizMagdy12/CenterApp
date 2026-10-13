@@ -87,6 +87,7 @@ public class PortalHomeVm
     public int HomeworkLocked { get; set; }
     public int AttendanceTotal { get; set; }
     public int AttendancePresent { get; set; }
+    public int OpenExams { get; set; }
 }
 
 public class PortalViewVm
