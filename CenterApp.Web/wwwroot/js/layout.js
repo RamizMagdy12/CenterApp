@@ -13,6 +13,9 @@
         }
     });
     $('#sbOverlay').on('click', function () { document.body.classList.remove('sb-open'); });
+    $(document).on('click', '.sidebar a', function () {
+        if (mobile()) document.body.classList.remove('sb-open');
+    });
 
     // ── فتح/طي المجموعات
     $(document).on('click', '.mg-head', function () { $(this).closest('.mg').toggleClass('open'); });

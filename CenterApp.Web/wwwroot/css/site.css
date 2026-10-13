@@ -756,3 +756,139 @@ body.sb-collapsed .sidebar {
     color: inherit;
     padding: 0;
 }
+
+/* ───────── Responsive ───────── */
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+.tb-title {
+    min-width: 0;
+    flex: 1;
+}
+
+.tb-title h1,
+.crumbs {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.tb-pop {
+    max-width: min(260px, calc(100vw - 24px));
+}
+
+.pagination {
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.table-responsive {
+    -webkit-overflow-scrolling: touch;
+}
+
+.border.rounded.d-flex {
+    flex-wrap: wrap;
+    min-width: 0;
+}
+
+.border.rounded.d-flex > span {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.legend-row > span:not(.legend-dot):not(.cnt):not(.pct) {
+    flex: 1;
+    min-width: 0;
+}
+
+.content > .d-flex.justify-content-between {
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+@media (max-width: 767.98px) {
+    .content > .d-flex.justify-content-between {
+        align-items: stretch !important;
+    }
+
+    .content > .d-flex.justify-content-between > .btn,
+    .content > .d-flex.justify-content-between > a.btn {
+        width: 100%;
+    }
+
+    .content form.row > .col-auto {
+        flex: 1 1 100%;
+        max-width: 100%;
+    }
+
+    .content form.row > .col-auto .btn {
+        width: 100%;
+    }
+
+    .content h3 {
+        font-size: 1.15rem;
+    }
+
+    .table {
+        font-size: 13px;
+    }
+
+    .table td.text-nowrap {
+        white-space: normal;
+    }
+
+    .table td .btn {
+        margin-bottom: 4px;
+    }
+
+    .hello h2 {
+        font-size: 18px;
+    }
+
+    .date-pill {
+        margin-inline-start: 0;
+    }
+
+    .stat .pill {
+        position: static;
+        display: inline-flex;
+        margin-bottom: 10px;
+    }
+
+    .chart-box {
+        height: 220px;
+    }
+
+    .modal-body {
+        padding: 12px;
+    }
+
+    .modal-body .d-flex.gap-2,
+    .col-12.d-flex.gap-2 {
+        flex-wrap: wrap;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .topbar {
+        gap: 8px;
+    }
+
+    .tb-title h1 {
+        font-size: 15px;
+    }
+
+    .tb-right {
+        gap: 8px;
+    }
+
+    .stat-num {
+        font-size: 28px;
+    }
+
+    .content {
+        padding: 14px 12px;
+    }
+}
