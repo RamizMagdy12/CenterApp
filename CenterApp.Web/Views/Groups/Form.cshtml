@@ -51,12 +51,12 @@
             return "<option value='" + d.v + "'" + (d.v === day ? " selected" : "") + ">" + d.t + "</option>";
         }).join('');
         var html =
-            "<div class='row g-2 mb-2 sch-row'>" +
-            "<div class='col-md-3'><select class='form-select sch-day'>" + opts + "</select></div>" +
-            "<div class='col-md-3'><input type='time' class='form-control sch-start' value='" + (start || '16:00') + "'></div>" +
-            "<div class='col-md-3'><input type='time' class='form-control sch-end' value='" + (end || '17:30') + "'></div>" +
-            "<div class='col-md-2'><input class='form-control sch-room' placeholder='القاعة' value='" + (room || '') + "'></div>" +
-            "<div class='col-md-1'><button type='button' class='btn btn-outline-danger' onclick=\"$(this).closest('.sch-row').remove()\">×</button></div>" +
+            "<div class='row g-2 mb-2 sch-row align-items-center'>" +
+            "<div class='col-6 col-md-3'><select class='form-select sch-day'>" + opts + "</select></div>" +
+            "<div class='col-6 col-md-3'><input type='time' class='form-control sch-start' value='" + (start || '16:00') + "'></div>" +
+            "<div class='col-6 col-md-3'><input type='time' class='form-control sch-end' value='" + (end || '17:30') + "'></div>" +
+            "<div class='col-4 col-md-2'><input class='form-control sch-room' placeholder='القاعة' value='" + (room || '') + "'></div>" +
+            "<div class='col-2 col-md-1'><button type='button' class='btn btn-outline-danger w-100' onclick=\"$(this).closest('.sch-row').remove()\">×</button></div>" +
             "</div>";
         $('#scheduleRows').append(html);
     }

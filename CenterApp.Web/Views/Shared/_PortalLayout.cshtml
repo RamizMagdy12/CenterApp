@@ -35,6 +35,25 @@
                 z-index: 50;
             }
 
+            .pnav-toggle {
+                display: none;
+                width: 40px;
+                height: 40px;
+                border: 1px solid var(--line);
+                border-radius: 10px;
+                background: #fff;
+                font-size: 22px;
+                place-items: center;
+                cursor: pointer;
+                color: var(--text);
+            }
+
+            .pnav-links {
+                display: flex;
+                align-items: center;
+                gap: 18px;
+            }
+
                 .pnav .brand {
                     font-weight: 800;
                     font-size: 22px;
@@ -58,7 +77,7 @@
 
             .tiles {
                 display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+                grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr));
                 gap: 18px;
                 margin: 20px 0;
             }
@@ -90,6 +109,13 @@
                     inset-inline-end: 16px;
                 }
 
+            @@media (max-width: 575.98px) {
+                .tile .pill {
+                    position: static;
+                    align-self: flex-start;
+                }
+            }
+
                 .tile.soon {
                     opacity: .6;
                 }
@@ -101,7 +127,7 @@
 
             .mgrid {
                 display: grid;
-                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+                grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
                 gap: 16px;
             }
 
@@ -138,17 +164,69 @@
                 .mcard-body small {
                     color: var(--muted);
                 }
+
+                .mcard-body b {
+                    overflow-wrap: anywhere;
+                }
+
+            @@media (max-width: 991.98px) {
+                .pnav {
+                    flex-wrap: wrap;
+                    padding: 10px 14px;
+                    gap: 10px;
+                }
+
+                .pnav .brand { order: 1; }
+                .pnav-toggle { order: 2; display: grid; }
+                .pnav .me { order: 3; margin-inline-start: auto; }
+                .pnav-links { order: 4; }
+
+                .pnav .pname {
+                    display: none;
+                }
+
+                .pnav-links {
+                    display: none;
+                    flex-basis: 100%;
+                    flex-direction: column;
+                    align-items: stretch;
+                    gap: 4px;
+                    padding-top: 8px;
+                    border-top: 1px solid var(--line);
+                }
+
+                .pnav.open .pnav-links {
+                    display: flex;
+                }
+
+                .pnav a.lnk {
+                    padding: 10px 8px;
+                    border-radius: 8px;
+                }
+
+                .pnav.open a.lnk:hover {
+                    background: var(--primary-soft);
+                }
+
+                main.container {
+                    padding-left: 14px;
+                    padding-right: 14px;
+                }
+            }
     </style>
 </head>
 <body>
-    <header class="pnav">
+    <header class="pnav" id="pnav">
         <a class="brand" asp-controller="Portal" asp-action="Index"><i class="bi bi-mortarboard-fill" style="color:var(--primary)"></i> السنتر</a>
-        <a class="lnk" asp-controller="Portal" asp-action="Index">الرئيسية</a>
-        <a class="lnk" asp-controller="Portal" asp-action="Materials">الماتريال</a>
-        <a class="lnk" asp-controller="Portal" asp-action="Attendance">الحضور</a>
-        <a class="lnk" asp-controller="Portal" asp-action="Homework">الواجبات</a>
+        <button type="button" class="pnav-toggle" id="pnavToggle" aria-label="القائمة"><i class="bi bi-list"></i></button>
+        <nav class="pnav-links">
+            <a class="lnk" asp-controller="Portal" asp-action="Index">الرئيسية</a>
+            <a class="lnk" asp-controller="Portal" asp-action="Materials">الماتريال</a>
+            <a class="lnk" asp-controller="Portal" asp-action="Attendance">الحضور</a>
+            <a class="lnk" asp-controller="Portal" asp-action="Homework">الواجبات</a>
+        </nav>
         <div class="me">
-            <span>@name</span>
+            <span class="pname">@name</span>
             <form asp-controller="Account" asp-action="Logout" method="post">
                 <button class="btn btn-sm btn-outline-danger"><i class="bi bi-box-arrow-right"></i> خروج</button>
             </form>
@@ -161,6 +239,14 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/lib/sweetalert2/dist/sweetalert2.all.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script>
+        (function () {
+            var nav = document.getElementById('pnav');
+            var btn = document.getElementById('pnavToggle');
+            if (!nav || !btn) return;
+            btn.addEventListener('click', function () { nav.classList.toggle('open'); });
+        })();
+    </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

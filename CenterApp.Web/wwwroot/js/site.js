@@ -46,10 +46,21 @@ function sessionReplaced(xhr) {
     return true;
 }
 
+function fitTables(root) {
+    $(root || document).find('table').each(function () {
+        var $t = $(this);
+        if ($t.parent().hasClass('table-responsive')) return;
+        $t.wrap('<div class="table-responsive"></div>');
+    });
+}
+
+$(function () { fitTables(document); });
+
 function openForm(url, title, large) {
     $.get(url).done(function (html) {
         $('#appModalTitle').text(title || '');
         $('#appModalBody').html(html);
+        fitTables(document.getElementById('appModalBody'));
         $('#appModalDialog').toggleClass('modal-lg', !!large);
         appModal().show();
     }).fail(function (xhr) {
