@@ -1,0 +1,210 @@
+@model ExamTakeVm
+@{
+    Layout = "_ExamLayout";
+    ViewData["Title"] = Model.Title;
+}
+<style>
+    body.exam-body { margin: 0; background: #f4f1fb; color: #1d1633; user-select: none; -webkit-user-select: none; }
+    .exam-top { position: sticky; top: 0; z-index: 20; background: #fff; border-bottom: 1px solid #e4dff3; display: flex; gap: 12px; align-items: center; padding: 12px 18px; flex-wrap: wrap; }
+    .exam-top b { font-size: 18px; }
+    .exam-timer { margin-inline-start: auto; font-weight: 800; font-size: 20px; font-variant-numeric: tabular-nums; }
+    .exam-timer.late { color: #c53030; }
+    .exam-sheet { position: relative; z-index: 2; max-width: 820px; margin: 0 auto; padding: 18px; }
+    .q-card { background: #fff; border: 1px solid #e4dff3; border-radius: 14px; padding: 16px; margin-bottom: 14px; }
+    .q-card h4 { font-size: 18px; margin-bottom: 10px; }
+    .choice { display: flex; gap: 10px; align-items: flex-start; border: 1px solid #ece8f6; border-radius: 10px; padding: 10px 12px; margin-bottom: 8px; cursor: pointer; }
+    .choice:has(input:checked) { border-color: #4b2fd0; background: #f6f3ff; }
+    .exam-watermark { position: fixed; inset: 0; z-index: 1; display: grid; place-items: center; font-size: 28px; font-weight: 800; color: rgba(75,47,208,.12); background: transparent; transform: rotate(-22deg); pointer-events: none; }
+    .gate, .done { position: fixed; inset: 0; background: rgba(20,14,40,.72); z-index: 40; display: grid; place-items: center; padding: 18px; }
+    .gate-card, .done-card { background: #fff; border-radius: 16px; padding: 22px; max-width: 460px; width: 100%; }
+    .hidden-qs { visibility: hidden; }
+</style>
+
+<div class="exam-watermark">@Model.StudentCode · @Model.StudentName</div>
+<header class="exam-top">
+    <div>
+        <b>@Model.Title</b>
+        <div class="text-muted small">@Model.StudentName · @Model.StudentCode</div>
+    </div>
+    <div class="exam-timer" id="timer">--:--</div>
+    <button type="button" class="btn btn-success" id="btnFinish" disabled onclick="askFinish()">تسليم</button>
+</header>
+
+<div class="exam-sheet hidden-qs" id="sheet">
+    @for (var i = 0; i < Model.Questions.Count; i++)
+    {
+        var q = Model.Questions[i];
+        <article class="q-card" data-qid="@q.Id">
+            <h4>@(i + 1). @q.Text <small class="text-muted">(@q.Points.ToString("0.##") درجة)</small></h4>
+            @foreach (var c in q.Choices)
+            {
+                <label class="choice">
+                    <input type="radio" name="q_@q.Id" value="@c.Id" @(q.SelectedChoiceId == c.Id ? "checked" : "") />
+                    <span>@c.Text</span>
+                </label>
+            }
+        </article>
+    }
+</div>
+
+<div class="gate" id="gate">
+    <div class="gate-card">
+        <h3>قبل ما تبدأ</h3>
+        <p>الاختبار هيفتح ملء الشاشة. النسخ واللصق ممنوع، ولو خرجت من التاب أو قفلت ملء الشاشة الاختبار هيتسلّم ومش هترجع له.</p>
+        <p class="text-muted">النتيجة هتظهر لكل الطلاب في @Model.ResultsAt.ToString("yyyy-MM-dd HH:mm")</p>
+        <button type="button" class="btn btn-primary" id="btnEnter">دخول الاختبار</button>
+    </div>
+</div>
+<div class="done" id="done" style="display:none">
+    <div class="done-card">
+        <h3 id="doneTitle">تم التسليم</h3>
+        <p id="doneText"></p>
+        <a class="btn btn-primary" href="@Url.Action("Exam", "Portal", new { id = Model.ExamId })">رجوع</a>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        var examId = @Model.ExamId;
+        var endsAt = Date.now() + (@Model.RemainingSeconds * 1000);
+        var resultsText = '@Model.ResultsAt.ToString("yyyy-MM-dd HH:mm")';
+        var armed = false, finished = false, saveTimer = null;
+
+        ['copy', 'cut', 'paste', 'contextmenu', 'dragstart', 'selectstart'].forEach(function (ev) {
+            document.addEventListener(ev, function (e) { e.preventDefault(); });
+        });
+        document.addEventListener('keydown', function (e) {
+            var k = (e.key || '').toLowerCase();
+            if ((e.ctrlKey || e.metaKey) && ['c', 'v', 'x', 'a', 'p', 's', 'u'].indexOf(k) >= 0) e.preventDefault();
+            if (k === 'f12' || (e.ctrlKey && e.shiftKey && ['i', 'j', 'c'].indexOf(k) >= 0)) e.preventDefault();
+        });
+
+        function tick() {
+            var left = Math.max(0, Math.floor((endsAt - Date.now()) / 1000));
+            var m = Math.floor(left / 60), s = left % 60;
+            var el = document.getElementById('timer');
+            el.textContent = String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+            el.classList.toggle('late', left < 60);
+            if (armed && left <= 0) endExam('timeout');
+        }
+        setInterval(tick, 250);
+        tick();
+
+        function payload(reason) {
+            var answers = [];
+            document.querySelectorAll('.q-card').forEach(function (card) {
+                var picked = card.querySelector('input:checked');
+                answers.push({ QuestionId: parseInt(card.getAttribute('data-qid'), 10), ChoiceId: picked ? parseInt(picked.value, 10) : null });
+            });
+            return { ExamId: examId, Reason: reason || 'submit', Answers: answers };
+        }
+
+        function postExam(url, reason) {
+            return fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+                body: JSON.stringify(payload(reason)),
+                credentials: 'same-origin'
+            }).then(function (r) { return r.json(); });
+        }
+
+        function beacon(reason) {
+            try {
+                var blob = new Blob([JSON.stringify(payload(reason))], { type: 'application/json' });
+                navigator.sendBeacon('@Url.Action("SubmitExam", "Portal")', blob);
+            } catch (e) { }
+        }
+
+        function showDone(title, text) {
+            finished = true;
+            document.getElementById('doneTitle').textContent = title;
+            document.getElementById('doneText').textContent = text;
+            document.getElementById('done').style.display = 'grid';
+            document.getElementById('gate').style.display = 'none';
+            document.getElementById('btnFinish').disabled = true;
+            if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(function () { });
+        }
+
+        function endExam(reason) {
+            if (finished) return;
+            finished = true;
+            var title = reason === 'submit' ? 'تم التسليم' : 'الاختبار اتقفل';
+            var text = reason === 'submit'
+                ? 'إجاباتك اتسجلت. النتيجة هتظهر لكل الطلاب في ' + resultsText
+                : (reason === 'timeout'
+                    ? 'وقت الاختبار خلّص والإجابات اللي وصلت اتسجلت. النتيجة هتظهر في ' + resultsText
+                    : 'خرجت من صفحة الاختبار فاتسلّم. النتيجة هتظهر في ' + resultsText);
+            postExam('@Url.Action("SubmitExam", "Portal")', reason)
+                .then(function () { showDone(title, text); })
+                .catch(function () { beacon(reason); showDone(title, text); });
+            if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(function () { });
+        }
+
+        function askFinish() {
+            if (!armed || finished) return;
+            var box = document.getElementById('done');
+            box.style.display = 'grid';
+            document.getElementById('doneTitle').textContent = 'تسليم الاختبار؟';
+            document.getElementById('doneText').innerHTML = '';
+            var p = document.createElement('p');
+            p.textContent = 'بعد التسليم مش هتقدر تعدّل إجاباتك.';
+            var yes = document.createElement('button');
+            yes.className = 'btn btn-success';
+            yes.textContent = 'تسليم';
+            yes.onclick = function () { endExam('submit'); };
+            var no = document.createElement('button');
+            no.className = 'btn btn-light';
+            no.style.marginInlineStart = '8px';
+            no.textContent = 'رجوع';
+            no.onclick = function () { box.style.display = 'none'; };
+            document.getElementById('doneText').appendChild(p);
+            document.getElementById('doneText').appendChild(yes);
+            document.getElementById('doneText').appendChild(no);
+        }
+
+        function begin() {
+            armed = true;
+            document.getElementById('gate').style.display = 'none';
+            document.getElementById('sheet').classList.remove('hidden-qs');
+            document.getElementById('btnFinish').disabled = false;
+            document.querySelectorAll('.q-card input').forEach(function (input) {
+                input.addEventListener('change', function () {
+                    clearTimeout(saveTimer);
+                    saveTimer = setTimeout(function () { postExam('@Url.Action("Sync", "Portal")', 'submit').catch(function () { }); }, 250);
+                });
+            });
+            setInterval(function () {
+                if (!armed || finished) return;
+                postExam('@Url.Action("Sync", "Portal")', 'submit').then(function (r) {
+                    if (r && r.finished) showDone('الاختبار اتقفل', r.message || 'تم التسليم');
+                }).catch(function () { });
+            }, 10000);
+        }
+
+        document.getElementById('btnEnter').onclick = function () {
+            var el = document.documentElement;
+            var req = el.requestFullscreen || el.webkitRequestFullscreen;
+            if (!req) { begin(); return; }
+            Promise.resolve(req.call(el)).then(begin).catch(function () {
+                document.getElementById('done').style.display = 'grid';
+                document.getElementById('doneTitle').textContent = 'ملء الشاشة مطلوب';
+                document.getElementById('doneText').textContent = 'اسمح بملء الشاشة عشان الاختبار يفتح.';
+            });
+        };
+
+        document.addEventListener('fullscreenchange', function () {
+            if (armed && !finished && !document.fullscreenElement) endExam('fullscreen');
+        });
+        document.addEventListener('visibilitychange', function () {
+            if (armed && !finished && document.visibilityState === 'hidden') endExam('left');
+        });
+        window.addEventListener('pagehide', function () {
+            if (armed && !finished) beacon('left');
+        });
+        history.pushState(null, '', location.href);
+        window.addEventListener('popstate', function () {
+            history.pushState(null, '', location.href);
+            if (armed && !finished) endExam('left');
+        });
+    </script>
+}

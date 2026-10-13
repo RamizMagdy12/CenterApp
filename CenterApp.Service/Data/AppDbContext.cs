@@ -39,6 +39,14 @@ public class AppDbContext : IdentityDbContext<AppUser>
     public DbSet<HomeworkFile> HomeworkFiles => Set<HomeworkFile>();
     public DbSet<AccessGrace> AccessGraces => Set<AccessGrace>();
     public DbSet<StudentTransfer> StudentTransfers => Set<StudentTransfer>();
+    public DbSet<OnlineExam> OnlineExams => Set<OnlineExam>();
+    public DbSet<OnlineExamGroup> OnlineExamGroups => Set<OnlineExamGroup>();
+    public DbSet<OnlineExamQuestion> OnlineExamQuestions => Set<OnlineExamQuestion>();
+    public DbSet<OnlineExamChoice> OnlineExamChoices => Set<OnlineExamChoice>();
+    public DbSet<OnlineExamAttempt> OnlineExamAttempts => Set<OnlineExamAttempt>();
+    public DbSet<OnlineExamAnswer> OnlineExamAnswers => Set<OnlineExamAnswer>();
+    public DbSet<OfflineExam> OfflineExams => Set<OfflineExam>();
+    public DbSet<OfflineExamGrade> OfflineExamGrades => Set<OfflineExamGrade>();
 
     protected override void ConfigureConventions(ModelConfigurationBuilder b)
     {
@@ -82,6 +90,18 @@ public class AppDbContext : IdentityDbContext<AppUser>
         mb.Entity<Group>().Property(x => x.LastStudentNumber).IsConcurrencyToken();   // يمنع رقمين متشابهين لو اتسجّل طالبين في نفس اللحظة
         mb.Entity<Student>().HasIndex(x => x.QrToken).IsUnique();
         mb.Entity<StudentTransfer>().HasIndex(x => x.StudentId);
+
+        mb.Entity<OnlineExam>().Property(x => x.Description).HasMaxLength(2000);
+        mb.Entity<OnlineExam>().HasIndex(x => new { x.Status, x.OpensAt });
+        mb.Entity<OnlineExamGroup>().HasIndex(x => new { x.ExamId, x.GroupId });
+        mb.Entity<OnlineExamQuestion>().Property(x => x.Text).HasMaxLength(2000);
+        mb.Entity<OnlineExamQuestion>().HasIndex(x => new { x.ExamId, x.SortOrder });
+        mb.Entity<OnlineExamChoice>().Property(x => x.Text).HasMaxLength(1000);
+        mb.Entity<OnlineExamAttempt>().Property(x => x.EndReason).HasMaxLength(250);
+        mb.Entity<OnlineExamAttempt>().HasIndex(x => new { x.ExamId, x.StudentId }).IsUnique();
+        mb.Entity<OnlineExamAnswer>().HasIndex(x => new { x.AttemptId, x.QuestionId }).IsUnique();
+        mb.Entity<OfflineExam>().HasIndex(x => new { x.GroupId, x.ExamDate });
+        mb.Entity<OfflineExamGrade>().HasIndex(x => new { x.OfflineExamId, x.StudentId }).IsUnique();
 
         // منع Cascade غير مقصود (على جداول السنتر بس، مش جداول الـ Identity)
         foreach (var fk in mb.Model.GetEntityTypes()

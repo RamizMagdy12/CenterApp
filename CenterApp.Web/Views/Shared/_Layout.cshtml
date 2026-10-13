@@ -1,11 +1,13 @@
 ﻿@using System.Security.Claims
 @inject CenterApp.Service.Services.IPermissionService Perm
 @functions {
-    record MI(string Text, string C, string A, string Screen, string? Type = null);
+    record MI(string Text, string C, string A, string Screen, string? Type = null, string? Act = null);
     record MG(string Title, string Icon, MI[] Items);
 }
 @{
     var ctrl = ((ViewContext.RouteData.Values["controller"] as string) ?? "").ToLower();
+    var action = ((ViewContext.RouteData.Values["action"] as string) ?? "").ToLower();
+    if (action == "edit") action = "index";
     var typeQ = Context.Request.Query["type"].ToString().ToLower();
     var pageTitle = ViewData["Title"] as string ?? "لوحة التحكم";
     var userName = User.FindFirst("FullName")?.Value ?? User.Identity?.Name ?? "";
@@ -20,6 +22,12 @@
         {
             new MI("الماتريال", "Materials", "Index", Screens.Materials),
             new MI("الواجبات", "Homeworks", "Index", Screens.Homework)
+        }),
+        new MG("الاختبارات", "bi-patch-question-fill", new[]
+        {
+            new MI("الاختبارات الأونلاين", "Exams", "Index", Screens.Exams, null, "Index"),
+            new MI("درجات الأونلاين", "Exams", "Grades", Screens.Exams, null, "Grades"),
+            new MI("رصد الأوفلاين", "OfflineExams", "Index", Screens.Exams, null, "Index")
         }),
         new MG("الحسابات", "bi-cash-coin", new[]
         {
@@ -90,7 +98,7 @@
                     <div class="mg-items">
                         @foreach (var it in g.Items)
                         {
-                            var active = ctrl == it.C.ToLower() && (it.Type == null || typeQ == it.Type);
+                            var active = ctrl == it.C.ToLower() && (it.Type == null || typeQ == it.Type) && (it.Act == null || action == it.Act.ToLower());
                             <a class="mi @(active ? "active" : "")" href="@Url.Action(it.A, it.C, it.Type == null ? null : new { type = it.Type })">
                                 <i class="bi bi-dot"></i><span>@it.Text</span>
                             </a>

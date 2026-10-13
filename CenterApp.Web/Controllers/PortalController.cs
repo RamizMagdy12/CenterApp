@@ -15,8 +15,9 @@ public class PortalController : Controller
     private readonly IMediaTokenService _tokens;
     private readonly ISessionService _sessions;
     private readonly IHomeworkStorage _files;
-    public PortalController(IPortalService p, IMediaTokenService tokens, ISessionService sessions, IHomeworkStorage files)
-    { _p = p; _tokens = tokens; _sessions = sessions; _files = files; }
+    private readonly IExamService _exams;
+    public PortalController(IPortalService p, IMediaTokenService tokens, ISessionService sessions, IHomeworkStorage files, IExamService exams)
+    { _p = p; _tokens = tokens; _sessions = sessions; _files = files; _exams = exams; }
 
     private string Uid => User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "";
 
@@ -38,7 +39,8 @@ public class PortalController : Controller
             HomeworkTotal = hw.Count,
             HomeworkLocked = hw.Count(x => x.IsLocked),
             AttendanceTotal = att?.Total ?? 0,
-            AttendancePresent = att?.Attended ?? 0
+            AttendancePresent = att?.Attended ?? 0,
+            OpenExams = await _exams.OpenCountAsync(st.Id)
         });
     }
 
@@ -110,5 +112,61 @@ public class PortalController : Controller
         var path = _files.FullPath(f);
         if (!System.IO.File.Exists(path)) return NotFound();
         return PhysicalFile(path, f.ContentType, f.FileName);
+    }
+
+    public async Task<IActionResult> Exams()
+    {
+        var st = await _p.StudentOfUserAsync(Uid);
+        if (st == null) return Forbid();
+        var vm = await _exams.ListForStudentAsync(st.Id);
+        return vm == null ? Forbid() : View(vm);
+    }
+
+    public async Task<IActionResult> Exam(long id)
+    {
+        var st = await _p.StudentOfUserAsync(Uid);
+        if (st == null) return Forbid();
+        var vm = await _exams.IntroAsync(st.Id, id);
+        return vm == null ? NotFound() : View(vm);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> StartExam(long id)
+    {
+        var st = await _p.StudentOfUserAsync(Uid);
+        if (st == null) return Forbid();
+        var result = await _exams.StartAsync(st.Id, id);
+        if (!result.Ok)
+        {
+            TempData["ExamError"] = result.Message;
+            return RedirectToAction(nameof(Exam), new { id });
+        }
+        return RedirectToAction(nameof(Take), new { id });
+    }
+
+    public async Task<IActionResult> Take(long id)
+    {
+        Response.Headers["Cache-Control"] = "no-store, no-cache, must-revalidate";
+        var st = await _p.StudentOfUserAsync(Uid);
+        if (st == null) return Forbid();
+        var vm = await _exams.TakeAsync(st.Id, id);
+        if (vm == null) return RedirectToAction(nameof(Exam), new { id });
+        return View(vm);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Sync([FromBody] ExamSubmitDto dto)
+    {
+        var st = await _p.StudentOfUserAsync(Uid);
+        if (st == null) return Forbid();
+        return Json(await _exams.SyncAsync(st.Id, dto, finish: false));
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> SubmitExam([FromBody] ExamSubmitDto dto)
+    {
+        var st = await _p.StudentOfUserAsync(Uid);
+        if (st == null) return Forbid();
+        return Json(await _exams.SyncAsync(st.Id, dto, finish: true));
     }
 }

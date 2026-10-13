@@ -24,7 +24,7 @@
     <a class="tile" asp-action="Materials"><i class="bi bi-collection-play"></i><b>الماتريال</b><span class="pill pill-primary">@Model.Total</span></a>
     <a class="tile" asp-action="Attendance"><i class="bi bi-calendar-check"></i><b>الحضور</b><span class="pill pill-primary">@Model.AttendancePresent / @Model.AttendanceTotal</span></a>
     <a class="tile" asp-action="Homework"><i class="bi bi-journal-check"></i><b>الواجبات</b><span class="pill pill-primary">@Model.HomeworkTotal</span></a>
-    <div class="tile soon"><i class="bi bi-patch-question"></i><b>الاختبارات</b><span class="pill pill-gray">قريباً</span></div>
+    <a class="tile" asp-action="Exams"><i class="bi bi-patch-question"></i><b>الاختبارات</b><span class="pill pill-primary">@Model.OpenExams</span></a>
 </div>
 
 <div class="panel">

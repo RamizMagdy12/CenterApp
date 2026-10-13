@@ -1,0 +1,52 @@
+@model ExamIntroVm
+@{
+    Layout = "_PortalLayout"; ViewData["Title"] = Model.Title;
+}
+<div class="panel">
+    <h3>@Model.Title</h3>
+    @if (!string.IsNullOrWhiteSpace(Model.Description))
+    {
+        <p>@Model.Description</p>
+    }
+    @if (TempData["ExamError"] is string err)
+    {
+        <div class="alert alert-danger">@err</div>
+    }
+    <ul class="mb-3">
+        <li>يفتح: <b>@Model.OpensAt.ToString("yyyy-MM-dd HH:mm")</b></li>
+        <li>يقفل: <b>@Model.ClosesAt.ToString("yyyy-MM-dd HH:mm")</b></li>
+        <li>النتيجة تظهر لكل الطلاب: <b>@Model.ResultsAt.ToString("yyyy-MM-dd HH:mm")</b></li>
+        <li>عدد الأسئلة: <b>@Model.QuestionsCount</b> · الدرجة من <b>@Model.MaxScore.ToString("0.##")</b></li>
+    </ul>
+
+    @if (Model.Phase == "result" && Model.Score != null)
+    {
+        <div class="alert alert-success">درجتك: <strong>@Model.Score.Value.ToString("0.##") / @Model.MaxScore.ToString("0.##")</strong></div>
+    }
+    else if (Model.Phase == "submitted")
+    {
+        <div class="alert alert-info">الاختبار اتسلّم. النتيجة هتظهر لك ولكل الطلاب في @Model.ResultsAt.ToString("yyyy-MM-dd HH:mm")</div>
+    }
+    else if (Model.Phase == "missed")
+    {
+        <div class="alert alert-warning">مقدرتش تدخل الاختبار في وقته، والنتيجة اتقفلت على كده.</div>
+    }
+    else if (Model.Phase == "closed")
+    {
+        <div class="alert alert-warning">وقت الاختبار خلّص. النتيجة هتظهر @Model.ResultsAt.ToString("yyyy-MM-dd HH:mm")</div>
+    }
+    else if (Model.Phase == "upcoming")
+    {
+        <div class="alert alert-secondary">الاختبار لسه مافتحش. هيتفتح @Model.OpensAt.ToString("yyyy-MM-dd HH:mm")</div>
+    }
+    else
+    {
+        <div class="alert alert-warning">
+            الاختبار بيفتح ملء الشاشة. النسخ واللصق ممنوع، ولو خرجت من التاب أو من الصفحة الاختبار هيتسلّم ومش هتقدر ترجعله.
+        </div>
+        <form asp-action="StartExam" asp-route-id="@Model.Id" method="post">
+            <button class="btn btn-primary">@(Model.CanResume ? "كمّل الاختبار" : "ابدأ الاختبار")</button>
+        </form>
+    }
+    <a class="btn btn-light mt-3" asp-action="Exams">رجوع</a>
+</div>

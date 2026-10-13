@@ -32,7 +32,14 @@ public class UnitOfWork : IUnitOfWork
         HomeworkFile = new Repository<HomeworkFile>(db);
         AccessGrace = new Repository<AccessGrace>(db);
         StudentTransfer = new Repository<StudentTransfer>(db);
-
+        OnlineExam = new Repository<OnlineExam>(db);
+        OnlineExamGroup = new Repository<OnlineExamGroup>(db);
+        OnlineExamQuestion = new Repository<OnlineExamQuestion>(db);
+        OnlineExamChoice = new Repository<OnlineExamChoice>(db);
+        OnlineExamAttempt = new Repository<OnlineExamAttempt>(db);
+        OnlineExamAnswer = new Repository<OnlineExamAnswer>(db);
+        OfflineExam = new Repository<OfflineExam>(db);
+        OfflineExamGrade = new Repository<OfflineExamGrade>(db);
     }
 
     public IRepository<GradeLevel> GradeLevel { get; }
@@ -53,7 +60,15 @@ public class UnitOfWork : IUnitOfWork
     public IRepository<HomeworkGroup> HomeworkGroup { get; }
     public IRepository<HomeworkFile> HomeworkFile { get; }
     public IRepository<AccessGrace> AccessGrace { get; }
-    public IRepository<StudentTransfer> StudentTransfer { get; }    
+    public IRepository<StudentTransfer> StudentTransfer { get; }
+    public IRepository<OnlineExam> OnlineExam { get; }
+    public IRepository<OnlineExamGroup> OnlineExamGroup { get; }
+    public IRepository<OnlineExamQuestion> OnlineExamQuestion { get; }
+    public IRepository<OnlineExamChoice> OnlineExamChoice { get; }
+    public IRepository<OnlineExamAttempt> OnlineExamAttempt { get; }
+    public IRepository<OnlineExamAnswer> OnlineExamAnswer { get; }
+    public IRepository<OfflineExam> OfflineExam { get; }
+    public IRepository<OfflineExamGrade> OfflineExamGrade { get; }    
 
     public Task<int> SaveAsync() => _db.SaveChangesAsync();
 

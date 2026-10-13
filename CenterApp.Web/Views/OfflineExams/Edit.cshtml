@@ -1,0 +1,117 @@
+@model OfflineExamEditVm
+@{
+    ViewData["Title"] = Model.Id == 0 ? "امتحان أوفلاين جديد" : "رصد الدرجات";
+}
+<div class="panel">
+    <div class="row g-3">
+        <div class="col-md-6">
+            <label class="form-label">اسم الامتحان</label>
+            <input id="mTitle" class="form-control" value="@Model.Title" placeholder="مثال: امتحان شهر أكتوبر" />
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">الدرجة النهائية</label>
+            <input id="mMax" type="number" min="0.5" step="0.5" class="form-control" value="@(Model.MaxScore > 0 ? Model.MaxScore.ToString("0.##") : "")" />
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">تاريخ الامتحان</label>
+            <input id="mDate" type="date" class="form-control" value="@Model.ExamDate?.ToString("yyyy-MM-dd")" />
+        </div>
+        <div class="col-md-6">
+            <label class="form-label">المجموعة</label>
+            <select id="mGroup" class="form-select" @(Model.GroupLocked ? "disabled" : "")>
+                <option value="">اختار المجموعة</option>
+                @foreach (var g in Model.Groups)
+                {
+                    <option value="@g.Id" selected="@(g.Id == Model.GroupId)">@g.Text</option>
+                }
+            </select>
+        </div>
+        <div class="col-12">
+            <div id="gradeBox">
+                @if (Model.Rows.Count == 0)
+                {
+                    <div class="text-muted" id="gradeEmpty">اختار المجموعة عشان تظهر درجات الطلاب.</div>
+                }
+            </div>
+            <div class="table-responsive">
+                <table class="table table-sm align-middle @(Model.Rows.Count == 0 ? "d-none" : "")" id="gradeTable">
+                    <thead><tr><th>الكود</th><th>الطالب</th><th style="width:160px">الدرجة</th></tr></thead>
+                    <tbody id="gradeBody">
+                        @foreach (var r in Model.Rows)
+                        {
+                            <tr data-student="@r.StudentId">
+                                <td class="text-muted">@r.StudentCode</td>
+                                <td>@r.StudentName</td>
+                                <td><input type="number" min="0" step="0.5" class="form-control form-control-sm grade-in" value="@(r.Score?.ToString("0.##"))" /></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="col-12 d-flex gap-2">
+            <button class="btn btn-success" id="btnSave" onclick="saveGrades()">حفظ الدرجات</button>
+            <a class="btn btn-light" asp-action="Index">رجوع</a>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        var examId = @Model.Id;
+        var groupLocked = @(Model.GroupLocked ? "true" : "false");
+
+        function esc(s) { return $('<i>').text(s || '').html(); }
+
+        $('#mGroup').on('change', function () {
+            if (groupLocked) return;
+            var id = $(this).val();
+            if (!id) {
+                $('#gradeBody').empty();
+                $('#gradeTable').addClass('d-none');
+                $('#gradeEmpty').removeClass('d-none').text('اختار المجموعة عشان تظهر درجات الطلاب.');
+                return;
+            }
+            $.get('@Url.Action("Students", "OfflineExams")', { groupId: id })
+                .done(function (rows) {
+                    $('#gradeBody').html((rows || []).map(function (r) {
+                        return '<tr data-student="' + r.studentId + '"><td class="text-muted">' + esc(r.studentCode) + '</td><td>' + esc(r.studentName) +
+                            '</td><td><input type="number" min="0" step="0.5" class="form-control form-control-sm grade-in" /></td></tr>';
+                    }).join(''));
+                    $('#gradeEmpty').addClass('d-none');
+                    $('#gradeTable').toggleClass('d-none', !(rows || []).length);
+                    if (!(rows || []).length) $('#gradeEmpty').removeClass('d-none').text('مفيش طلاب نشطين في المجموعة دي.');
+                })
+                .fail(function (xhr) { if (!sessionReplaced(xhr)) notify('error', 'متعذر تحميل الطلاب'); });
+        });
+
+        function saveGrades() {
+            var title = $.trim($('#mTitle').val());
+            var max = parseFloat($('#mMax').val());
+            var groupId = parseInt($('#mGroup').val(), 10) || 0;
+            if (!title) return notify('warning', 'اكتب اسم الامتحان');
+            if (!max || max <= 0) return notify('warning', 'اكتب الدرجة النهائية');
+            if (!$('#mDate').val()) return notify('warning', 'حدد تاريخ الامتحان');
+            if (!groupId) return notify('warning', 'اختار المجموعة');
+
+            var grades = $('#gradeBody tr').map(function () {
+                var raw = $.trim($(this).find('.grade-in').val());
+                return { StudentId: parseInt($(this).attr('data-student'), 10), Score: raw === '' ? null : parseFloat(raw) };
+            }).get();
+
+            $('#btnSave').prop('disabled', true);
+            $.ajax({
+                url: '@Url.Action("Save", "OfflineExams")', type: 'POST', contentType: 'application/json',
+                headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                data: JSON.stringify({ Id: examId, Title: title, MaxScore: max, GroupId: groupId, ExamDate: $('#mDate').val(), Grades: grades })
+            }).done(function (r) {
+                if (!r.ok) { $('#btnSave').prop('disabled', false); return notify('error', r.message); }
+                Swal.fire({ icon: 'success', title: 'تم حفظ الدرجات', timer: 1200, showConfirmButton: false, heightAuto: false })
+                    .then(function () { location.href = '@Url.Action("Index", "OfflineExams")'; });
+            }).fail(function (xhr) {
+                $('#btnSave').prop('disabled', false);
+                if (!sessionReplaced(xhr)) notify('error', 'حصل خطأ، جرّب تاني');
+            });
+        }
+    </script>
+}
