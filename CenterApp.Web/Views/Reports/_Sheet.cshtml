@@ -1,0 +1,195 @@
+@model ReportSheetModel
+@{
+    var r = Model.Report;
+    var grades = Model.Kind == "grades";
+    var title = grades ? "تقرير الدرجات" : "تقرير الحضور";
+
+    string AttLabel(AttendanceReportRow row) => !row.Recorded ? "لم يُسجل" : row.Status switch
+    {
+        AttendanceStatus.Present => "حاضر",
+        AttendanceStatus.Absent => "غائب",
+        AttendanceStatus.Excused => "بعذر",
+        AttendanceStatus.Late => "متأخر",
+        _ => "—"
+    };
+
+    string ScoreText(GradeReportRow row) => row.Taken
+        ? $"{row.Score:0.##} / {row.MaxScore:0.##}"
+        : row.MissingLabel;
+
+    string PercentText(GradeReportRow row)
+    {
+        if (!row.Taken || row.MaxScore <= 0 || row.Score == null) return "—";
+        return ((row.Score.Value / row.MaxScore) * 100m).ToString("0.#") + "%";
+    }
+
+    string Average(List<GradeReportRow> rows)
+    {
+        var taken = rows.Where(x => x.Taken && x.MaxScore > 0 && x.Score != null).ToList();
+        if (taken.Count == 0) return "—";
+        var avg = taken.Average(x => (double)(x.Score!.Value / x.MaxScore * 100m));
+        return avg.ToString("0.#") + "%";
+    }
+}
+<article class="sheet">
+    <header class="sheet-head">
+        <div>
+            <h2>@title</h2>
+            <div class="sheet-sub">من @r.From.ToString("yyyy-MM-dd") إلى @r.To.ToString("yyyy-MM-dd")</div>
+        </div>
+        <div class="sheet-brand">السنتر</div>
+    </header>
+
+    <table class="meta">
+        <tr>
+            <th>الطالب</th>
+            <td>@r.StudentName</td>
+            <th>الكود</th>
+            <td dir="ltr">@r.StudentCode</td>
+        </tr>
+        <tr>
+            <th>ولي الأمر</th>
+            <td>@(string.IsNullOrWhiteSpace(r.ParentName) ? "—" : r.ParentName)</td>
+            <th>المجموعة</th>
+            <td>@r.GroupName</td>
+        </tr>
+        <tr>
+            <th>المادة</th>
+            <td>@r.SubjectName</td>
+            <th>المدرس</th>
+            <td>@r.TeacherName</td>
+        </tr>
+    </table>
+
+    @if (!grades)
+    {
+        <div class="summary">
+            <span>حاضر <b>@r.Present</b></span>
+            <span>متأخر <b>@r.Late</b></span>
+            <span>غائب <b>@r.Absent</b></span>
+            <span>بعذر <b>@r.Excused</b></span>
+            <span>لم يُسجل <b>@r.Unrecorded</b></span>
+            <span>نسبة الحضور <b>@r.Rate%</b></span>
+        </div>
+        @if (r.Attendance.Count == 0)
+        {
+            <p class="empty">مفيش حصص في الفترة دي.</p>
+        }
+        else
+        {
+            <table class="grid">
+                <thead>
+                    <tr>
+                        <th>التاريخ</th>
+                        <th>اليوم</th>
+                        <th>من</th>
+                        <th>إلى</th>
+                        <th>الحالة</th>
+                        <th>ملاحظة</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var row in r.Attendance)
+                    {
+                        <tr>
+                            <td>@row.Date.ToString("yyyy-MM-dd")</td>
+                            <td>@ArabicDays.Name(row.Date.DayOfWeek)</td>
+                            <td>@row.Start.ToString(@"hh\:mm")</td>
+                            <td>@row.End.ToString(@"hh\:mm")</td>
+                            <td>@AttLabel(row)</td>
+                            <td>@row.Note</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    }
+    else
+    {
+        <h3>امتحانات أونلاين</h3>
+        <div class="summary">
+            <span>عدد الامتحانات <b>@r.Online.Count</b></span>
+            <span>المتوسط <b>@Average(r.Online)</b></span>
+        </div>
+        @if (r.Online.Count == 0)
+        {
+            <p class="empty">مفيش امتحانات أونلاين في الفترة دي.</p>
+        }
+        else
+        {
+            <table class="grid">
+                <thead>
+                    <tr>
+                        <th>الامتحان</th>
+                        <th>التاريخ</th>
+                        <th>الدرجة</th>
+                        <th>النسبة</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var row in r.Online)
+                    {
+                        <tr>
+                            <td>@row.Title</td>
+                            <td>@row.Date.ToString("yyyy-MM-dd")</td>
+                            <td>@ScoreText(row)</td>
+                            <td>@PercentText(row)</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+
+        <h3>امتحانات أوفلاين</h3>
+        <div class="summary">
+            <span>عدد الامتحانات <b>@r.Offline.Count</b></span>
+            <span>المتوسط <b>@Average(r.Offline)</b></span>
+        </div>
+        @if (r.Offline.Count == 0)
+        {
+            <p class="empty">مفيش امتحانات أوفلاين في الفترة دي.</p>
+        }
+        else
+        {
+            <table class="grid">
+                <thead>
+                    <tr>
+                        <th>الامتحان</th>
+                        <th>التاريخ</th>
+                        <th>الدرجة</th>
+                        <th>النسبة</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var row in r.Offline)
+                    {
+                        <tr>
+                            <td>@row.Title</td>
+                            <td>@row.Date.ToString("yyyy-MM-dd")</td>
+                            <td>@ScoreText(row)</td>
+                            <td>@PercentText(row)</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    }
+
+    <footer class="sign">
+        <div class="sign-title">توقيع ولي الأمر</div>
+        <div class="sign-grid">
+            <div>
+                <span>الاسم</span>
+                <span class="line">@(string.IsNullOrWhiteSpace(r.ParentName) ? "" : r.ParentName)</span>
+            </div>
+            <div>
+                <span>التوقيع</span>
+                <span class="line"></span>
+            </div>
+            <div>
+                <span>التاريخ</span>
+                <span class="line"></span>
+            </div>
+        </div>
+    </footer>
+</article>

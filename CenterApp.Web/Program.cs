@@ -94,6 +94,7 @@ builder.Services.AddScoped<IRoleAdminService, RoleAdminService>();
 builder.Services.AddScoped<IMaterialService, MaterialService>();
 builder.Services.AddScoped<IHomeworkService, HomeworkService>();
 builder.Services.AddScoped<IExamService, ExamService>();
+builder.Services.AddScoped<IReportService, ReportService>();
 builder.Services.AddScoped<IPortalService, PortalService>();
 builder.Services.AddScoped<IGraceService, GraceService>();
 builder.Services.AddScoped<IStudentAccountService, StudentAccountService>();

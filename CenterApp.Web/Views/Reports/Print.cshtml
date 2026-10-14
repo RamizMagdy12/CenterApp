@@ -1,0 +1,63 @@
+@model ReportPageVm
+@{
+    Layout = null;
+    var title = Model.Kind == "grades" ? "تقرير الدرجات" : "تقرير الحضور";
+    var from = Model.From.ToString("yyyy-MM-dd");
+    var to = Model.To.ToString("yyyy-MM-dd");
+}
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="utf-8" />
+    <title>@title</title>
+    <link rel="stylesheet" href="~/lib/fontsource-cairo/400.css" />
+    <link rel="stylesheet" href="~/lib/fontsource-cairo/700.css" />
+    <style>
+        @@page { size: A4; margin: 0; }
+        html, body { margin: 0; padding: 0; }
+        body { font-family: 'Cairo', Tahoma, Arial, sans-serif; color: #1d2147; }
+        .toolbar { display: flex; gap: 8px; margin: 16px; }
+        .toolbar button, .toolbar a {
+            padding: 8px 18px; font-size: 15px; cursor: pointer;
+            border: 1px solid #4b2fd0; background: #4b2fd0; color: #fff;
+            border-radius: 8px; text-decoration: none; font-family: inherit;
+        }
+        .toolbar a { background: #fff; color: #4b2fd0; }
+        .sheet { padding: 12mm 14mm; }
+        .sheet + .sheet { break-before: page; page-break-before: always; }
+        .sheet-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+        .sheet-head h2 { margin: 0; font-size: 22px; }
+        .sheet-sub { color: #666; font-size: 13px; }
+        .sheet-brand { font-weight: 700; font-size: 18px; }
+        .sheet h3 { font-size: 16px; margin: 16px 0 8px; }
+        .meta, .grid { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
+        .meta th, .meta td, .grid th, .grid td { border: 1px solid #ccc; padding: 6px 8px; text-align: right; font-size: 13px; }
+        .meta th, .grid th { background: #f3f3f8; }
+        .summary { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; font-size: 13px; }
+        .summary span { border: 1px solid #ddd; border-radius: 8px; padding: 4px 8px; }
+        .empty { color: #666; }
+        .sign { margin-top: 28px; }
+        .sign-title { font-weight: 700; margin-bottom: 12px; }
+        .sign-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+        .sign-grid span { display: block; font-size: 13px; }
+        .line { display: block; min-height: 32px; border-bottom: 1px solid #111; margin-top: 10px; }
+        @@media print {
+            .toolbar { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="toolbar">
+        <button type="button" onclick="window.print()">طباعة</button>
+        <a href="@Url.Action("Index", new { groupId = Model.GroupId, studentId = Model.StudentId, from, to, kind = Model.Kind })">رجوع</a>
+    </div>
+    @if (Model.Reports.Count == 0)
+    {
+        <p>مفيش طلاب في المجموعة خلال الفترة دي.</p>
+    }
+    @foreach (var report in Model.Reports)
+    {
+        <partial name="_Sheet" model="new ReportSheetModel { Kind = Model.Kind, Report = report }" />
+    }
+</body>
+</html>
