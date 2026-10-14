@@ -162,6 +162,16 @@ public class PortalController : Controller
         return Json(await _exams.SyncAsync(st.Id, dto, finish: false));
     }
 
+    public async Task<IActionResult> ExamImage(long id)
+    {
+        var st = await _p.StudentOfUserAsync(Uid);
+        if (st == null) return Forbid();
+        var opened = await _exams.OpenStudentImageAsync(st.Id, id);
+        if (opened == null) return NotFound();
+        Response.Headers["Cache-Control"] = "no-store";
+        return PhysicalFile(opened.Value.Path, opened.Value.ContentType);
+    }
+
     [HttpPost]
     public async Task<IActionResult> SubmitExam([FromBody] ExamSubmitDto dto)
     {

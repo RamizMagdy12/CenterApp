@@ -39,7 +39,7 @@
         <div class="col-12">
             <div class="alert alert-info mb-0">
                 الاختبار يتفتح بس في الفترة دي، وممنوع فيه النسخ واللصق، ولو الطالب خرج من التاب أو من الصفحة الاختبار بيتسلّم لوحده.
-                الدرجة بتتحسب وقت التسليم، والطالب يشوفها هو وزملاؤه في وقت ظهور النتيجة مع بعض.
+                تقدر تضيف صورة جنب السؤال لو فيه رسم. الدرجة بتتحسب وقت التسليم، والطالب يشوفها هو وزملاؤه في وقت ظهور النتيجة مع بعض.
             </div>
         </div>
         @if (Model.Locked)
@@ -107,6 +107,34 @@
 
         function esc(s) { return $('<i>').text(s || '').html(); }
 
+        function imageBox(q, qi) {
+            var html = '<div class="mb-2">';
+            if (q.file) html += '<img alt="" style="max-width:220px;max-height:160px;border-radius:8px;display:block;margin-bottom:8px" src="' + URL.createObjectURL(q.file) + '" />';
+            else if (q.imageStoredName) html += '<img alt="" style="max-width:220px;max-height:160px;border-radius:8px;display:block;margin-bottom:8px" src="@Url.Action("QuestionImage", "Exams")?examId=' + examId + '&name=' + encodeURIComponent(q.imageStoredName) + '" />';
+            if (!locked) {
+                html += '<label class="btn btn-sm btn-outline-secondary mb-0">صورة السؤال<input type="file" accept="image/png,image/jpeg,image/webp,image/gif" hidden onchange="pickImage(' + qi + ', this)" /></label> ';
+                if (q.imageStoredName || q.file) html += '<button type="button" class="btn btn-sm btn-outline-danger" onclick="clearImage(' + qi + ')">شيل الصورة</button>';
+            }
+            return html + '</div>';
+        }
+
+        function pickImage(qi, input) {
+            var f = input.files && input.files[0];
+            if (!f) return;
+            if (f.size > 4 * 1024 * 1024) {
+                notify('warning', 'الصورة أكبر من 4 ميجا');
+                return;
+            }
+            questions[qi].file = f;
+            render();
+        }
+
+        function clearImage(qi) {
+            questions[qi].file = null;
+            questions[qi].imageStoredName = '';
+            render();
+        }
+
         function addQuestion() {
             questions.push({ text: '', points: 1, choices: [{ text: '', isCorrect: true }, { text: '', isCorrect: false }] });
             render();
@@ -128,6 +156,7 @@
                     (locked ? '' : '<button type="button" class="btn btn-sm btn-outline-danger" onclick="questions.splice(' + qi + ',1);render()">حذف السؤال</button>') +
                     '</div>' +
                     '<textarea class="form-control mb-2" rows="2" placeholder="نص السؤال" ' + (locked ? 'disabled' : '') + ' oninput="questions[' + qi + '].text=this.value">' + esc(q.text) + '</textarea>' +
+                    imageBox(q, qi) +
                     '<div class="row g-2 mb-2"><div class="col-md-3"><label class="form-label">درجة السؤال</label>' +
                     '<input type="number" min="0.5" step="0.5" class="form-control" value="' + (q.points || 1) + '" ' + (locked ? 'disabled' : '') + ' oninput="questions[' + qi + '].points=parseFloat(this.value)||0;renderTotal()" /></div></div>' +
                     '<div class="small text-muted mb-1">علّم الإجابة الصحيحة</div>' + choices +
@@ -159,7 +188,7 @@
 
         function collectQuestions() {
             var list = [];
-            $('#qList > .border').each(function () {
+            $('#qList > .border').each(function (i) {
                 var choices = [];
                 $(this).find('.d-flex.gap-2').each(function () {
                     choices.push({
@@ -167,9 +196,11 @@
                         IsCorrect: $(this).find('input[type=radio]').prop('checked')
                     });
                 });
+                var q = questions[i] || {};
                 list.push({
                     Text: $(this).find('textarea').val(),
                     Points: parseFloat($(this).find('input[type=number]').val()) || 0,
+                    ImageStoredName: q.file ? '' : (q.imageStoredName || ''),
                     Choices: choices
                 });
             });
@@ -204,6 +235,19 @@
                 });
                 if (!res.ok) throw res.message;
                 examId = res.id;
+                for (var i = 0; i < questions.length; i++) {
+                    if (!questions[i].file) continue;
+                    var fd = new FormData();
+                    fd.append('examId', examId);
+                    fd.append('sortOrder', i);
+                    fd.append('file', questions[i].file);
+                    var up = await $.ajax({
+                        url: '@Url.Action("QuestionImage", "Exams")',
+                        type: 'POST', data: fd, processData: false, contentType: false,
+                        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                    });
+                    if (!up.ok) throw up.message || 'الصورة ما اترفعتش';
+                }
                 if (publish) {
                     var p = await $.post('@Url.Action("Publish", "Exams")', { id: examId });
                     if (!p.ok) throw p.message;

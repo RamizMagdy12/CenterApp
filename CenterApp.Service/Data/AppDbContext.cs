@@ -95,6 +95,7 @@ public class AppDbContext : IdentityDbContext<AppUser>
         mb.Entity<OnlineExam>().HasIndex(x => new { x.Status, x.OpensAt });
         mb.Entity<OnlineExamGroup>().HasIndex(x => new { x.ExamId, x.GroupId });
         mb.Entity<OnlineExamQuestion>().Property(x => x.Text).HasMaxLength(2000);
+        mb.Entity<OnlineExamQuestion>().Property(x => x.ImageStoredName).HasMaxLength(40);
         mb.Entity<OnlineExamQuestion>().HasIndex(x => new { x.ExamId, x.SortOrder });
         mb.Entity<OnlineExamChoice>().Property(x => x.Text).HasMaxLength(1000);
         mb.Entity<OnlineExamAttempt>().Property(x => x.EndReason).HasMaxLength(250);

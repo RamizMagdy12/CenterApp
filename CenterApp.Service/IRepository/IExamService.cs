@@ -1,4 +1,5 @@
 using CenterApp.Service.Models;
+using Microsoft.AspNetCore.Http;
 
 namespace CenterApp.Service.IRepository;
 
@@ -13,6 +14,10 @@ public interface IExamService
     Task<OpResult> PublishOnlineAsync(long id, long? teacherId);
     Task<OpResult> DeleteOnlineAsync(long id, long? teacherId);
     Task<OnlineGradesVm?> OnlineGradesAsync(long? examId, long? teacherId);
+    Task<OpResult> ReopenAsync(long examId, long studentId, int minutes, long? teacherId);
+    Task<OpResult> SaveQuestionImageAsync(long examId, int sortOrder, IFormFile file, long? teacherId);
+    Task<(string Path, string ContentType)?> OpenQuestionImageAsync(long examId, string storedName, long? teacherId);
+    Task<(string Path, string ContentType)?> OpenStudentImageAsync(long studentId, long questionId);
 
     Task<List<OfflineExamRow>> ListOfflineAsync(long? teacherId);
     Task<OfflineExamEditVm?> GetOfflineAsync(long id, long? teacherId);

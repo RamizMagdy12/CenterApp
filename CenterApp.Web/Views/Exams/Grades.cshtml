@@ -1,6 +1,8 @@
 @model OnlineGradesVm
+@inject CenterApp.Service.Services.IPermissionService Perm
 @{
     ViewData["Title"] = "درجات الأونلاين";
+    var canEdit = Perm.Has(User, Screens.Exams, PermissionAction.Edit);
 }
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h3>درجات الاختبارات الأونلاين</h3>
@@ -55,6 +57,10 @@ else
                     <th>وقت التسليم</th>
                     <th>الدرجة</th>
                     <th>مخالفات</th>
+                    @if (canEdit)
+                    {
+                        <th></th>
+                    }
                 </tr>
             </thead>
             <tbody>
@@ -87,9 +93,50 @@ else
                                 <span class="text-muted">—</span>
                             }
                         </td>
+                        @if (canEdit)
+                        {
+                            <td>
+                                @if (r.CanReopen)
+                                {
+                                    <button type="button" class="btn btn-sm btn-outline-primary btn-reopen" data-exam="@Model.ExamId" data-student="@r.StudentId" data-name="@r.StudentName">إعادة فتح</button>
+                                }
+                            </td>
+                        }
                     </tr>
                 }
             </tbody>
         </table>
     }
+}
+
+@section Scripts {
+    <script>
+        document.querySelectorAll('.btn-reopen').forEach(function (btn) {
+            btn.onclick = function () {
+                var name = btn.getAttribute('data-name') || '';
+                Swal.fire({
+                    title: 'إعادة فتح لـ ' + name,
+                    input: 'number',
+                    inputLabel: 'المدة بالدقايق',
+                    inputValue: 30,
+                    inputAttributes: { min: 5, max: 360, step: 5 },
+                    showCancelButton: true,
+                    confirmButtonText: 'افتح',
+                    cancelButtonText: 'رجوع',
+                    heightAuto: false,
+                    inputValidator: function (v) {
+                        var n = parseInt(v, 10);
+                        if (!n || n < 5 || n > 360) return 'من 5 لـ 360 دقيقة';
+                    }
+                }).then(function (r) {
+                    if (!r.isConfirmed) return;
+                    postJson('@Url.Action("Reopen", "Exams")', {
+                        examId: btn.getAttribute('data-exam'),
+                        studentId: btn.getAttribute('data-student'),
+                        minutes: parseInt(r.value, 10)
+                    }, function () { location.reload(); });
+                });
+            };
+        });
+    </script>
 }

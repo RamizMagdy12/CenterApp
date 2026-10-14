@@ -1,15 +1,25 @@
+using System.Text.RegularExpressions;
 using CenterApp.Entity.Center;
 using CenterApp.Service.IRepository;
 using CenterApp.Service.Models;
 using CenterApp.Service.Unitofwork;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
 namespace CenterApp.Service.Repository;
 
 public class ExamService : IExamService
 {
+    private const long MaxImage = 4L * 1024 * 1024;
+    private static readonly Regex ImageName = new(@"^[a-f0-9]{32}\.(jpg|png|webp|gif)$", RegexOptions.Compiled);
     private readonly IUnitOfWork _u;
-    public ExamService(IUnitOfWork u) => _u = u;
+    private readonly IWebHostEnvironment _env;
+    public ExamService(IUnitOfWork u, IWebHostEnvironment env)
+    {
+        _u = u;
+        _env = env;
+    }
 
     private static DateTime Now() => DateTime.Now;
 
@@ -59,6 +69,7 @@ public class ExamService : IExamService
             {
                 Text = q.Text,
                 Points = q.Points,
+                ImageStoredName = q.ImageStoredName,
                 Choices = q.Choices.OrderBy(c => c.SortOrder).ThenBy(c => c.Id).Select(c => new ExamChoiceVm
                 {
                     Text = c.Text,
@@ -217,6 +228,9 @@ public class ExamService : IExamService
             Rows = students.Select(s =>
             {
                 byStudent.TryGetValue(s.StudentId, out var a);
+                var close = EffectiveClose(exam, a);
+                var taking = a?.Status == ExamAttemptStatus.InProgress && now < close;
+                var finished = a != null && a.Status != ExamAttemptStatus.InProgress;
                 return new OnlineGradeRow
                 {
                     StudentId = s.StudentId,
@@ -226,7 +240,8 @@ public class ExamService : IExamService
                     SubmittedAt = a?.SubmittedAt,
                     Score = a?.Status == ExamAttemptStatus.InProgress ? null : a?.Score,
                     Violations = a?.ViolationCount ?? 0,
-                    EndReason = a?.EndReason
+                    EndReason = a?.EndReason,
+                    CanReopen = !taking && (finished || now >= exam.ClosesAt)
                 };
             }).ToList()
         };
@@ -472,7 +487,7 @@ public class ExamService : IExamService
             Title = exam.Title,
             Description = exam.Description,
             OpensAt = exam.OpensAt,
-            ClosesAt = exam.ClosesAt,
+            ClosesAt = EffectiveClose(exam, attempt),
             ResultsAt = exam.ResultsAt,
             MaxScore = exam.Questions.Sum(q => q.Points),
             QuestionsCount = exam.Questions.Count,
@@ -484,17 +499,63 @@ public class ExamService : IExamService
         };
     }
 
+    public async Task<OpResult> ReopenAsync(long examId, long studentId, int minutes, long? teacherId)
+    {
+        var exam = await _u.OnlineExam
+            .GetAll(x => x.Id == examId && x.Status == ExamStatus.Published && (teacherId == null || x.TeacherId == teacherId))
+            .FirstOrDefaultAsync();
+        if (exam == null) return OpResult.Fail("الاختبار غير موجود");
+
+        var groupIds = await _u.OnlineExamGroup.GetAll(g => g.ExamId == examId).Select(g => g.GroupId).ToListAsync();
+        var enrolled = await _u.GroupEnrollment
+            .GetAll(e => e.StudentId == studentId && e.IsActive && e.LeftAt == null && groupIds.Contains(e.GroupId))
+            .AnyAsync();
+        if (!enrolled) return OpResult.Fail("الطالب مش في مجموعات الاختبار");
+        if (minutes < 5 || minutes > 360) return OpResult.Fail("المدة من 5 لـ 360 دقيقة");
+
+        var until = Now().AddMinutes(minutes);
+
+        var attempt = await _u.OnlineExamAttempt
+            .GetAll(a => a.ExamId == examId && a.StudentId == studentId, "Answers", tracking: true)
+            .FirstOrDefaultAsync();
+        if (attempt == null)
+        {
+            _u.OnlineExamAttempt.Add(new OnlineExamAttempt
+            {
+                ExamId = examId,
+                StudentId = studentId,
+                StartedAt = Now(),
+                Status = ExamAttemptStatus.InProgress,
+                RetakeUntil = until
+            });
+        }
+        else
+        {
+            foreach (var answer in attempt.Answers.ToList()) _u.OnlineExamAnswer.Remove(answer);
+            attempt.Status = ExamAttemptStatus.InProgress;
+            attempt.Score = null;
+            attempt.SubmittedAt = null;
+            attempt.EndReason = null;
+            attempt.ViolationCount = 0;
+            attempt.StartedAt = Now();
+            attempt.RetakeUntil = until;
+        }
+
+        await _u.SaveAsync();
+        return OpResult.Success($"اتفتح الاختبار لمدة {minutes} دقيقة");
+    }
+
     public async Task<OpResult> StartAsync(long studentId, long examId)
     {
         var exam = await StudentExamAsync(studentId, examId);
         if (exam == null) return OpResult.Fail("الاختبار غير متاح");
         var now = Now();
-        if (now < exam.OpensAt) return OpResult.Fail("الاختبار لسه مافتحش");
-        if (now >= exam.ClosesAt) return OpResult.Fail("وقت الاختبار خلّص");
-
         var existing = await _u.OnlineExamAttempt
             .GetAll(a => a.ExamId == examId && a.StudentId == studentId, tracking: true)
             .FirstOrDefaultAsync();
+        if (now < exam.OpensAt) return OpResult.Fail("الاختبار لسه مافتحش");
+        if (now >= EffectiveClose(exam, existing)) return OpResult.Fail("وقت الاختبار خلّص");
+
         if (existing != null)
         {
             if (existing.Status != ExamAttemptStatus.InProgress)
@@ -530,7 +591,8 @@ public class ExamService : IExamService
             .FirstOrDefaultAsync();
         if (attempt == null || attempt.Status != ExamAttemptStatus.InProgress) return null;
 
-        if (Now() >= exam.ClosesAt)
+        var close = EffectiveClose(exam, attempt);
+        if (Now() >= close)
         {
             await FinishAsync(attempt, exam, "timeout");
             await _u.SaveAsync();
@@ -546,14 +608,15 @@ public class ExamService : IExamService
             Title = exam.Title,
             StudentName = student.Name,
             StudentCode = student.Code ?? "",
-            ClosesAt = exam.ClosesAt,
+            ClosesAt = close,
             ResultsAt = exam.ResultsAt,
-            RemainingSeconds = Math.Max(0, (int)(exam.ClosesAt - Now()).TotalSeconds),
+            RemainingSeconds = Math.Max(0, (int)(close - Now()).TotalSeconds),
             Questions = exam.Questions.OrderBy(q => q.SortOrder).ThenBy(q => q.Id).Select(q => new ExamTakeQuestionVm
             {
                 Id = q.Id,
                 Text = q.Text,
                 Points = q.Points,
+                HasImage = !string.IsNullOrEmpty(q.ImageStoredName),
                 SelectedChoiceId = picked.GetValueOrDefault(q.Id),
                 Choices = q.Choices.OrderBy(c => c.SortOrder).ThenBy(c => c.Id).Select(c => new ExamTakeChoiceVm
                 {
@@ -583,7 +646,8 @@ public class ExamService : IExamService
             return ExamSyncResult.Done("الاختبار اتسلّم");
 
         var now = Now();
-        var timedOut = now >= exam.ClosesAt;
+        var close = EffectiveClose(exam, attempt);
+        var timedOut = now >= close;
         await SaveAnswersAsync(attempt, exam, dto.Answers);
 
         if (!finish && !timedOut)
@@ -594,7 +658,7 @@ public class ExamService : IExamService
                 Ok = true,
                 Message = "تم الحفظ",
                 Finished = false,
-                RemainingSeconds = Math.Max(0, (int)(exam.ClosesAt - now).TotalSeconds)
+                RemainingSeconds = Math.Max(0, (int)(close - now).TotalSeconds)
             };
         }
 
@@ -641,7 +705,7 @@ public class ExamService : IExamService
         if (examIds.Count == 0) return;
         var now = Now();
         var hanging = await _u.OnlineExamAttempt
-            .GetAll(a => examIds.Contains(a.ExamId) && a.Status == ExamAttemptStatus.InProgress && a.Exam.ClosesAt <= now, "Answers,Exam.Questions.Choices", tracking: true)
+            .GetAll(a => examIds.Contains(a.ExamId) && a.Status == ExamAttemptStatus.InProgress && ((a.RetakeUntil != null && a.RetakeUntil <= now) || (a.RetakeUntil == null && a.Exam.ClosesAt <= now)), "Answers,Exam.Questions.Choices", tracking: true)
             .ToListAsync();
         if (hanging.Count == 0) return;
         foreach (var attempt in hanging)
@@ -699,20 +763,31 @@ public class ExamService : IExamService
 
     private void ReplaceQuestions(OnlineExam exam, List<ExamQuestionInput>? questions)
     {
+        var previous = exam.Questions
+            .Select(q => q.ImageStoredName)
+            .Where(n => !string.IsNullOrWhiteSpace(n))
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
         foreach (var q in exam.Questions.ToList())
         {
             foreach (var c in q.Choices.ToList()) _u.OnlineExamChoice.Remove(c);
             _u.OnlineExamQuestion.Remove(q);
         }
 
+        var keep = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         var order = 0;
         foreach (var q in questions ?? new())
         {
+            var image = q.ImageStoredName?.Trim().ToLowerInvariant();
+            if (image != null && (!ImageName.IsMatch(image) || !previous.Contains(image))) image = null;
+            if (image != null) keep.Add(image);
+
             var entity = new OnlineExamQuestion
             {
                 Text = q.Text.Trim(),
                 Points = q.Points,
-                SortOrder = order++
+                SortOrder = order++,
+                ImageStoredName = image
             };
             var cOrder = 0;
             foreach (var c in q.Choices)
@@ -725,6 +800,13 @@ public class ExamService : IExamService
                 });
             }
             exam.Questions.Add(entity);
+        }
+
+        if (exam.Id > 0)
+        {
+            foreach (var name in previous)
+                if (!string.IsNullOrWhiteSpace(name) && !keep.Contains(name))
+                    DeleteImage(exam.Id, name);
         }
     }
 
@@ -779,15 +861,25 @@ public class ExamService : IExamService
             if (now < exam.ClosesAt) return "لم يبدأ";
             return "لم يدخل";
         }
-        if (attempt.Status == ExamAttemptStatus.InProgress) return "جاري";
+        if (attempt.Status == ExamAttemptStatus.InProgress)
+        {
+            var close = EffectiveClose(exam, attempt);
+            if (now < close && attempt.RetakeUntil != null)
+                return "مفتوح تاني لحد " + attempt.RetakeUntil.Value.ToString("HH:mm");
+            if (now < close) return "جاري";
+        }
         return attempt.EndReason ?? "تم التسليم";
     }
+
+    private static DateTime EffectiveClose(OnlineExam exam, OnlineExamAttempt? attempt)
+        => attempt?.RetakeUntil ?? exam.ClosesAt;
 
     private static (string Phase, string Text, decimal? Score) StudentPhase(OnlineExam exam, OnlineExamAttempt? attempt, DateTime now)
     {
         var revealed = now >= exam.ResultsAt;
-        if (attempt?.Status == ExamAttemptStatus.InProgress && now < exam.ClosesAt)
-            return ("progress", "الاختبار مفتوح، كمّل", null);
+        var close = EffectiveClose(exam, attempt);
+        if (attempt?.Status == ExamAttemptStatus.InProgress && now < close)
+            return ("progress", attempt?.RetakeUntil != null ? "اتفتح لك الاختبار تاني" : "الاختبار مفتوح، كمّل", null);
         if (attempt != null && attempt.Status != ExamAttemptStatus.InProgress)
         {
             if (!revealed) return ("submitted", "تم التسليم، النتيجة لسه", null);
@@ -805,4 +897,113 @@ public class ExamService : IExamService
         if (r is "left" or "fullscreen" or "timeout") return r;
         return "submit";
     }
+
+    public async Task<OpResult> SaveQuestionImageAsync(long examId, int sortOrder, IFormFile file, long? teacherId)
+    {
+        var exam = await _u.OnlineExam
+            .GetAll(x => x.Id == examId && (teacherId == null || x.TeacherId == teacherId), "Questions,Attempts", tracking: true)
+            .FirstOrDefaultAsync();
+        if (exam == null) return OpResult.Fail("الاختبار غير موجود");
+        if (IsLocked(exam)) return OpResult.Fail("الاختبار بدأ، مش هينفع تعديل الصورة");
+
+        var question = exam.Questions.FirstOrDefault(q => q.SortOrder == sortOrder);
+        if (question == null) return OpResult.Fail("السؤال مش موجود");
+        if (file == null || file.Length == 0) return OpResult.Fail("اختار صورة");
+        if (file.Length > MaxImage) return OpResult.Fail("الصورة أكبر من 4 ميجا");
+
+        var ext = Path.GetExtension(file.FileName).ToLowerInvariant();
+        ext = ext switch
+        {
+            ".jpg" or ".jpeg" => ".jpg",
+            ".png" => ".png",
+            ".webp" => ".webp",
+            ".gif" => ".gif",
+            _ => ""
+        };
+        if (ext.Length == 0) return OpResult.Fail("الصورة لازم تكون jpg أو png أو webp أو gif");
+
+        var folder = ExamFolder(examId);
+        Directory.CreateDirectory(folder);
+        var stored = Guid.NewGuid().ToString("N") + ext;
+        var path = Path.Combine(folder, stored);
+        await using (var fs = new FileStream(path, FileMode.Create))
+            await file.CopyToAsync(fs);
+        if (!ImageBytesMatch(path, ext))
+        {
+            File.Delete(path);
+            return OpResult.Fail("الملف مش صورة سليمة");
+        }
+
+        var old = question.ImageStoredName;
+        question.ImageStoredName = stored;
+        await _u.SaveAsync();
+        if (!string.IsNullOrWhiteSpace(old) && !string.Equals(old, stored, StringComparison.OrdinalIgnoreCase))
+            DeleteImage(examId, old);
+        return OpResult.Success("اتضافت الصورة");
+    }
+
+    public async Task<(string Path, string ContentType)?> OpenQuestionImageAsync(long examId, string storedName, long? teacherId)
+    {
+        var name = (storedName ?? "").Trim().ToLowerInvariant();
+        if (!ImageName.IsMatch(name)) return null;
+        var owns = await _u.OnlineExamQuestion
+            .GetAll(q => q.ExamId == examId && q.ImageStoredName == name && (teacherId == null || q.Exam.TeacherId == teacherId))
+            .AnyAsync();
+        if (!owns) return null;
+        var path = Path.Combine(ExamFolder(examId), name);
+        return File.Exists(path) ? (path, ImageType(name)) : null;
+    }
+
+    public async Task<(string Path, string ContentType)?> OpenStudentImageAsync(long studentId, long questionId)
+    {
+        var question = await _u.OnlineExamQuestion
+            .GetAll(q => q.Id == questionId && q.ImageStoredName != null, "Exam")
+            .FirstOrDefaultAsync();
+        if (question?.ImageStoredName == null || question.Exam.Status != ExamStatus.Published) return null;
+        var name = question.ImageStoredName.ToLowerInvariant();
+        if (!ImageName.IsMatch(name)) return null;
+
+        var attempt = await _u.OnlineExamAttempt
+            .GetAll(a => a.ExamId == question.ExamId && a.StudentId == studentId && a.Status == ExamAttemptStatus.InProgress)
+            .FirstOrDefaultAsync();
+        if (attempt == null || Now() >= EffectiveClose(question.Exam, attempt)) return null;
+
+        var path = Path.Combine(ExamFolder(question.ExamId), name);
+        return File.Exists(path) ? (path, ImageType(name)) : null;
+    }
+
+    private string ExamFolder(long examId) => Path.Combine(_env.ContentRootPath, "App_Data", "exams", examId.ToString());
+
+    private void DeleteImage(long examId, string storedName)
+    {
+        var name = storedName.Trim().ToLowerInvariant();
+        if (!ImageName.IsMatch(name)) return;
+        var path = Path.Combine(ExamFolder(examId), name);
+        if (File.Exists(path)) File.Delete(path);
+    }
+
+    private static bool ImageBytesMatch(string path, string ext)
+    {
+        var b = new byte[12];
+        int n;
+        using (var s = File.OpenRead(path)) n = s.Read(b, 0, b.Length);
+        if (n < 4) return false;
+        return ext switch
+        {
+            ".jpg" => b[0] == 0xFF && b[1] == 0xD8 && b[2] == 0xFF,
+            ".png" => b[0] == 0x89 && b[1] == 0x50 && b[2] == 0x4E && b[3] == 0x47,
+            ".gif" => b[0] == (byte)'G' && b[1] == (byte)'I' && b[2] == (byte)'F',
+            ".webp" => n >= 12 && b[0] == (byte)'R' && b[1] == (byte)'I' && b[2] == (byte)'F' && b[3] == (byte)'F'
+                        && b[8] == (byte)'W' && b[9] == (byte)'E' && b[10] == (byte)'B' && b[11] == (byte)'P',
+            _ => false
+        };
+    }
+
+    private static string ImageType(string name) => Path.GetExtension(name) switch
+    {
+        ".png" => "image/png",
+        ".webp" => "image/webp",
+        ".gif" => "image/gif",
+        _ => "image/jpeg"
+    };
 }

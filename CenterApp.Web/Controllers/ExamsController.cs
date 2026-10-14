@@ -45,4 +45,23 @@ public class ExamsController : AppController
         var vm = await _s.OnlineGradesAsync(id == 0 ? null : id, await ScopeAsync());
         return vm == null ? NotFound() : View(vm);
     }
+
+    [HttpPost]
+    public async Task<IActionResult> Reopen(long examId, long studentId, int minutes)
+    {
+        if (!Can(Screens.Exams, PermissionAction.Edit)) return NoPermission();
+        return Json(await _s.ReopenAsync(examId, studentId, minutes, await ScopeAsync()));
+    }
+
+    [HttpPost, RequirePermission(Screens.Exams, PermissionAction.Edit)]
+    public async Task<IActionResult> QuestionImage(long examId, int sortOrder, IFormFile file)
+        => Json(await _s.SaveQuestionImageAsync(examId, sortOrder, file, await ScopeAsync()));
+
+    [HttpGet, RequirePermission(Screens.Exams, PermissionAction.View)]
+    public async Task<IActionResult> QuestionImage(long examId, string name)
+    {
+        var opened = await _s.OpenQuestionImageAsync(examId, name, await ScopeAsync());
+        if (opened == null) return NotFound();
+        return PhysicalFile(opened.Value.Path, opened.Value.ContentType);
+    }
 }

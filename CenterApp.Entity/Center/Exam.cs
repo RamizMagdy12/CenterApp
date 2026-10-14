@@ -36,6 +36,7 @@ public class OnlineExamQuestion : BaseEntity
     public string Text { get; set; } = null!;
     public int SortOrder { get; set; }
     public decimal Points { get; set; }
+    public string? ImageStoredName { get; set; }
     public virtual OnlineExam Exam { get; set; } = null!;
     public virtual ICollection<OnlineExamChoice> Choices { get; set; } = new List<OnlineExamChoice>();
 }
@@ -59,6 +60,7 @@ public class OnlineExamAttempt : BaseEntity
     public decimal? Score { get; set; }
     public int ViolationCount { get; set; }
     public string? EndReason { get; set; }
+    public DateTime? RetakeUntil { get; set; }
 
     public virtual OnlineExam Exam { get; set; } = null!;
     public virtual Student Student { get; set; } = null!;

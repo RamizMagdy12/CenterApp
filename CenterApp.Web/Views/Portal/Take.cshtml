@@ -4,7 +4,8 @@
     ViewData["Title"] = Model.Title;
 }
 <style>
-    body.exam-body { margin: 0; background: #f4f1fb; color: #1d1633; user-select: none; -webkit-user-select: none; }
+    body.exam-body { margin: 0; background: #f4f1fb; color: #1d1633; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
+    @@media print { html, body { display: none !important; } }
     .exam-top { position: sticky; top: 0; z-index: 20; background: #fff; border-bottom: 1px solid #e4dff3; display: flex; gap: 12px; align-items: center; padding: 12px 18px; flex-wrap: wrap; }
     .exam-top b { font-size: 18px; }
     .exam-timer { margin-inline-start: auto; font-weight: 800; font-size: 20px; font-variant-numeric: tabular-nums; }
@@ -12,15 +13,27 @@
     .exam-sheet { position: relative; z-index: 2; max-width: 820px; margin: 0 auto; padding: 18px; }
     .q-card { background: #fff; border: 1px solid #e4dff3; border-radius: 14px; padding: 16px; margin-bottom: 14px; }
     .q-card h4 { font-size: 18px; margin-bottom: 10px; }
+    .q-body { display: flex; gap: 16px; align-items: flex-start; }
+    .q-main { flex: 1; min-width: 0; }
+    .q-fig { width: 240px; max-width: 42%; height: auto; border-radius: 10px; border: 1px solid #ece8f6; flex: none; pointer-events: none; }
+    @@media (max-width: 640px) { .q-body { flex-direction: column; } .q-fig { width: 100%; max-width: 100%; } }
     .choice { display: flex; gap: 10px; align-items: flex-start; border: 1px solid #ece8f6; border-radius: 10px; padding: 10px 12px; margin-bottom: 8px; cursor: pointer; }
     .choice:has(input:checked) { border-color: #4b2fd0; background: #f6f3ff; }
-    .exam-watermark { position: fixed; inset: 0; z-index: 1; display: grid; place-items: center; font-size: 28px; font-weight: 800; color: rgba(75,47,208,.12); background: transparent; transform: rotate(-22deg); pointer-events: none; }
+    .exam-watermark { position: fixed; inset: -20%; z-index: 6; display: flex; flex-wrap: wrap; align-content: space-around; justify-content: space-around; transform: rotate(-18deg); pointer-events: none; }
+    .exam-watermark span { margin: 22px 28px; font-size: 14px; font-weight: 800; color: rgba(75,47,208,.18); white-space: nowrap; }
+    #shotCover { position: fixed; inset: 0; background: #0b0714; z-index: 90; display: none; }
     .gate, .done { position: fixed; inset: 0; background: rgba(20,14,40,.72); z-index: 40; display: grid; place-items: center; padding: 18px; }
     .gate-card, .done-card { background: #fff; border-radius: 16px; padding: 22px; max-width: 460px; width: 100%; }
     .hidden-qs { visibility: hidden; }
 </style>
 
-<div class="exam-watermark">@Model.StudentCode · @Model.StudentName</div>
+<div class="exam-watermark" aria-hidden="true">
+    @for (var w = 0; w < 24; w++)
+    {
+        <span>@Model.StudentCode · @Model.StudentName</span>
+    }
+</div>
+<div id="shotCover"></div>
 <header class="exam-top">
     <div>
         <b>@Model.Title</b>
@@ -35,14 +48,22 @@
     {
         var q = Model.Questions[i];
         <article class="q-card" data-qid="@q.Id">
-            <h4>@(i + 1). @q.Text <small class="text-muted">(@q.Points.ToString("0.##") درجة)</small></h4>
-            @foreach (var c in q.Choices)
-            {
-                <label class="choice">
-                    <input type="radio" name="q_@q.Id" value="@c.Id" @(q.SelectedChoiceId == c.Id ? "checked" : "") />
-                    <span>@c.Text</span>
-                </label>
-            }
+            <div class="q-body">
+                <div class="q-main">
+                    <h4>@(i + 1). @q.Text <small class="text-muted">(@q.Points.ToString("0.##") درجة)</small></h4>
+                    @foreach (var c in q.Choices)
+                    {
+                        <label class="choice">
+                            <input type="radio" name="q_@q.Id" value="@c.Id" @(q.SelectedChoiceId == c.Id ? "checked" : "") />
+                            <span>@c.Text</span>
+                        </label>
+                    }
+                </div>
+                @if (q.HasImage)
+                {
+                    <img class="q-fig" draggable="false" alt="" src="@Url.Action("ExamImage", "Portal", new { id = q.Id })" />
+                }
+            </div>
         </article>
     }
 </div>
@@ -50,7 +71,7 @@
 <div class="gate" id="gate">
     <div class="gate-card">
         <h3>قبل ما تبدأ</h3>
-        <p>الاختبار هيفتح ملء الشاشة. النسخ واللصق ممنوع، ولو خرجت من التاب أو قفلت ملء الشاشة الاختبار هيتسلّم ومش هترجع له.</p>
+        <p>الاختبار هيفتح ملء الشاشة. النسخ واللصق والتصوير ممنوعين، ولو خرجت من التاب الاختبار هيتسلّم. لو ضغطت Esc هتظهر رسالة الأول.</p>
         <p class="text-muted">النتيجة هتظهر لكل الطلاب في @Model.ResultsAt.ToString("yyyy-MM-dd HH:mm")</p>
         <button type="button" class="btn btn-primary" id="btnEnter">دخول الاختبار</button>
     </div>
@@ -59,7 +80,7 @@
     <div class="done-card">
         <h3 id="doneTitle">تم التسليم</h3>
         <p id="doneText"></p>
-        <a class="btn btn-primary" href="@Url.Action("Exam", "Portal", new { id = Model.ExamId })">رجوع</a>
+        <a id="doneBack" class="btn btn-primary mt-2" style="display:none" href="@Url.Action("Exam", "Portal", new { id = Model.ExamId })">رجوع لصفحة الاختبار</a>
     </div>
 </div>
 
@@ -68,16 +89,90 @@
         var examId = @Model.ExamId;
         var endsAt = Date.now() + (@Model.RemainingSeconds * 1000);
         var resultsText = '@Model.ResultsAt.ToString("yyyy-MM-dd HH:mm")';
-        var armed = false, finished = false, saveTimer = null;
+        var armed = false, finished = false, escAsking = false, shotLock = false, saveTimer = null;
+
+        function isShotKey(e) {
+            var k = e.key || '';
+            var code = e.code || '';
+            if (k === 'PrintScreen' || code === 'PrintScreen' || code === 'F13') return true;
+            if (k === 'Meta' || code === 'MetaLeft' || code === 'MetaRight' || code === 'OSLeft' || code === 'OSRight') return true;
+            if (e.metaKey || (e.getModifierState && e.getModifierState('OS'))) return true;
+            if ((e.metaKey || e.ctrlKey) && e.shiftKey && ['s', '3', '4', '5'].indexOf(k.toLowerCase()) >= 0) return true;
+            return false;
+        }
+        function blankShot() {
+            document.getElementById('shotCover').style.display = 'block';
+            document.getElementById('sheet').style.display = 'none';
+            document.querySelector('.exam-top').style.visibility = 'hidden';
+            document.querySelector('.exam-watermark').style.visibility = 'hidden';
+            if (!escAsking) document.getElementById('done').style.display = 'none';
+        }
+        function showExam() {
+            document.getElementById('shotCover').style.display = 'none';
+            document.getElementById('sheet').style.display = '';
+            document.getElementById('sheet').classList.remove('hidden-qs');
+            document.querySelector('.exam-top').style.visibility = '';
+            document.querySelector('.exam-watermark').style.visibility = '';
+        }
+        function wipeClipboard() {
+            var n = 0;
+            var id = setInterval(function () {
+                try {
+                    if (navigator.clipboard && navigator.clipboard.writeText)
+                        navigator.clipboard.writeText('\u200b').catch(function () { });
+                } catch (e) { }
+                if (++n > 15) clearInterval(id);
+            }, 70);
+        }
+        function askShot() {
+            if (!armed || finished) return;
+            blankShot();
+            wipeClipboard();
+            if (shotLock) return;
+            shotLock = true;
+            setTimeout(function () {
+                if (!shotLock || finished) return;
+                var box = document.getElementById('done');
+                document.getElementById('doneBack').style.display = 'none';
+                box.style.zIndex = '100';
+                box.style.display = 'grid';
+                document.getElementById('doneTitle').textContent = 'التصوير ممنوع';
+                document.getElementById('doneText').innerHTML = '';
+                var p = document.createElement('p');
+                p.textContent = 'تصوير الشاشة مش مسموح أثناء الاختبار.';
+                var back = document.createElement('button');
+                back.className = 'btn btn-primary';
+                back.textContent = 'ارجع للاختبار';
+                back.onclick = function () {
+                    shotLock = false;
+                    box.style.display = 'none';
+                    showExam();
+                    lockKeys();
+                };
+                document.getElementById('doneText').appendChild(p);
+                document.getElementById('doneText').appendChild(back);
+            }, 700);
+        }
 
         ['copy', 'cut', 'paste', 'contextmenu', 'dragstart', 'selectstart'].forEach(function (ev) {
             document.addEventListener(ev, function (e) { e.preventDefault(); });
         });
         document.addEventListener('keydown', function (e) {
+            if (isShotKey(e)) { e.preventDefault(); e.stopPropagation(); askShot(); return; }
             var k = (e.key || '').toLowerCase();
             if ((e.ctrlKey || e.metaKey) && ['c', 'v', 'x', 'a', 'p', 's', 'u'].indexOf(k) >= 0) e.preventDefault();
             if (k === 'f12' || (e.ctrlKey && e.shiftKey && ['i', 'j', 'c'].indexOf(k) >= 0)) e.preventDefault();
-        });
+            if (e.key === 'Escape' && armed && !finished) {
+                e.preventDefault();
+                e.stopPropagation();
+                askEsc();
+            }
+        }, true);
+        document.addEventListener('keyup', function (e) {
+            if (!isShotKey(e)) return;
+            e.preventDefault();
+            askShot();
+        }, true);
 
         function tick() {
             var left = Math.max(0, Math.floor((endsAt - Date.now()) / 1000));
@@ -117,9 +212,15 @@
 
         function showDone(title, text) {
             finished = true;
+            escAsking = false;
+            shotLock = false;
+            document.getElementById('shotCover').style.display = 'none';
             document.getElementById('doneTitle').textContent = title;
             document.getElementById('doneText').textContent = text;
-            document.getElementById('done').style.display = 'grid';
+            document.getElementById('doneBack').style.display = '';
+            var box = document.getElementById('done');
+            box.style.zIndex = '100';
+            box.style.display = 'grid';
             document.getElementById('gate').style.display = 'none';
             document.getElementById('btnFinish').disabled = true;
             if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(function () { });
@@ -143,6 +244,8 @@
         function askFinish() {
             if (!armed || finished) return;
             var box = document.getElementById('done');
+            document.getElementById('doneBack').style.display = 'none';
+            box.style.zIndex = '100';
             box.style.display = 'grid';
             document.getElementById('doneTitle').textContent = 'تسليم الاختبار؟';
             document.getElementById('doneText').innerHTML = '';
@@ -162,9 +265,50 @@
             document.getElementById('doneText').appendChild(no);
         }
 
+        function askEsc() {
+            if (!armed || finished || escAsking) return;
+            escAsking = true;
+            var box = document.getElementById('done');
+            document.getElementById('doneBack').style.display = 'none';
+            box.style.zIndex = '100';
+            box.style.display = 'grid';
+            document.getElementById('doneTitle').textContent = 'خرجت من ملء الشاشة';
+            document.getElementById('doneText').innerHTML = '';
+            var p = document.createElement('p');
+            p.textContent = 'لو دست Esc بالغلط ارجع للاختبار. لو هتسيبه دلوقتي هيتسلّم.';
+            var back = document.createElement('button');
+            back.className = 'btn btn-primary';
+            back.textContent = 'ارجع للاختبار';
+            back.onclick = function () {
+                escAsking = false;
+                box.style.display = 'none';
+                showExam();
+                var el = document.documentElement;
+                var req = el.requestFullscreen || el.webkitRequestFullscreen;
+                if (req) Promise.resolve(req.call(el)).then(lockKeys).catch(function () { askEsc(); });
+            };
+            var leave = document.createElement('button');
+            leave.className = 'btn btn-outline-danger';
+            leave.style.marginInlineStart = '8px';
+            leave.textContent = 'سلّم الاختبار';
+            leave.onclick = function () { escAsking = false; endExam('fullscreen'); };
+            document.getElementById('doneText').appendChild(p);
+            document.getElementById('doneText').appendChild(back);
+            document.getElementById('doneText').appendChild(leave);
+        }
+
+        function lockKeys() {
+            if (!navigator.keyboard || !navigator.keyboard.lock || !document.fullscreenElement) return;
+            navigator.keyboard.lock().catch(function () {
+                return navigator.keyboard.lock(['PrintScreen', 'Escape', 'F13', 'MetaLeft', 'MetaRight']);
+            }).catch(function () { });
+        }
+
         function begin() {
             armed = true;
+            lockKeys();
             document.getElementById('gate').style.display = 'none';
+            document.getElementById('shotCover').style.display = 'none';
             document.getElementById('sheet').classList.remove('hidden-qs');
             document.getElementById('btnFinish').disabled = false;
             document.querySelectorAll('.q-card input').forEach(function (input) {
@@ -185,7 +329,8 @@
             var el = document.documentElement;
             var req = el.requestFullscreen || el.webkitRequestFullscreen;
             if (!req) { begin(); return; }
-            Promise.resolve(req.call(el)).then(begin).catch(function () {
+            Promise.resolve(req.call(el)).then(function () { lockKeys(); begin(); }).catch(function () {
+                document.getElementById('doneBack').style.display = '';
                 document.getElementById('done').style.display = 'grid';
                 document.getElementById('doneTitle').textContent = 'ملء الشاشة مطلوب';
                 document.getElementById('doneText').textContent = 'اسمح بملء الشاشة عشان الاختبار يفتح.';
@@ -193,10 +338,26 @@
         };
 
         document.addEventListener('fullscreenchange', function () {
-            if (armed && !finished && !document.fullscreenElement) endExam('fullscreen');
+            if (document.fullscreenElement) lockKeys();
+            else if (armed && !finished) askEsc();
         });
         document.addEventListener('visibilitychange', function () {
-            if (armed && !finished && document.visibilityState === 'hidden') endExam('left');
+            if (armed && !finished && document.visibilityState === 'hidden') {
+                blankShot();
+                endExam('left');
+            }
+        });
+        window.addEventListener('blur', function () {
+            if (!armed || finished) return;
+            blankShot();
+            wipeClipboard();
+        });
+        window.addEventListener('focus', function () {
+            if (!armed || finished || shotLock || escAsking || document.visibilityState !== 'visible') return;
+            setTimeout(function () {
+                if (shotLock || escAsking || finished || document.visibilityState !== 'visible') return;
+                showExam();
+            }, 800);
         });
         window.addEventListener('pagehide', function () {
             if (armed && !finished) beacon('left');

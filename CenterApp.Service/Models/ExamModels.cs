@@ -27,6 +27,7 @@ public class ExamQuestionInput
 {
     public string Text { get; set; } = "";
     public decimal Points { get; set; }
+    public string? ImageStoredName { get; set; }
     public List<ExamChoiceInput> Choices { get; set; } = new();
 }
 
@@ -40,6 +41,7 @@ public class ExamQuestionVm
 {
     public string Text { get; set; } = "";
     public decimal Points { get; set; }
+    public string? ImageStoredName { get; set; }
     public List<ExamChoiceVm> Choices { get; set; } = new();
 }
 
@@ -79,6 +81,7 @@ public class OnlineGradeRow
     public decimal? Score { get; set; }
     public int Violations { get; set; }
     public string? EndReason { get; set; }
+    public bool CanReopen { get; set; }
 }
 
 public class OnlineGradesVm
@@ -205,6 +208,7 @@ public class ExamTakeQuestionVm
     public long Id { get; set; }
     public string Text { get; set; } = "";
     public decimal Points { get; set; }
+    public bool HasImage { get; set; }
     public long? SelectedChoiceId { get; set; }
     public List<ExamTakeChoiceVm> Choices { get; set; } = new();
 }
