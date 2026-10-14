@@ -47,6 +47,11 @@ public static class DbSeeder
                 db.RolePermissions.Add(new RolePermission
                 { RoleId = teacher.Id, ScreenCode = Screens.Exams, CanView = true, CanAdd = true, CanEdit = true, CanDelete = true });
             }
+            if (!await db.RolePermissions.AnyAsync(p => p.RoleId == teacher.Id && p.ScreenCode == Screens.Reports))
+            {
+                db.RolePermissions.Add(new RolePermission
+                { RoleId = teacher.Id, ScreenCode = Screens.Reports, CanView = true });
+            }
             await db.SaveChangesAsync();
         }
 

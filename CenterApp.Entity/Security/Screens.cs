@@ -20,12 +20,14 @@ public static class Screens
     public const string Grace = "grace";
     public const string Users = "users";
     public const string Roles = "roles";
+    public const string Reports = "reports";
 
     public static readonly (string Code, string Name)[] All =
     {
         (Students, "الطلاب"), (Groups, "المجموعات"), (Sessions, "الحصص والحضور"),
         (Invoices, "الفواتير والتحصيل"), (Lookups, "البيانات الأساسية"),
         (Materials, "الماتريال"), (Homework, "الواجبات"), (Exams, "الاختبارات"), (Grace, "سماح الوصول للماتريال"),
+        (Reports, "التقارير"),
         (Users, "المستخدمين"), (Roles, "الأدوار والصلاحيات")
     };
 }
