@@ -226,8 +226,10 @@
             <a class="lnk" asp-controller="Portal" asp-action="Attendance">الحضور</a>
             <a class="lnk" asp-controller="Portal" asp-action="Homework">الواجبات</a>
             <a class="lnk" asp-controller="Portal" asp-action="Exams">الاختبارات</a>
+            <a class="lnk" asp-controller="Portal" asp-action="Ask">اسأل المدرس</a>
         </nav>
         <div class="me">
+            <partial name="_NotifyBell" />
             <span class="pname">@name</span>
             <form asp-controller="Account" asp-action="Logout" method="post">
                 <button class="btn btn-sm btn-outline-danger"><i class="bi bi-box-arrow-right"></i> خروج</button>
@@ -240,7 +242,9 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/lib/sweetalert2/dist/sweetalert2.all.min.js"></script>
+    <script src="~/lib/signalr/signalr.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/notifications.js" asp-append-version="true"></script>
     <script>
         (function () {
             var nav = document.getElementById('pnav');

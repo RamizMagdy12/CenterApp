@@ -1,0 +1,38 @@
+@model ThreadVm
+@{
+    ViewData["Title"] = Model.Title;
+}
+<div class="chat-wrap">
+    <div class="chat-head">
+        <a class="btn btn-sm btn-outline-secondary" asp-action="Index"><i class="bi bi-arrow-right"></i></a>
+        <div>
+            <b>@Model.Title</b>
+            <div class="text-muted small">@Model.Subtitle</div>
+        </div>
+        <button type="button" class="btn btn-sm btn-outline-danger chat-delete" id="chatDelete">مسح الشات</button>
+    </div>
+    <div class="chat-log" id="chatLog">
+        @if (Model.Messages.Count == 0)
+        {
+            <div class="chat-empty">لسه مفيش رسائل</div>
+        }
+        @foreach (var m in Model.Messages)
+        {
+            <div class="bubble @(m.Mine ? "mine" : "theirs")">
+                <div class="bubble-name">@m.SenderName</div>
+                <div class="bubble-body">@m.Body</div>
+                <small>@m.When</small>
+            </div>
+        }
+    </div>
+    <form id="chatForm" class="chat-form">
+        <textarea id="chatBody" rows="2" maxlength="2000" placeholder="اكتب الرد..."></textarea>
+        <button class="btn btn-primary" type="submit">إرسال</button>
+    </form>
+</div>
+<script>
+    window.chatThreadId = @Model.Id;
+    window.chatSendUrl = '@Url.Action("Send", "Messages", new { id = Model.Id })';
+    window.chatDeleteUrl = '@Url.Action("Delete", "Messages")';
+    window.chatAfterDelete = '@Url.Action("Index", "Messages")';
+</script>

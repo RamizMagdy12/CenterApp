@@ -16,8 +16,10 @@ public class PortalController : Controller
     private readonly ISessionService _sessions;
     private readonly IHomeworkStorage _files;
     private readonly IExamService _exams;
-    public PortalController(IPortalService p, IMediaTokenService tokens, ISessionService sessions, IHomeworkStorage files, IExamService exams)
-    { _p = p; _tokens = tokens; _sessions = sessions; _files = files; _exams = exams; }
+    private readonly IChatService _chat;
+    private readonly IChatNotifier _hub;
+    public PortalController(IPortalService p, IMediaTokenService tokens, ISessionService sessions, IHomeworkStorage files, IExamService exams, IChatService chat, IChatNotifier hub)
+    { _p = p; _tokens = tokens; _sessions = sessions; _files = files; _exams = exams; _chat = chat; _hub = hub; }
 
     private string Uid => User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "";
 
@@ -40,7 +42,8 @@ public class PortalController : Controller
             HomeworkLocked = hw.Count(x => x.IsLocked),
             AttendanceTotal = att?.Total ?? 0,
             AttendancePresent = att?.Attended ?? 0,
-            OpenExams = await _exams.OpenCountAsync(st.Id)
+            OpenExams = await _exams.OpenCountAsync(st.Id),
+            UnreadChats = await _chat.StudentUnreadAsync(st.Id)
         });
     }
 
@@ -178,5 +181,26 @@ public class PortalController : Controller
         var st = await _p.StudentOfUserAsync(Uid);
         if (st == null) return Forbid();
         return Json(await _exams.SyncAsync(st.Id, dto, finish: true));
+    }
+
+    public async Task<IActionResult> Ask(long? teacherId)
+    {
+        var st = await _p.StudentOfUserAsync(Uid);
+        if (st == null) return Forbid();
+        var vm = await _chat.AskAsync(st.Id, Uid, teacherId);
+        return vm == null ? NotFound() : View(vm);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> AskSend(long teacherId, string? body)
+    {
+        var st = await _p.StudentOfUserAsync(Uid);
+        if (st == null) return Forbid();
+        var name = User.FindFirst("FullName")?.Value ?? st.Name;
+        var r = await _chat.SendFromStudentAsync(st.Id, Uid, name, teacherId, body);
+        if (r.Ok && r.Live != null)
+            foreach (var id in r.ToUserIds)
+                await _hub.PushAsync(id, r.Live);
+        return Json(new { ok = r.Ok, message = r.Message, id = r.Id, extra = r.When });
     }
 }

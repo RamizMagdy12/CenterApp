@@ -33,6 +33,9 @@ public interface IUnitOfWork : IDisposable
     IRepository<OnlineExamAnswer> OnlineExamAnswer { get; }
     IRepository<OfflineExam> OfflineExam { get; }
     IRepository<OfflineExamGrade> OfflineExamGrade { get; }
+    IRepository<Conversation> Conversation { get; }
+    IRepository<ChatMessage> ChatMessage { get; }
+    IRepository<UserNotification> UserNotification { get; }
 
     Task<int> SaveAsync();
     Task<int> SaveInTransactionAsync();

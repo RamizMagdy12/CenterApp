@@ -1,0 +1,43 @@
+@model List<ConversationRow>
+@{
+    ViewData["Title"] = "الرسائل";
+    var unlinked = ViewBag.Unlinked as bool? == true;
+}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3>أسئلة الطلاب <span class="badge bg-secondary">@Model.Count</span></h3>
+    <button type="button" class="btn btn-sm btn-outline-danger" onclick="confirmPost('@Url.Action("Clear", "Notifications")', {}, 'مسح كل إشعاراتك؟')">مسح الإشعارات</button>
+</div>
+
+@if (unlinked)
+{
+    <div class="alert alert-warning">حسابك مش مربوط بمدرس. من شاشة المستخدمين اربط الحساب بالمدرس عشان توصلك أسئلة طلابه.</div>
+}
+else if (Model.Count == 0)
+{
+    <div class="empty-box">مفيش رسائل لسه. لما طالب يبعت سؤال هيظهر هنا.</div>
+}
+else
+{
+    <table class="table table-hover align-middle">
+        <thead><tr><th>الطالب</th><th>المدرس</th><th>آخر رسالة</th><th>الوقت</th><th></th></tr></thead>
+        <tbody>
+        @foreach (var c in Model)
+        {
+            <tr>
+                <td>@c.StudentName <small class="text-muted" dir="ltr">@c.StudentCode</small></td>
+                <td>@c.TeacherName</td>
+                <td>@c.LastMessage</td>
+                <td>@c.When</td>
+                <td>
+                    @if (c.Unread > 0)
+                    {
+                        <span class="badge bg-danger">@c.Unread</span>
+                    }
+                    <a class="btn btn-sm btn-outline-primary" asp-action="Thread" asp-route-id="@c.Id">فتح</a>
+                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="confirmPost('@Url.Action("Delete", "Messages")', { id: @c.Id }, 'مسح الشات ده؟')">مسح</button>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}

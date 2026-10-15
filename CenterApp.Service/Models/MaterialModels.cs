@@ -88,6 +88,7 @@ public class PortalHomeVm
     public int AttendanceTotal { get; set; }
     public int AttendancePresent { get; set; }
     public int OpenExams { get; set; }
+    public int UnreadChats { get; set; }
 }
 
 public class PortalViewVm
