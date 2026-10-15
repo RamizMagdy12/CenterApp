@@ -1,12 +1,18 @@
 using System.Security.Claims;
 using CenterApp.Entity.Center;
+using CenterApp.Entity.Identity;
 using CenterApp.Service.Data;
 using CenterApp.Service.Models;
 using CenterApp.Service.Repository;
 using CenterApp.Service.Unitofwork;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 sealed class StickyHttpContextAccessor : IHttpContextAccessor
 {
@@ -52,7 +58,17 @@ public sealed class BillingLab : IAsyncDisposable
 
         var uow = new UnitOfWork(db);
         var invoices = new InvoiceService(uow);
-        return new BillingLab(connection, uow, invoices, new StudentService(uow, invoices), new EnrollmentService(uow, invoices));
+        var users = new UserManager<AppUser>(
+            new UserStore<AppUser>(db),
+            Options.Create(new IdentityOptions()),
+            new PasswordHasher<AppUser>(),
+            [new UserValidator<AppUser>()],
+            [new PasswordValidator<AppUser>()],
+            new UpperInvariantLookupNormalizer(),
+            new IdentityErrorDescriber(),
+            new ServiceCollection().BuildServiceProvider(),
+            new Logger<UserManager<AppUser>>(new LoggerFactory()));
+        return new BillingLab(connection, uow, invoices, new StudentService(uow, invoices, users), new EnrollmentService(uow, invoices));
     }
 
     public async Task<long> AddGroup(string name, decimal monthlyFee)

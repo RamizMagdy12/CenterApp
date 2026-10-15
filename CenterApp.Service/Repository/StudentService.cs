@@ -1,6 +1,8 @@
 ﻿using CenterApp.Entity.Center;
+using CenterApp.Entity.Identity;
 using CenterApp.Service.Models;
 using CenterApp.Service.Unitofwork;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
 
@@ -8,10 +10,12 @@ public class StudentService : IStudentService
 {
     private readonly IUnitOfWork _u;
     private readonly IInvoiceService _invoices;
-    public StudentService(IUnitOfWork u, IInvoiceService invoices)
+    private readonly UserManager<AppUser> _um;
+    public StudentService(IUnitOfWork u, IInvoiceService invoices, UserManager<AppUser> um)
     {
         _u = u;
         _invoices = invoices;
+        _um = um;
     }
 
     public async Task<PagedResult<Student>> SearchAsync(string? q, long? gradeId, int page, int pageSize = 15)
@@ -119,7 +123,21 @@ public class StudentService : IStudentService
         if (await _u.GroupEnrollment.GetAll(e => e.StudentId == id && e.IsActive).AnyAsync())
             return OpResult.Fail("الطالب مسجل في مجموعات، شيله منها الأول");
         var s = _u.Student.GetFirstOrDefault(x => x.Id == id);
-        if (s != null) _u.Student.Remove(s);
+        if (s != null)
+        {
+            if (!string.IsNullOrEmpty(s.UserId))
+            {
+                var user = await _um.FindByIdAsync(s.UserId);
+                if (user != null)
+                {
+                    var deleted = await _um.DeleteAsync(user);
+                    if (!deleted.Succeeded)
+                        return OpResult.Fail(string.Join("، ", deleted.Errors.Select(e => e.Description)));
+                }
+                s.UserId = null;
+            }
+            _u.Student.Remove(s);
+        }
         await _u.SaveAsync();
         return OpResult.Success("تم الحذف");
     }
