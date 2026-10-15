@@ -47,6 +47,9 @@ public class AppDbContext : IdentityDbContext<AppUser>
     public DbSet<OnlineExamAnswer> OnlineExamAnswers => Set<OnlineExamAnswer>();
     public DbSet<OfflineExam> OfflineExams => Set<OfflineExam>();
     public DbSet<OfflineExamGrade> OfflineExamGrades => Set<OfflineExamGrade>();
+    public DbSet<Conversation> Conversations => Set<Conversation>();
+    public DbSet<ChatMessage> ChatMessages => Set<ChatMessage>();
+    public DbSet<UserNotification> UserNotifications => Set<UserNotification>();
 
     protected override void ConfigureConventions(ModelConfigurationBuilder b)
     {
@@ -103,6 +106,11 @@ public class AppDbContext : IdentityDbContext<AppUser>
         mb.Entity<OnlineExamAnswer>().HasIndex(x => new { x.AttemptId, x.QuestionId }).IsUnique();
         mb.Entity<OfflineExam>().HasIndex(x => new { x.GroupId, x.ExamDate });
         mb.Entity<OfflineExamGrade>().HasIndex(x => new { x.OfflineExamId, x.StudentId }).IsUnique();
+        mb.Entity<Conversation>().HasIndex(x => new { x.StudentId, x.TeacherId }).IsUnique();
+        mb.Entity<ChatMessage>().Property(x => x.Body).HasMaxLength(2000);
+        mb.Entity<ChatMessage>().HasIndex(x => new { x.ConversationId, x.SentAt });
+        mb.Entity<UserNotification>().Property(x => x.Body).HasMaxLength(500);
+        mb.Entity<UserNotification>().HasIndex(x => new { x.UserId, x.IsRead, x.CreatedAt });
 
         // منع Cascade غير مقصود (على جداول السنتر بس، مش جداول الـ Identity)
         foreach (var fk in mb.Model.GetEntityTypes()

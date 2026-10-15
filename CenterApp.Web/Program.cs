@@ -4,6 +4,7 @@ using CenterApp.Service.IRepository;
 using CenterApp.Service.Repository;
 using CenterApp.Service.Services;
 using CenterApp.Service.Unitofwork;
+using CenterApp.Web.Hubs;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Authorization;
@@ -102,6 +103,9 @@ builder.Services.AddSingleton<IMaterialStorage, MaterialStorage>();
 builder.Services.AddSingleton<IHomeworkStorage, HomeworkStorage>();
 builder.Services.AddSingleton<IMediaTokenService, MediaTokenService>();
 builder.Services.AddScoped<ITransferService, TransferService>();
+builder.Services.AddScoped<IChatService, ChatService>();
+builder.Services.AddScoped<IChatNotifier, SignalRChatNotifier>();
+builder.Services.AddSignalR();
 
 // رفع الفيديوهات (حد أقصى 250 ميجا للطلب)
 builder.Services.Configure<FormOptions>(o => o.MultipartBodyLengthLimit = 262144000);
@@ -123,6 +127,7 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.MapHub<CenterApp.Web.Hubs.AppHub>("/hubs/app");
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");

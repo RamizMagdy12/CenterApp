@@ -1,0 +1,26 @@
+@using System.Security.Claims
+@using CenterApp.Entity.Security
+@{
+    var name = User.FindFirst("FullName")?.Value ?? User.Identity?.Name ?? "";
+    var canClear = User.IsInRole(RoleNames.Admin) || User.IsInRole(RoleNames.Teacher);
+}
+<div class="tb-dd">
+    <button type="button" class="tb-icon" data-pop="popBell" aria-label="الإشعارات">
+        <i class="bi bi-bell"></i>
+        <span class="tb-badge" id="bellBadge" hidden></span>
+    </button>
+    <div class="tb-pop tb-pop-bell" id="popBell">
+        <div class="tb-pop-head">
+            <div class="tb-pop-title">الإشعارات</div>
+            <div class="tb-pop-actions">
+                <button type="button" class="btn btn-link btn-sm p-0" id="bellReadAll">تعليم الكل كمقروء</button>
+                @if (canClear)
+                {
+                    <button type="button" class="btn btn-link btn-sm p-0 text-danger" id="bellClear">مسح</button>
+                }
+            </div>
+        </div>
+        <div id="bellList"><div class="tb-pop-empty">مفيش إشعارات جديدة</div></div>
+    </div>
+</div>
+<script>window.chatMyName = @Json.Serialize(name);</script>

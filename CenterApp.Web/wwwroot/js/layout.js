@@ -1,4 +1,5 @@
 ﻿(function () {
+    window.__tbPop = true;
     var mobile = function () { return window.matchMedia('(max-width: 991.98px)').matches; };
 
     // ── فتح/غلق السايدبار

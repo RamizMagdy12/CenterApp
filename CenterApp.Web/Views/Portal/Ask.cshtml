@@ -1,0 +1,67 @@
+@model PortalAskVm
+@{
+    Layout = "_PortalLayout";
+    ViewData["Title"] = Model.Thread?.Title ?? "اسأل المدرس";
+}
+
+@if (Model.Thread == null)
+{
+    <h3 class="mb-3">اسأل المدرس</h3>
+    @if (Model.Teachers.Count == 0)
+    {
+        <div class="empty-box">لسه مش متسجل في مجموعة، فمفيش مدرس تسأله.</div>
+    }
+    <div class="tiles">
+        @foreach (var t in Model.Teachers)
+        {
+            <a class="tile" asp-action="Ask" asp-route-teacherId="@t.Id">
+                <i class="bi bi-person-video3"></i>
+                <b>@t.Name</b>
+                <span>@t.Subjects</span>
+                @if (t.Unread > 0)
+                {
+                    <span class="pill pill-primary">@t.Unread</span>
+                }
+            </a>
+        }
+    </div>
+}
+else
+{
+    <div class="chat-wrap">
+        <div class="chat-head">
+            <a class="btn btn-sm btn-outline-secondary" asp-action="Ask"><i class="bi bi-arrow-right"></i></a>
+            <div>
+                <b>@Model.Thread.Title</b>
+                <div class="text-muted small">@Model.Thread.Subtitle</div>
+                @if (!Model.Thread.TeacherHasAccount)
+                {
+                    <div class="text-warning small">المدرس ده لسه ملوش حساب دخول، السؤال هيتسجل بس مش هيوصله إشعار.</div>
+                }
+            </div>
+        </div>
+        <div class="chat-log" id="chatLog">
+            @if (Model.Thread.Messages.Count == 0)
+            {
+                <div class="chat-empty">اكتب سؤالك وهيوصل للمدرس</div>
+            }
+            @foreach (var m in Model.Thread.Messages)
+            {
+                <div class="bubble @(m.Mine ? "mine" : "theirs")">
+                    <div class="bubble-name">@m.SenderName</div>
+                    <div class="bubble-body">@m.Body</div>
+                    <small>@m.When</small>
+                </div>
+            }
+        </div>
+        <form id="chatForm" class="chat-form">
+            <textarea id="chatBody" rows="2" maxlength="2000" placeholder="اكتب سؤالك..."></textarea>
+            <button class="btn btn-primary" type="submit">إرسال</button>
+        </form>
+    </div>
+    <script>
+        window.chatThreadId = @Model.Thread.Id;
+        window.chatTeacherId = @Model.Thread.TeacherId;
+        window.chatSendUrl = '@Url.Action("AskSend", "Portal")';
+    </script>
+}

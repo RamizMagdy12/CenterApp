@@ -52,6 +52,19 @@ public static class DbSeeder
                 db.RolePermissions.Add(new RolePermission
                 { RoleId = teacher.Id, ScreenCode = Screens.Reports, CanView = true });
             }
+
+            var teachingRoles = await db.RolePermissions
+                .Where(p => p.CanView && (p.ScreenCode == Screens.Materials || p.ScreenCode == Screens.Homework || p.ScreenCode == Screens.Exams || p.RoleId == teacher.Id))
+                .Select(p => p.RoleId)
+                .Distinct()
+                .ToListAsync();
+            teachingRoles.Add(teacher.Id);
+            foreach (var roleId in teachingRoles.Distinct())
+            {
+                if (await db.RolePermissions.AnyAsync(p => p.RoleId == roleId && p.ScreenCode == Screens.Messages)) continue;
+                db.RolePermissions.Add(new RolePermission
+                { RoleId = roleId, ScreenCode = Screens.Messages, CanView = true, CanAdd = true, CanEdit = true });
+            }
             await db.SaveChangesAsync();
         }
 

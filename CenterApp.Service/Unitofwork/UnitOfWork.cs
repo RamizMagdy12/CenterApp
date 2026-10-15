@@ -40,6 +40,9 @@ public class UnitOfWork : IUnitOfWork
         OnlineExamAnswer = new Repository<OnlineExamAnswer>(db);
         OfflineExam = new Repository<OfflineExam>(db);
         OfflineExamGrade = new Repository<OfflineExamGrade>(db);
+        Conversation = new Repository<Conversation>(db);
+        ChatMessage = new Repository<ChatMessage>(db);
+        UserNotification = new Repository<UserNotification>(db);
     }
 
     public IRepository<GradeLevel> GradeLevel { get; }
@@ -68,7 +71,10 @@ public class UnitOfWork : IUnitOfWork
     public IRepository<OnlineExamAttempt> OnlineExamAttempt { get; }
     public IRepository<OnlineExamAnswer> OnlineExamAnswer { get; }
     public IRepository<OfflineExam> OfflineExam { get; }
-    public IRepository<OfflineExamGrade> OfflineExamGrade { get; }    
+    public IRepository<OfflineExamGrade> OfflineExamGrade { get; }
+    public IRepository<Conversation> Conversation { get; }
+    public IRepository<ChatMessage> ChatMessage { get; }
+    public IRepository<UserNotification> UserNotification { get; }    
 
     public Task<int> SaveAsync() => _db.SaveChangesAsync();
 

@@ -892,3 +892,151 @@ img {
         padding: 14px 12px;
     }
 }
+
+.tb-badge {
+    position: absolute;
+    top: -4px;
+    inset-inline-start: -8px;
+    min-width: 16px;
+    height: 16px;
+    padding: 0 4px;
+    border-radius: 99px;
+    background: #e11d48;
+    color: #fff;
+    font-size: 10px;
+    line-height: 16px;
+    text-align: center;
+}
+
+.tb-pop-bell {
+    width: 320px;
+}
+
+.tb-pop-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.tb-pop-head .tb-pop-title {
+    margin-bottom: 0;
+}
+
+.tb-pop-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.tb-note {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 8px 4px;
+    border-top: 1px solid var(--line);
+    color: var(--text);
+    text-decoration: none;
+}
+
+.tb-note.unread b {
+    color: var(--primary);
+}
+
+.tb-note span,
+.tb-note small {
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.tb-note span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.chat-wrap {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    min-height: 70vh;
+}
+
+.chat-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--line);
+}
+
+.chat-delete {
+    margin-inline-start: auto;
+}
+
+.chat-log {
+    flex: 1;
+    overflow: auto;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background: var(--bg);
+    max-height: 62vh;
+}
+
+.chat-empty {
+    margin: auto;
+    color: var(--muted);
+}
+
+.bubble {
+    max-width: min(75%, 520px);
+    padding: 8px 12px;
+    border-radius: 14px;
+    background: #fff;
+    border: 1px solid var(--line);
+}
+
+.bubble.mine {
+    margin-inline-start: auto;
+    background: var(--primary);
+    border-color: var(--primary);
+    color: #fff;
+}
+
+.bubble-name {
+    font-size: 12px;
+    font-weight: 700;
+    opacity: .8;
+}
+
+.bubble-body {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.bubble small {
+    display: block;
+    text-align: end;
+    opacity: .7;
+    font-size: 11px;
+}
+
+.chat-form {
+    display: flex;
+    gap: 8px;
+    padding: 12px;
+    border-top: 1px solid var(--line);
+    align-items: flex-end;
+}
+
+.chat-form textarea {
+    flex: 1;
+    resize: none;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 8px 12px;
+    font-family: inherit;
+}
