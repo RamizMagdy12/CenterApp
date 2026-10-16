@@ -2,13 +2,14 @@
 @{
     var name = User.FindFirst("FullName")?.Value ?? User.Identity?.Name ?? "";
     var title = ViewData["Title"] as string ?? "";
+    var isAr = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "ar";
 }
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="@(isAr ? "ar" : "en")" dir="@(isAr ? "rtl" : "ltr")">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@title - السنتر</title>
+    <title>@title - @L.Get("App.Name")</title>
     <partial name="_Favicon" />
     <link rel="stylesheet" href="~/lib/fontsource-cairo/400.css" />
     <link rel="stylesheet" href="~/lib/fontsource-cairo/600.css" />
@@ -218,27 +219,29 @@
 </head>
 <body>
     <header class="pnav" id="pnav">
-        <a class="brand" asp-controller="Portal" asp-action="Index"><i class="bi bi-mortarboard-fill" style="color:var(--primary)"></i> السنتر</a>
-        <button type="button" class="pnav-toggle" id="pnavToggle" aria-label="القائمة"><i class="bi bi-list"></i></button>
+        <a class="brand" asp-controller="Portal" asp-action="Index"><i class="bi bi-mortarboard-fill" style="color:var(--primary)"></i> @L.Get("App.Name")</a>
+        <button type="button" class="pnav-toggle" id="pnavToggle" aria-label="@L.Get("Common.Menu")"><i class="bi bi-list"></i></button>
         <nav class="pnav-links">
-            <a class="lnk" asp-controller="Portal" asp-action="Index">الرئيسية</a>
-            <a class="lnk" asp-controller="Portal" asp-action="Materials">الماتريال</a>
-            <a class="lnk" asp-controller="Portal" asp-action="Attendance">الحضور</a>
-            <a class="lnk" asp-controller="Portal" asp-action="Homework">الواجبات</a>
-            <a class="lnk" asp-controller="Portal" asp-action="Exams">الاختبارات</a>
-            <a class="lnk" asp-controller="Portal" asp-action="Ask">اسأل المدرس</a>
+            <a class="lnk" asp-controller="Portal" asp-action="Index">@L.Get("Common.Home")</a>
+            <a class="lnk" asp-controller="Portal" asp-action="Materials">@L.Get("Menu.Materials")</a>
+            <a class="lnk" asp-controller="Portal" asp-action="Attendance">@L.Get("Menu.Attendance")</a>
+            <a class="lnk" asp-controller="Portal" asp-action="Homework">@L.Get("Menu.Homework")</a>
+            <a class="lnk" asp-controller="Portal" asp-action="Exams">@L.Get("Menu.Exams")</a>
+            <a class="lnk" asp-controller="Portal" asp-action="Ask">@L.Get("Menu.AskTeacher")</a>
         </nav>
         <div class="me">
+            <partial name="_LangSwitch" />
             <partial name="_NotifyBell" />
             <span class="pname">@name</span>
             <form asp-controller="Account" asp-action="Logout" method="post">
-                <button class="btn btn-sm btn-outline-danger"><i class="bi bi-box-arrow-right"></i> خروج</button>
+                <button class="btn btn-sm btn-outline-danger"><i class="bi bi-box-arrow-right"></i> @L.Get("Auth.LogoutShort")</button>
             </form>
         </div>
     </header>
 
     <main class="container py-4">@RenderBody()</main>
 
+    <partial name="_L10n" />
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/lib/sweetalert2/dist/sweetalert2.all.min.js"></script>

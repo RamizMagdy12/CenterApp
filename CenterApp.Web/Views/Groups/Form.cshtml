@@ -8,43 +8,49 @@
 <form id="groupForm" onsubmit="return false;">
     <input type="hidden" id="gId" value="@Model.Id" />
     <div class="row g-3">
-        <div class="col-md-4"><label class="form-label">اسم المجموعة</label><input id="gName" class="form-control" value="@Model.Name" /></div>
+        <div class="col-md-4"><label class="form-label">@L.Get("Groups.GroupName")</label><input id="gName" class="form-control" value="@Model.Name" /></div>
         <div class="col-md-2">
-            <label class="form-label">الكود <span class="text-danger">*</span></label>
+            <label class="form-label">@L.Get("Common.Code") <span class="text-danger">*</span></label>
             <input id="gCode" class="form-control text-uppercase" dir="ltr" maxlength="3" value="@Model.Code" @(Model.CodeLocked ? "readonly" : "") placeholder="A" />
         </div>
-        <div class="col-12"><small class="text-muted">كود المجموعة بيتحط جنب رقم الطالب (مثال: 001A). مينفعش يتغيّر بعد ما يتسجّل فيها طلاب.</small></div>
+        <div class="col-12"><small class="text-muted">@L.Get("Groups.CodeHint")</small></div>
         <div class="col-md-3">
-            <label class="form-label">المدرس</label>
-            <select asp-for="TeacherId" id="gTeacher" asp-items="teachers" class="form-select"><option value="">-- اختر --</option></select>
+            <label class="form-label">@L.Get("Common.Teacher")</label>
+            <select asp-for="TeacherId" id="gTeacher" asp-items="teachers" class="form-select"><option value="">@L.Get("Common.Choose")</option></select>
         </div>
         <div class="col-md-3">
-            <label class="form-label">المادة</label>
-            <select asp-for="SubjectId" id="gSubject" asp-items="subjects" class="form-select"><option value="">-- اختر --</option></select>
+            <label class="form-label">@L.Get("Common.Subject")</label>
+            <select asp-for="SubjectId" id="gSubject" asp-items="subjects" class="form-select"><option value="">@L.Get("Common.Choose")</option></select>
         </div>
         <div class="col-md-3">
-            <label class="form-label">المرحلة</label>
-            <select asp-for="GradeLevelId" id="gGrade" asp-items="grades" class="form-select"><option value="">-- بدون --</option></select>
+            <label class="form-label">@L.Get("Common.Grade")</label>
+            <select asp-for="GradeLevelId" id="gGrade" asp-items="grades" class="form-select"><option value="">@L.Get("Groups.None")</option></select>
         </div>
-        <div class="col-md-3"><label class="form-label">السعر الشهري</label><input id="gFee" type="number" min="0" step="0.01" class="form-control" value="@Model.MonthlyFee" /></div>
-        <div class="col-md-3"><label class="form-label">الحد الأقصى للطلاب (0 = بلا حد)</label><input id="gCap" type="number" min="0" class="form-control" value="@Model.Capacity" /></div>
+        <div class="col-md-3"><label class="form-label">@L.Get("Groups.MonthlyFee")</label><input id="gFee" type="number" min="0" step="0.01" class="form-control" value="@Model.MonthlyFee" /></div>
+        <div class="col-md-3"><label class="form-label">@L.Get("Groups.CapacityHint")</label><input id="gCap" type="number" min="0" class="form-control" value="@Model.Capacity" /></div>
         <div class="col-md-3 d-flex align-items-end">
-            <div class="form-check"><input id="gActive" type="checkbox" class="form-check-input" @(Model.IsActive ? "checked" : "") /><label class="form-check-label">نشطة</label></div>
+            <div class="form-check"><input id="gActive" type="checkbox" class="form-check-input" @(Model.IsActive ? "checked" : "") /><label class="form-check-label">@L.Get("Groups.Active")</label></div>
         </div>
 
-        <div class="col-12"><h6>المواعيد الأسبوعية</h6></div>
+        <div class="col-12"><h6>@L.Get("Groups.WeeklySchedule")</h6></div>
         <div class="col-12" id="scheduleRows"></div>
-        <div class="col-12"><button type="button" class="btn btn-sm btn-outline-secondary" onclick="addScheduleRow()">+ ميعاد</button></div>
+        <div class="col-12"><button type="button" class="btn btn-sm btn-outline-secondary" onclick="addScheduleRow()">@L.Get("Groups.AddSlot")</button></div>
 
-        <div class="col-12"><button class="btn btn-success" onclick="saveGroup()">حفظ</button></div>
+        <div class="col-12"><button class="btn btn-success" onclick="saveGroup()">@L.Get("Common.Save")</button></div>
     </div>
 </form>
 
 <script>
     var DAYS = [
-        { v: 6, t: 'السبت' }, { v: 0, t: 'الأحد' }, { v: 1, t: 'الإثنين' }, { v: 2, t: 'الثلاثاء' },
-        { v: 3, t: 'الأربعاء' }, { v: 4, t: 'الخميس' }, { v: 5, t: 'الجمعة' }
+        { v: 6, t: @Json.Serialize(ArabicDays.Name(System.DayOfWeek.Saturday)) },
+        { v: 0, t: @Json.Serialize(ArabicDays.Name(System.DayOfWeek.Sunday)) },
+        { v: 1, t: @Json.Serialize(ArabicDays.Name(System.DayOfWeek.Monday)) },
+        { v: 2, t: @Json.Serialize(ArabicDays.Name(System.DayOfWeek.Tuesday)) },
+        { v: 3, t: @Json.Serialize(ArabicDays.Name(System.DayOfWeek.Wednesday)) },
+        { v: 4, t: @Json.Serialize(ArabicDays.Name(System.DayOfWeek.Thursday)) },
+        { v: 5, t: @Json.Serialize(ArabicDays.Name(System.DayOfWeek.Friday)) }
     ];
+    var roomPh = @Json.Serialize(L.Get("Groups.Room").Value);
 
     function addScheduleRow(day, start, end, room) {
         var opts = DAYS.map(function (d) {
@@ -55,7 +61,7 @@
             "<div class='col-6 col-md-3'><select class='form-select sch-day'>" + opts + "</select></div>" +
             "<div class='col-6 col-md-3'><input type='time' class='form-control sch-start' value='" + (start || '16:00') + "'></div>" +
             "<div class='col-6 col-md-3'><input type='time' class='form-control sch-end' value='" + (end || '17:30') + "'></div>" +
-            "<div class='col-4 col-md-2'><input class='form-control sch-room' placeholder='القاعة' value='" + (room || '') + "'></div>" +
+            "<div class='col-4 col-md-2'><input class='form-control sch-room' placeholder=" + JSON.stringify(roomPh) + " value='" + (room || '') + "'></div>" +
             "<div class='col-2 col-md-1'><button type='button' class='btn btn-outline-danger w-100' onclick=\"$(this).closest('.sch-row').remove()\">×</button></div>" +
             "</div>";
         $('#scheduleRows').append(html);

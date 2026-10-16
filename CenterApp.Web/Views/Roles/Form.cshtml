@@ -2,19 +2,19 @@
 @using System.Text.Json
 <form id="roleForm" onsubmit="return false;">
     <div class="mb-3">
-        <label class="form-label">اسم الدور</label>
-        <input id="rName" class="form-control" value="@Model.Name" placeholder="مثال: استقبال" />
+        <label class="form-label">@L.Get("Roles.Name")</label>
+        <input id="rName" class="form-control" value="@Model.Name" placeholder="@L.Get("Roles.NamePh")" />
     </div>
 
     <table class="table table-sm align-middle text-center">
         <thead>
-            <tr><th class="text-start">الشاشة</th><th>عرض</th><th>إضافة</th><th>تعديل</th><th>حذف</th><th>الكل</th></tr>
+            <tr><th class="text-start">@L.Get("Roles.Screen")</th><th>@L.Get("Perm.View")</th><th>@L.Get("Perm.Add")</th><th>@L.Get("Perm.Edit")</th><th>@L.Get("Perm.Delete")</th><th>@L.Get("Common.All")</th></tr>
         </thead>
         <tbody>
             @foreach (var p in Model.Perms)
             {
                 <tr class="perm-row" data-code="@p.Code">
-                    <td class="text-start">@p.Name</td>
+                    <td class="text-start">@L.Get("Screen." + p.Code)</td>
                     <td><input type="checkbox" class="form-check-input pv" @(p.View ? "checked" : "") /></td>
                     <td><input type="checkbox" class="form-check-input pa" @(p.Add ? "checked" : "") /></td>
                     <td><input type="checkbox" class="form-check-input pe" @(p.Edit ? "checked" : "") /></td>
@@ -25,7 +25,7 @@
         </tbody>
     </table>
 
-    <button class="btn btn-success" onclick="saveRole()">حفظ</button>
+    <button class="btn btn-success" onclick="saveRole()">@L.Get("Common.Save")</button>
 </form>
 
 <script>

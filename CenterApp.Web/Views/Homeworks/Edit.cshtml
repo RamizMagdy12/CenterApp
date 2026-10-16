@@ -1,29 +1,29 @@
 @model HomeworkEditVm
 @{
-    ViewData["Title"] = Model.Id == 0 ? "واجب جديد" : "تعديل واجب";
+    ViewData["Title"] = Model.Id == 0 ? L.Get("Homework.New").Value : L.Get("Homework.Edit").Value;
 }
 
 <div class="panel">
     <div class="row g-3">
         <div class="col-md-6">
-            <label class="form-label">العنوان</label>
+            <label class="form-label">@L.Get("Homework.Title")</label>
             <input id="mTitle" class="form-control" value="@Model.Title" />
         </div>
         <div class="col-12">
-            <label class="form-label">الوصف (اختياري)</label>
+            <label class="form-label">@L.Get("Homework.DescriptionOptional")</label>
             <textarea id="mDesc" class="form-control" rows="3">@Model.Description</textarea>
         </div>
 
         <div class="col-12">
-            <label class="form-label">إتاحة الواجب لـ</label>
+            <label class="form-label">@L.Get("Homework.ShareWith")</label>
             <div class="form-check mb-1">
                 <input type="checkbox" class="form-check-input" id="gAll" />
-                <label for="gAll" class="form-check-label fw-bold">كل المجموعات</label>
+                <label for="gAll" class="form-check-label fw-bold">@L.Get("Common.AllGroups")</label>
             </div>
             <div class="border rounded p-2" style="max-height:200px;overflow:auto">
                 @if (Model.Groups.Count == 0)
                 {
-                    <span class="text-muted">مفيش مجموعات</span>
+                    <span class="text-muted">@L.Get("Homework.NoGroups")</span>
                 }
                 @foreach (var g in Model.Groups)
                 {
@@ -36,15 +36,15 @@
         </div>
 
         <div class="col-12">
-            <label class="form-label">الملفات (PDF أو Word، حتى 25 ميجا، والطالب ينزّلها زي ما هي)</label>
+            <label class="form-label">@L.Get("Homework.FilesHint")</label>
             <div id="existingFiles">
                 @foreach (var f in Model.Files)
                 {
                     <div class="d-flex align-items-center gap-2 border rounded p-2 mb-1">
                         <i class="bi @(f.Kind == HomeworkFileKind.Pdf ? "bi-file-earmark-pdf" : "bi-file-earmark-word")"></i>
                         <span>@f.Name</span><small class="text-muted">@f.Size</small>
-                        <a class="btn btn-sm btn-outline-dark ms-auto" asp-action="Download" asp-route-id="@f.Id">تنزيل</a>
-                        <button type="button" class="btn btn-sm btn-outline-danger" onclick="delFile(@f.Id, this)">حذف</button>
+                        <a class="btn btn-sm btn-outline-dark ms-auto" asp-action="Download" asp-route-id="@f.Id">@L.Get("Homework.Download")</a>
+                        <button type="button" class="btn btn-sm btn-outline-danger" onclick="delFile(@f.Id, this)">@L.Get("Common.Delete")</button>
                     </div>
                 }
             </div>
@@ -55,9 +55,9 @@
         </div>
 
         <div class="col-12 d-flex gap-2">
-            <button class="btn btn-outline-primary" id="btnDraft" onclick="saveAll(false)">حفظ كمسودة</button>
-            <button class="btn btn-success" id="btnPub" onclick="saveAll(true)">حفظ ونشر</button>
-            <a class="btn btn-light" asp-action="Index">رجوع</a>
+            <button class="btn btn-outline-primary" id="btnDraft" onclick="saveAll(false)">@L.Get("Homework.SaveDraft")</button>
+            <button class="btn btn-success" id="btnPub" onclick="saveAll(true)">@L.Get("Homework.SavePublish")</button>
+            <a class="btn btn-light" asp-action="Index">@L.Get("Homework.Back")</a>
         </div>
     </div>
 </div>
@@ -84,7 +84,7 @@
             $('#staged').html(staged.map(function (f, i) {
                 return '<div class="d-flex align-items-center gap-2 border rounded p-2 mb-1"><i class="bi bi-file-earmark-arrow-up"></i><span>' + $('<i>').text(f.name).html() +
                     '</span><small class="text-muted">' + (f.size / 1048576).toFixed(1) + ' MB</small>' +
-                    '<button type="button" class="btn btn-sm btn-outline-secondary ms-auto" onclick="staged.splice(' + i + ',1);renderStaged()">إزالة</button></div>';
+                    '<button type="button" class="btn btn-sm btn-outline-secondary ms-auto" onclick="staged.splice(' + i + ',1);renderStaged()">' + @Json.Serialize(L.Get("Homework.Remove").Value) + '</button></div>';
             }).join(''));
         }
 
@@ -103,10 +103,10 @@
                 };
                 xhr.onload = function () {
                     var r;
-                    try { r = JSON.parse(xhr.responseText); } catch (x) { r = { ok: false, message: 'حصل خطأ (' + xhr.status + ')' }; }
+                    try { r = JSON.parse(xhr.responseText); } catch (x) { r = { ok: false, message: (@Json.Serialize(L.Get("Homework.ErrorStatus").Value)).replace('{0}', xhr.status) }; }
                     r.ok ? resolve(r) : reject(r.message);
                 };
-                xhr.onerror = function () { reject('فشل الاتصال بالسيرفر'); };
+                xhr.onerror = function () { reject(@Json.Serialize(L.Get("Homework.ConnectionFailed").Value)); };
                 xhr.send(fd);
             });
         }
@@ -114,9 +114,9 @@
         async function saveAll(publish) {
             var title = $.trim($('#mTitle').val());
             var groups = $('.g-chk:checked').map(function () { return parseInt(this.value); }).get();
-            if (!title) return notify('warning', 'اكتب عنوان الواجب');
-            if (!groups.length) return notify('warning', 'اختار مجموعة واحدة على الأقل');
-            if (publish && existingCount + staged.length === 0) return notify('warning', 'ارفع ملف واحد على الأقل قبل النشر');
+            if (!title) return notify('warning', @Json.Serialize(L.Get("Homework.TitleRequired").Value));
+            if (!groups.length) return notify('warning', @Json.Serialize(L.Get("Homework.GroupRequired").Value));
+            if (publish && existingCount + staged.length === 0) return notify('warning', @Json.Serialize(L.Get("Homework.FileRequired").Value));
 
             setBusy(true);
             $('.progress').show();
@@ -130,7 +130,7 @@
 
                 var total = staged.length;
                 for (var i = 0; i < total; i++) {
-                    $('#pmsg').text('رفع ملف ' + (i + 1) + ' من ' + total + ': ' + staged[0].name);
+                    $('#pmsg').text((@Json.Serialize(L.Get("Homework.Uploading").Value)).replace('{0}', i + 1).replace('{1}', total).replace('{2}', staged[0].name));
                     $('#pbar').css('width', '0%');
                     await uploadOne(hwId, staged[0]);
                     staged.shift(); existingCount++; renderStaged();
@@ -141,18 +141,18 @@
                     if (!p.ok) throw p.message;
                 }
 
-                await Swal.fire({ icon: 'success', title: publish ? 'تم النشر' : 'تم الحفظ كمسودة', timer: 1200, showConfirmButton: false, heightAuto: false });
+                await Swal.fire({ icon: 'success', title: publish ? @Json.Serialize(L.Get("Common.Published").Value) : @Json.Serialize(L.Get("Homework.SavedDraft").Value), timer: 1200, showConfirmButton: false, heightAuto: false });
                 location.href = '@Url.Action("Index", "Homeworks")';
             } catch (e) {
                 setBusy(false);
                 $('.progress').hide();
                 if (e && e.status && handleHttpError(e)) return;
-                notify('error', typeof e === 'string' ? e : 'حصل خطأ، جرّب تاني');
+                notify('error', typeof e === 'string' ? e : @Json.Serialize(L.Get("Homework.TryAgain").Value));
             }
         }
 
         function delFile(id, btn) {
-            askConfirm('حذف الملف ده؟', 'نعم').then(function (ok) {
+            askConfirm(@Json.Serialize(L.Get("Homework.DeleteFileAsk").Value), @Json.Serialize(L.Get("Common.Yes").Value)).then(function (ok) {
                 if (!ok) return;
                 postJson('@Url.Action("DeleteFile", "Homeworks")', { id: id }, function () {
                     $(btn).closest('.d-flex').remove(); existingCount--;

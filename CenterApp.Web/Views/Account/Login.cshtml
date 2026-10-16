@@ -2,12 +2,15 @@
 @{
     Layout = null;
 }
+@{
+    var isAr = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "ar";
+}
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="@(isAr ? "ar" : "en")" dir="@(isAr ? "rtl" : "ltr")">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>تسجيل الدخول - السنتر</title>
+    <title>@L.Get("Auth.LoginTitle") - @L.Get("App.Name")</title>
     <partial name="_Favicon" />
     <link rel="stylesheet" href="~/lib/fontsource-cairo/400.css" />
     <link rel="stylesheet" href="~/lib/fontsource-cairo/600.css" />
@@ -334,6 +337,31 @@
                 margin-bottom: 16px;
             }
 
+            .login-lang {
+                position: fixed;
+                top: 16px;
+                inset-inline-end: 16px;
+                z-index: 2;
+                background: rgba(255, 255, 255, .92);
+                border-radius: 10px;
+                padding: 4px;
+            }
+
+            .login-lang .tb-lang-btn {
+                border: 0;
+                background: transparent;
+                font-family: inherit;
+                cursor: pointer;
+                padding: 4px 8px;
+                border-radius: 8px;
+                opacity: .55;
+            }
+
+            .login-lang .tb-lang-btn.on {
+                opacity: 1;
+                background: #efeaff;
+            }
+
             @@media (max-width: 575.98px) {
                 .login-card {
                     padding: 26px 22px 30px;
@@ -346,6 +374,7 @@
     </style>
 </head>
 <body>
+    <div class="login-lang"><partial name="_LangSwitch" /></div>
 
     <div class="bg" aria-hidden="true">
         <div class="bg-gradient"></div>
@@ -359,11 +388,11 @@
     <div class="login-card">
         <div class="brand">
             <span class="brand-logo"><i class="bi bi-mortarboard-fill"></i></span>
-            <span class="brand-name">السنتر</span>
+            <span class="brand-name">@L.Get("App.Name")</span>
         </div>
 
-        <h1>تسجيل الدخول</h1>
-        <p class="sub">ادخل على لوحة التحكم</p>
+        <h1>@L.Get("Auth.LoginTitle")</h1>
+        <p class="sub">@L.Get("Auth.LoginSub")</p>
 
         @if (!string.IsNullOrEmpty(Model.Error))
         {
@@ -373,19 +402,19 @@
         <form asp-action="Login" method="post">
             <input type="hidden" asp-for="ReturnUrl" />
 
-            <label for="UserName">اسم المستخدم أو البريد الإلكتروني</label>
-            <input asp-for="UserName" class="field" placeholder="اسم المستخدم أو البريد" autocomplete="username" autofocus />
+            <label for="UserName">@L.Get("Auth.UserOrEmail")</label>
+            <input asp-for="UserName" class="field" placeholder="@L.Get("Auth.UserOrEmailPh")" autocomplete="username" autofocus />
 
             <div class="row-label">
-                <label for="Password">كلمة المرور</label>
-                <a href="#" onclick="forgot(); return false;">نسيت كلمة المرور؟</a>
+                <label for="Password">@L.Get("Auth.Password")</label>
+                <a href="#" onclick="forgot(); return false;">@L.Get("Auth.Forgot")</a>
             </div>
             <div class="pw">
                 <input asp-for="Password" type="password" class="field" autocomplete="current-password" />
-                <button type="button" id="togglePw" aria-label="إظهار كلمة المرور"><i class="bi bi-eye"></i></button>
+                <button type="button" id="togglePw" aria-label="@L.Get("Auth.ShowPassword")"><i class="bi bi-eye"></i></button>
             </div>
 
-            <button type="submit" class="btn-login">دخول</button>
+            <button type="submit" class="btn-login">@L.Get("Auth.SignIn")</button>
         </form>
     </div>
 
@@ -433,7 +462,7 @@
             });
 
             function forgot() {
-                Swal.fire({ icon: 'info', title: 'نسيت كلمة المرور؟', text: 'كلّم مدير النظام وهو يغيّرها لك.', confirmButtonText: 'حسناً', confirmButtonColor: '#4b2fd0' });
+                Swal.fire({ icon: 'info', title: @Json.Serialize(L.Get("Auth.Forgot").Value), text: @Json.Serialize(L.Get("Auth.ForgotHint").Value), confirmButtonText: @Json.Serialize(L.Get("Common.Ok").Value), confirmButtonColor: '#4b2fd0' });
             }
     </script>
 </body>

@@ -7,32 +7,32 @@
     <input type="hidden" asp-for="Id" />
     <div class="row g-3">
         <div class="col-md-6">
-            <label class="form-label">اسم المستخدم (إنجليزي)</label>
+            <label class="form-label">@L.Get("Users.UserNameLatin")</label>
             <input asp-for="UserName" class="form-control" autocomplete="off" />
         </div>
         <div class="col-md-6">
-            <label class="form-label">الاسم بالكامل</label>
+            <label class="form-label">@L.Get("Users.FullName")</label>
             <input asp-for="FullName" class="form-control" />
         </div>
         <div class="col-md-6">
-            <label class="form-label">الإيميل (اختياري)</label>
+            <label class="form-label">@L.Get("Users.EmailOptional")</label>
             <input asp-for="Email" type="email" class="form-control" />
         </div>
         <div class="col-md-6">
-            <label class="form-label">الموبايل</label>
+            <label class="form-label">@L.Get("Common.Phone")</label>
             <input asp-for="PhoneNumber" class="form-control" />
         </div>
         @if (isNew)
         {
             <div class="col-md-6">
-                <label class="form-label">كلمة المرور (6 حروف على الأقل)</label>
+                <label class="form-label">@L.Get("Users.PasswordHint")</label>
                 <input asp-for="Password" type="password" class="form-control" autocomplete="new-password" />
             </div>
         }
         <div class="col-md-6">
-            <label class="form-label">مدرس مرتبط (لو المستخدم ده مدرس)</label>
+            <label class="form-label">@L.Get("Users.LinkedTeacher")</label>
             <select name="TeacherId" class="form-select">
-                <option value="">-- لا --</option>
+                <option value="">@L.Get("Common.No")</option>
                 @foreach (var t in (List<SimpleItem>)ViewBag.Teachers)
                 {
                     <option value="@t.Id" selected="@(t.Id == Model.TeacherId)">@t.Text</option>
@@ -40,9 +40,9 @@
             </select>
         </div>
         <div class="col-md-6">
-            <label class="form-label">الدور</label>
+            <label class="form-label">@L.Get("Users.Role")</label>
             <select name="RoleName" class="form-select">
-                <option value="">-- اختر --</option>
+                <option value="">@L.Get("Common.Choose")</option>
                 @foreach (var r in roles)
                 {
                     <option value="@r" selected="@(r == Model.RoleName)">@r</option>
@@ -50,10 +50,10 @@
             </select>
         </div>
         <div class="col-12 form-check ms-3">
-            <input asp-for="IsActive" class="form-check-input" /><label class="form-check-label">نشط (يقدر يسجّل دخول)</label>
+            <input asp-for="IsActive" class="form-check-input" /><label class="form-check-label">@L.Get("Users.ActiveCanLogin")</label>
         </div>
         <div class="col-12">
-            <button class="btn btn-success" onclick="submitForm('#userForm', '@Url.Action("Save", "Users")')">حفظ</button>
+            <button class="btn btn-success" onclick="submitForm('#userForm', '@Url.Action("Save", "Users")')">@L.Get("Common.Save")</button>
         </div>
     </div>
 </form>

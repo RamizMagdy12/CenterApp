@@ -45,7 +45,7 @@
         if (!items.length) {
             var empty = document.createElement('div');
             empty.className = 'tb-pop-empty';
-            empty.textContent = 'مفيش إشعارات جديدة';
+            empty.textContent = (window.L10n && window.L10n.noNotifications) || 'مفيش إشعارات جديدة';
             list.appendChild(empty);
             return;
         }
@@ -104,20 +104,20 @@
             $.post('/Notifications/Read').always(loadBell);
         });
         $('#bellClear').on('click', function () {
-            askConfirm('مسح كل إشعاراتك؟', 'مسح').then(function (ok) {
+            askConfirm((window.L10n && window.L10n.clearAllAsk) || 'مسح كل إشعاراتك؟', (window.L10n && window.L10n.clear) || 'مسح').then(function (ok) {
                 if (!ok) return;
                 $.post('/Notifications/Clear').done(function (r) {
-                    if (r && r.ok === false) notify('error', r.message || 'حصل خطأ');
+                    if (r && r.ok === false) notify('error', r.message || ((window.L10n && window.L10n.error) || 'حصل خطأ'));
                 }).always(loadBell);
             });
         });
         $('#chatDelete').on('click', function () {
             if (!window.chatDeleteUrl) return;
-            askConfirm('مسح الشات ده؟', 'مسح').then(function (ok) {
+            askConfirm((window.L10n && window.L10n.clearChatAsk) || 'مسح الشات ده؟', (window.L10n && window.L10n.clear) || 'مسح').then(function (ok) {
                 if (!ok) return;
                 $.post(window.chatDeleteUrl, { id: window.chatThreadId }).done(function (r) {
                     if (r && r.ok) location.href = window.chatAfterDelete || '/Messages';
-                    else notify('error', (r && r.message) || 'حصل خطأ');
+                    else notify('error', (r && r.message) || ((window.L10n && window.L10n.error) || 'حصل خطأ'));
                 }).fail(function (xhr) { if (window.ajaxFail) ajaxFail(xhr); });
             });
         });
@@ -131,12 +131,12 @@
             var $btn = $(this).find('button[type=submit]').prop('disabled', true);
             $.post(window.chatSendUrl, data).done(function (r) {
                 if (!r || !r.ok) {
-                    notify('error', (r && r.message) || 'حصل خطأ');
+                    notify('error', (r && r.message) || ((window.L10n && window.L10n.error) || 'حصل خطأ'));
                     return;
                 }
                 if (r.id) window.chatThreadId = r.id;
                 $body.val('');
-                appendChat(window.chatMyName || 'أنت', text, r.extra || '', true);
+                appendChat(window.chatMyName || ((window.L10n && window.L10n.you) || 'أنت'), text, r.extra || '', true);
             }).fail(function (xhr) {
                 if (window.ajaxFail) ajaxFail(xhr);
             }).always(function () { $btn.prop('disabled', false); });

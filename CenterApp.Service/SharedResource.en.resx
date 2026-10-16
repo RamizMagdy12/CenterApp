@@ -1,0 +1,1898 @@
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="App.Name" xml:space="preserve">
+    <value>Center</value>
+  </data>
+  <data name="Att.Absent" xml:space="preserve">
+    <value>Absent</value>
+  </data>
+  <data name="Att.Excused" xml:space="preserve">
+    <value>Excused</value>
+  </data>
+  <data name="Att.Late" xml:space="preserve">
+    <value>Late</value>
+  </data>
+  <data name="Att.Present" xml:space="preserve">
+    <value>Present</value>
+  </data>
+  <data name="Auth.BackHome" xml:space="preserve">
+    <value>Back to home</value>
+  </data>
+  <data name="Auth.BadCredentials" xml:space="preserve">
+    <value>The username or password is incorrect</value>
+  </data>
+  <data name="Auth.DeniedHeading" xml:space="preserve">
+    <value>You don't have permission to open this page</value>
+  </data>
+  <data name="Auth.DeniedHint" xml:space="preserve">
+    <value>If you need this permission, contact the administrator.</value>
+  </data>
+  <data name="Auth.DeniedTitle" xml:space="preserve">
+    <value>Not allowed</value>
+  </data>
+  <data name="Auth.EnterCredentials" xml:space="preserve">
+    <value>Enter the username and password</value>
+  </data>
+  <data name="Auth.Forgot" xml:space="preserve">
+    <value>Forgot your password?</value>
+  </data>
+  <data name="Auth.ForgotHint" xml:space="preserve">
+    <value>Contact the administrator and they will change it for you.</value>
+  </data>
+  <data name="Auth.Inactive" xml:space="preserve">
+    <value>This account is disabled. Contact the administrator</value>
+  </data>
+  <data name="Auth.LockedOut" xml:space="preserve">
+    <value>The account is temporarily locked after too many failed attempts. Try again in 5 minutes</value>
+  </data>
+  <data name="Auth.LoginSub" xml:space="preserve">
+    <value>Sign in to the dashboard</value>
+  </data>
+  <data name="Auth.LoginTitle" xml:space="preserve">
+    <value>Sign in</value>
+  </data>
+  <data name="Auth.Logout" xml:space="preserve">
+    <value>Sign out</value>
+  </data>
+  <data name="Auth.LogoutShort" xml:space="preserve">
+    <value>Sign out</value>
+  </data>
+  <data name="Auth.NoPermission" xml:space="preserve">
+    <value>You don't have permission for this action</value>
+  </data>
+  <data name="Auth.Password" xml:space="preserve">
+    <value>Password</value>
+  </data>
+  <data name="Auth.SessionReplaced" xml:space="preserve">
+    <value>This account was opened on another device, so this session was closed.</value>
+  </data>
+  <data name="Auth.ShowPassword" xml:space="preserve">
+    <value>Show password</value>
+  </data>
+  <data name="Auth.SignIn" xml:space="preserve">
+    <value>Sign in</value>
+  </data>
+  <data name="Auth.UserOrEmail" xml:space="preserve">
+    <value>Username or email</value>
+  </data>
+  <data name="Auth.UserOrEmailPh" xml:space="preserve">
+    <value>Username or email</value>
+  </data>
+  <data name="Chat.You" xml:space="preserve">
+    <value>You</value>
+  </data>
+  <data name="Common.Active" xml:space="preserve">
+    <value>Active</value>
+  </data>
+  <data name="Common.Add" xml:space="preserve">
+    <value>Add</value>
+  </data>
+  <data name="Common.All" xml:space="preserve">
+    <value>All</value>
+  </data>
+  <data name="Common.AllGroups" xml:space="preserve">
+    <value>All groups</value>
+  </data>
+  <data name="Common.Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Common.Choose" xml:space="preserve">
+    <value>-- Choose --</value>
+  </data>
+  <data name="Common.Clear" xml:space="preserve">
+    <value>Clear</value>
+  </data>
+  <data name="Common.Code" xml:space="preserve">
+    <value>Code</value>
+  </data>
+  <data name="Common.Confirm" xml:space="preserve">
+    <value>Confirm</value>
+  </data>
+  <data name="Common.ConfirmAction" xml:space="preserve">
+    <value>Confirm this action?</value>
+  </data>
+  <data name="Common.ConfirmDelete" xml:space="preserve">
+    <value>Confirm delete?</value>
+  </data>
+  <data name="Common.Delete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="Common.Edit" xml:space="preserve">
+    <value>Edit</value>
+  </data>
+  <data name="Common.Error" xml:space="preserve">
+    <value>Something went wrong</value>
+  </data>
+  <data name="Common.Grade" xml:space="preserve">
+    <value>Grade</value>
+  </data>
+  <data name="Common.Group" xml:space="preserve">
+    <value>Group</value>
+  </data>
+  <data name="Common.Home" xml:space="preserve">
+    <value>Home</value>
+  </data>
+  <data name="Common.InactiveAlt" xml:space="preserve">
+    <value>Inactive</value>
+  </data>
+  <data name="Common.LoadFailed" xml:space="preserve">
+    <value>Couldn't load ({0})</value>
+  </data>
+  <data name="Common.Menu" xml:space="preserve">
+    <value>Menu</value>
+  </data>
+  <data name="Common.Name" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="Common.No" xml:space="preserve">
+    <value>-- No --</value>
+  </data>
+  <data name="Common.Notes" xml:space="preserve">
+    <value>Notes</value>
+  </data>
+  <data name="Common.Ok" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="Common.Open" xml:space="preserve">
+    <value>Open</value>
+  </data>
+  <data name="Common.Phone" xml:space="preserve">
+    <value>Phone</value>
+  </data>
+  <data name="Common.Published" xml:space="preserve">
+    <value>Published</value>
+  </data>
+  <data name="Common.Reason" xml:space="preserve">
+    <value>Reason</value>
+  </data>
+  <data name="Common.ReasonOptional" xml:space="preserve">
+    <value>Reason (optional)</value>
+  </data>
+  <data name="Common.Save" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="Common.Saved" xml:space="preserve">
+    <value>Saved</value>
+  </data>
+  <data name="Common.Search" xml:space="preserve">
+    <value>Search</value>
+  </data>
+  <data name="Common.Send" xml:space="preserve">
+    <value>Send</value>
+  </data>
+  <data name="Common.ServerError" xml:space="preserve">
+    <value>Server error ({0})</value>
+  </data>
+  <data name="Common.Status" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="Common.Stopped" xml:space="preserve">
+    <value>Inactive</value>
+  </data>
+  <data name="Common.Student" xml:space="preserve">
+    <value>Student</value>
+  </data>
+  <data name="Common.Subject" xml:space="preserve">
+    <value>Subject</value>
+  </data>
+  <data name="Common.Teacher" xml:space="preserve">
+    <value>Teacher</value>
+  </data>
+  <data name="Common.Time" xml:space="preserve">
+    <value>Time</value>
+  </data>
+  <data name="Common.Total" xml:space="preserve">
+    <value>Total</value>
+  </data>
+  <data name="Common.UnknownMark" xml:space="preserve">
+    <value>?</value>
+  </data>
+  <data name="Common.Yes" xml:space="preserve">
+    <value>Yes</value>
+  </data>
+  <data name="Dash.ActiveCount" xml:space="preserve">
+    <value>{0} active</value>
+  </data>
+  <data name="Dash.ActiveStudents" xml:space="preserve">
+    <value>Total: {0} active students</value>
+  </data>
+  <data name="Dash.AttendanceOverview" xml:space="preserve">
+    <value>Attendance overview</value>
+  </data>
+  <data name="Dash.AttendanceSub" xml:space="preserve">
+    <value>Daily attendance — last 7 days</value>
+  </data>
+  <data name="Dash.ByGrade" xml:space="preserve">
+    <value>Students by grade</value>
+  </data>
+  <data name="Dash.Collected" xml:space="preserve">
+    <value>Collected</value>
+  </data>
+  <data name="Dash.CollectedPct" xml:space="preserve">
+    <value>{0}% of this month's invoices collected</value>
+  </data>
+  <data name="Dash.Done" xml:space="preserve">
+    <value>Done</value>
+  </data>
+  <data name="Dash.Due" xml:space="preserve">
+    <value>Total due</value>
+  </data>
+  <data name="Dash.Enrolled" xml:space="preserve">
+    <value>{0} enrolled in groups</value>
+  </data>
+  <data name="Dash.GenerateMonth" xml:space="preserve">
+    <value>Generate this month's sessions</value>
+  </data>
+  <data name="Dash.Hello" xml:space="preserve">
+    <value>Hello, {0} 👋</value>
+  </data>
+  <data name="Dash.MonthAccounts" xml:space="preserve">
+    <value>This month's accounts</value>
+  </data>
+  <data name="Dash.NoAttendanceYet" xml:space="preserve">
+    <value>No attendance data yet</value>
+  </data>
+  <data name="Dash.NoChartData" xml:space="preserve">
+    <value>No data</value>
+  </data>
+  <data name="Dash.NoData" xml:space="preserve">
+    <value>No data</value>
+  </data>
+  <data name="Dash.NoGrade" xml:space="preserve">
+    <value>No grade</value>
+  </data>
+  <data name="Dash.NoPayments" xml:space="preserve">
+    <value>No payments yet</value>
+  </data>
+  <data name="Dash.NoSessionsToday" xml:space="preserve">
+    <value>No sessions today.</value>
+  </data>
+  <data name="Dash.NoStudents" xml:space="preserve">
+    <value>No students yet</value>
+  </data>
+  <data name="Dash.NotTaken" xml:space="preserve">
+    <value>Attendance not taken yet</value>
+  </data>
+  <data name="Dash.PresentOf" xml:space="preserve">
+    <value>Present {0} of {1}</value>
+  </data>
+  <data name="Dash.RecentCount" xml:space="preserve">
+    <value>Last {0} payments</value>
+  </data>
+  <data name="Dash.RecentPayments" xml:space="preserve">
+    <value>Recent payments</value>
+  </data>
+  <data name="Dash.Remaining" xml:space="preserve">
+    <value>Remaining</value>
+  </data>
+  <data name="Dash.SessionCount" xml:space="preserve">
+    <value>{0} sessions</value>
+  </data>
+  <data name="Dash.TakeAttendance" xml:space="preserve">
+    <value>Take attendance</value>
+  </data>
+  <data name="Dash.TeacherCount" xml:space="preserve">
+    <value>{0} teachers</value>
+  </data>
+  <data name="Dash.TodayAttendance" xml:space="preserve">
+    <value>Today's attendance</value>
+  </data>
+  <data name="Dash.TodayClasses" xml:space="preserve">
+    <value>Today's sessions</value>
+  </data>
+  <data name="Dash.TodaySessions" xml:space="preserve">
+    <value>{0} sessions today</value>
+  </data>
+  <data name="Dash.TotalStudents" xml:space="preserve">
+    <value>Total students</value>
+  </data>
+  <data name="Dash.Welcome" xml:space="preserve">
+    <value>Welcome back — here's today's summary.</value>
+  </data>
+  <data name="Enroll.CustomFee" xml:space="preserve">
+    <value>Custom fee</value>
+  </data>
+  <data name="Enroll.CustomFeePh" xml:space="preserve">
+    <value>Custom fee (optional)</value>
+  </data>
+  <data name="Enroll.Enrolled" xml:space="preserve">
+    <value>Enrolled</value>
+  </data>
+  <data name="Enroll.JoinedOn" xml:space="preserve">
+    <value>Joined on</value>
+  </data>
+  <data name="Enroll.PickStudent" xml:space="preserve">
+    <value>Choose the student from the list</value>
+  </data>
+  <data name="Enroll.Register" xml:space="preserve">
+    <value>Enroll</value>
+  </data>
+  <data name="Enroll.RemoveAsk" xml:space="preserve">
+    <value>Cancel the student's enrollment in this group? They will be removed from this month's and next month's billing, unless the invoice already has a payment.</value>
+  </data>
+  <data name="Enroll.RemoveYes" xml:space="preserve">
+    <value>Yes, cancel enrollment</value>
+  </data>
+  <data name="Enroll.Transfer" xml:space="preserve">
+    <value>Transfer</value>
+  </data>
+  <data name="Enroll.UnassignedPh" xml:space="preserve">
+    <value>Students not enrolled in any group</value>
+  </data>
+  <data name="Enroll.Unregister" xml:space="preserve">
+    <value>Cancel enrollment</value>
+  </data>
+  <data name="Error.Body" xml:space="preserve">
+    <value>An error occurred while processing the request.</value>
+  </data>
+  <data name="Error.Heading" xml:space="preserve">
+    <value>Error</value>
+  </data>
+  <data name="Error.RequestId" xml:space="preserve">
+    <value>Request ID:</value>
+  </data>
+  <data name="Error.Title" xml:space="preserve">
+    <value>Error</value>
+  </data>
+  <data name="Exam.Back" xml:space="preserve">
+    <value>Back</value>
+  </data>
+  <data name="Exam.Choice" xml:space="preserve">
+    <value>Choice</value>
+  </data>
+  <data name="Exam.Closes" xml:space="preserve">
+    <value>Closes</value>
+  </data>
+  <data name="Exam.ClosesAt" xml:space="preserve">
+    <value>Closes at</value>
+  </data>
+  <data name="Exam.DeleteAsk" xml:space="preserve">
+    <value>Delete this exam?</value>
+  </data>
+  <data name="Exam.DeleteQuestion" xml:space="preserve">
+    <value>Delete question</value>
+  </data>
+  <data name="Exam.Draft" xml:space="preserve">
+    <value>Draft</value>
+  </data>
+  <data name="Exam.EditTitle" xml:space="preserve">
+    <value>Edit exam</value>
+  </data>
+  <data name="Exam.Empty" xml:space="preserve">
+    <value>No online exams yet</value>
+  </data>
+  <data name="Exam.ExamTitle" xml:space="preserve">
+    <value>Exam title</value>
+  </data>
+  <data name="Exam.Grades" xml:space="preserve">
+    <value>Grades</value>
+  </data>
+  <data name="Exam.GroupRequired" xml:space="preserve">
+    <value>Choose at least one group</value>
+  </data>
+  <data name="Exam.Groups" xml:space="preserve">
+    <value>Groups</value>
+  </data>
+  <data name="Exam.ImageTooBig" xml:space="preserve">
+    <value>The image is larger than 4 MB</value>
+  </data>
+  <data name="Exam.ImageUploadFailed" xml:space="preserve">
+    <value>The image was not uploaded</value>
+  </data>
+  <data name="Exam.LockedHint" xml:space="preserve">
+    <value>The exam has started or already has attempts, so you can only change when the results appear.</value>
+  </data>
+  <data name="Exam.MarkCorrect" xml:space="preserve">
+    <value>Mark the correct answer</value>
+  </data>
+  <data name="Exam.Minutes" xml:space="preserve">
+    <value>Duration in minutes</value>
+  </data>
+  <data name="Exam.MinutesRange" xml:space="preserve">
+    <value>From 5 to 360 minutes</value>
+  </data>
+  <data name="Exam.New" xml:space="preserve">
+    <value>New exam</value>
+  </data>
+  <data name="Exam.NewOnline" xml:space="preserve">
+    <value>New online exam</value>
+  </data>
+  <data name="Exam.NoExamsForGrades" xml:space="preserve">
+    <value>There are no exams to show grades for yet</value>
+  </data>
+  <data name="Exam.NoGroups" xml:space="preserve">
+    <value>No groups</value>
+  </data>
+  <data name="Exam.NoStudents" xml:space="preserve">
+    <value>There are no students in this exam's groups.</value>
+  </data>
+  <data name="Exam.OnlineGradesTitle" xml:space="preserve">
+    <value>Online exam grades</value>
+  </data>
+  <data name="Exam.OpenNow" xml:space="preserve">
+    <value>Open</value>
+  </data>
+  <data name="Exam.Opens" xml:space="preserve">
+    <value>Opens</value>
+  </data>
+  <data name="Exam.OpensFrom" xml:space="preserve">
+    <value>Opens from</value>
+  </data>
+  <data name="Exam.Published" xml:space="preserve">
+    <value>Published</value>
+  </data>
+  <data name="Exam.Question" xml:space="preserve">
+    <value>Question</value>
+  </data>
+  <data name="Exam.QuestionAttempts" xml:space="preserve">
+    <value>{0} questions · {1} attempts</value>
+  </data>
+  <data name="Exam.QuestionImage" xml:space="preserve">
+    <value>Question image</value>
+  </data>
+  <data name="Exam.QuestionN" xml:space="preserve">
+    <value>Question {0}</value>
+  </data>
+  <data name="Exam.QuestionPoints" xml:space="preserve">
+    <value>Question points</value>
+  </data>
+  <data name="Exam.Questions" xml:space="preserve">
+    <value>Questions</value>
+  </data>
+  <data name="Exam.QuestionTextPh" xml:space="preserve">
+    <value>Question text</value>
+  </data>
+  <data name="Exam.RemoveImage" xml:space="preserve">
+    <value>Remove image</value>
+  </data>
+  <data name="Exam.Reopen" xml:space="preserve">
+    <value>Reopen</value>
+  </data>
+  <data name="Exam.ReopenFor" xml:space="preserve">
+    <value>Reopen for {0}</value>
+  </data>
+  <data name="Exam.Result" xml:space="preserve">
+    <value>Result</value>
+  </data>
+  <data name="Exam.ResultsAtLabel" xml:space="preserve">
+    <value>Results are shown to all students at</value>
+  </data>
+  <data name="Exam.ResultsOn" xml:space="preserve">
+    <value>Students will see the results on {0}</value>
+  </data>
+  <data name="Exam.ResultsRequired" xml:space="preserve">
+    <value>Set when results appear</value>
+  </data>
+  <data name="Exam.Rules" xml:space="preserve">
+    <value>The exam is only open during this window. Copy and paste are blocked, and if the student leaves the tab or the page the exam is submitted automatically. You can add an image beside a question when it includes a drawing. The score is calculated on submit, and the student sees it together with classmates when results are released.</value>
+  </data>
+  <data name="Exam.SaveDraft" xml:space="preserve">
+    <value>Save as draft</value>
+  </data>
+  <data name="Exam.SavePublish" xml:space="preserve">
+    <value>Save and publish</value>
+  </data>
+  <data name="Exam.SaveResultsTime" xml:space="preserve">
+    <value>Save results time</value>
+  </data>
+  <data name="Exam.ScheduleRequired" xml:space="preserve">
+    <value>Set the open, close, and results times</value>
+  </data>
+  <data name="Exam.Score" xml:space="preserve">
+    <value>Score</value>
+  </data>
+  <data name="Exam.StudentDescription" xml:space="preserve">
+    <value>Description for the student (optional)</value>
+  </data>
+  <data name="Exam.StudentsSeeResults" xml:space="preserve">
+    <value>Students can see the results</value>
+  </data>
+  <data name="Exam.SubmittedAt" xml:space="preserve">
+    <value>Submitted at</value>
+  </data>
+  <data name="Exam.Title" xml:space="preserve">
+    <value>Exam</value>
+  </data>
+  <data name="Exam.TitleCol" xml:space="preserve">
+    <value>Title</value>
+  </data>
+  <data name="Exam.TitleRequired" xml:space="preserve">
+    <value>Enter the exam title</value>
+  </data>
+  <data name="Exam.TotalPoints" xml:space="preserve">
+    <value>· Total {0}</value>
+  </data>
+  <data name="Exam.TryAgain" xml:space="preserve">
+    <value>Something went wrong. Try again.</value>
+  </data>
+  <data name="Exam.Violations" xml:space="preserve">
+    <value>Violations</value>
+  </data>
+  <data name="Exam.WindowScore" xml:space="preserve">
+    <value>From {0} to {1} · out of {2}</value>
+  </data>
+  <data name="Grace.Active" xml:space="preserve">
+    <value>Active</value>
+  </data>
+  <data name="Grace.DayCount" xml:space="preserve">
+    <value>Number of days (from today)</value>
+  </data>
+  <data name="Grace.Days" xml:space="preserve">
+    <value>Days</value>
+  </data>
+  <data name="Grace.Expired" xml:space="preserve">
+    <value>Expired</value>
+  </data>
+  <data name="Grace.Grant" xml:space="preserve">
+    <value>Grant access</value>
+  </data>
+  <data name="Grace.LastDay" xml:space="preserve">
+    <value>Last day</value>
+  </data>
+  <data name="Grace.New" xml:space="preserve">
+    <value>New grace</value>
+  </data>
+  <data name="Grace.PickStudent" xml:space="preserve">
+    <value>Choose the student from the list</value>
+  </data>
+  <data name="Grace.RevokeAsk" xml:space="preserve">
+    <value>Cancel this grace?</value>
+  </data>
+  <data name="Grace.Revoked" xml:space="preserve">
+    <value>Revoked</value>
+  </data>
+  <data name="Grace.SearchStudent" xml:space="preserve">
+    <value>Search by name or code...</value>
+  </data>
+  <data name="Grace.Title" xml:space="preserve">
+    <value>Material access grace</value>
+  </data>
+  <data name="Groups.Active" xml:space="preserve">
+    <value>Active</value>
+  </data>
+  <data name="Groups.AddSlot" xml:space="preserve">
+    <value>+ Time slot</value>
+  </data>
+  <data name="Groups.CapacityHint" xml:space="preserve">
+    <value>Maximum students (0 = no limit)</value>
+  </data>
+  <data name="Groups.CodeHint" xml:space="preserve">
+    <value>The group code is placed beside the student number (example: 001A). It can't be changed after students are enrolled.</value>
+  </data>
+  <data name="Groups.Edit" xml:space="preserve">
+    <value>Edit group</value>
+  </data>
+  <data name="Groups.Fee" xml:space="preserve">
+    <value>Price</value>
+  </data>
+  <data name="Groups.GroupName" xml:space="preserve">
+    <value>Group name</value>
+  </data>
+  <data name="Groups.MonthlyFee" xml:space="preserve">
+    <value>Monthly fee</value>
+  </data>
+  <data name="Groups.New" xml:space="preserve">
+    <value>New group</value>
+  </data>
+  <data name="Groups.NoCode" xml:space="preserve">
+    <value>No code</value>
+  </data>
+  <data name="Groups.None" xml:space="preserve">
+    <value>-- None --</value>
+  </data>
+  <data name="Groups.Room" xml:space="preserve">
+    <value>Room</value>
+  </data>
+  <data name="Groups.Schedule" xml:space="preserve">
+    <value>Schedule</value>
+  </data>
+  <data name="Groups.Search" xml:space="preserve">
+    <value>Search by group name</value>
+  </data>
+  <data name="Groups.SeatsLeft" xml:space="preserve">
+    <value>Remaining {0}</value>
+  </data>
+  <data name="Groups.Students" xml:space="preserve">
+    <value>Group students</value>
+  </data>
+  <data name="Groups.WeeklySchedule" xml:space="preserve">
+    <value>Weekly schedule</value>
+  </data>
+  <data name="Homework.Back" xml:space="preserve">
+    <value>Back</value>
+  </data>
+  <data name="Homework.ConnectionFailed" xml:space="preserve">
+    <value>Could not connect to the server</value>
+  </data>
+  <data name="Homework.DeleteAsk" xml:space="preserve">
+    <value>Delete this homework and all of its files?</value>
+  </data>
+  <data name="Homework.DeleteFileAsk" xml:space="preserve">
+    <value>Delete this file?</value>
+  </data>
+  <data name="Homework.DescriptionOptional" xml:space="preserve">
+    <value>Description (optional)</value>
+  </data>
+  <data name="Homework.Download" xml:space="preserve">
+    <value>Download</value>
+  </data>
+  <data name="Homework.Draft" xml:space="preserve">
+    <value>Draft</value>
+  </data>
+  <data name="Homework.Edit" xml:space="preserve">
+    <value>Edit homework</value>
+  </data>
+  <data name="Homework.ErrorStatus" xml:space="preserve">
+    <value>Something went wrong ({0})</value>
+  </data>
+  <data name="Homework.FileRequired" xml:space="preserve">
+    <value>Upload at least one file before publishing</value>
+  </data>
+  <data name="Homework.Files" xml:space="preserve">
+    <value>Files</value>
+  </data>
+  <data name="Homework.FilesHint" xml:space="preserve">
+    <value>Files (PDF or Word, up to 25 MB; students download them as they are)</value>
+  </data>
+  <data name="Homework.GroupRequired" xml:space="preserve">
+    <value>Choose at least one group</value>
+  </data>
+  <data name="Homework.New" xml:space="preserve">
+    <value>New homework</value>
+  </data>
+  <data name="Homework.NoGroups" xml:space="preserve">
+    <value>No groups</value>
+  </data>
+  <data name="Homework.Published" xml:space="preserve">
+    <value>Published</value>
+  </data>
+  <data name="Homework.PublishedOn" xml:space="preserve">
+    <value>Published on</value>
+  </data>
+  <data name="Homework.Remove" xml:space="preserve">
+    <value>Remove</value>
+  </data>
+  <data name="Homework.SavedDraft" xml:space="preserve">
+    <value>Saved as draft</value>
+  </data>
+  <data name="Homework.SaveDraft" xml:space="preserve">
+    <value>Save as draft</value>
+  </data>
+  <data name="Homework.SavePublish" xml:space="preserve">
+    <value>Save and publish</value>
+  </data>
+  <data name="Homework.ShareWith" xml:space="preserve">
+    <value>Share this homework with</value>
+  </data>
+  <data name="Homework.Title" xml:space="preserve">
+    <value>Title</value>
+  </data>
+  <data name="Homework.TitleRequired" xml:space="preserve">
+    <value>Enter the homework title</value>
+  </data>
+  <data name="Homework.TryAgain" xml:space="preserve">
+    <value>Something went wrong, try again</value>
+  </data>
+  <data name="Homework.Uploading" xml:space="preserve">
+    <value>Uploading file {0} of {1}: {2}</value>
+  </data>
+  <data name="Invoices.Amount" xml:space="preserve">
+    <value>Amount</value>
+  </data>
+  <data name="Invoices.AmountNow" xml:space="preserve">
+    <value>Amount paid now (remaining {0})</value>
+  </data>
+  <data name="Invoices.BalanceHigh" xml:space="preserve">
+    <value>Remaining, highest first</value>
+  </data>
+  <data name="Invoices.BalanceLow" xml:space="preserve">
+    <value>Remaining, lowest first</value>
+  </data>
+  <data name="Invoices.CurrentPrices" xml:space="preserve">
+    <value>Current subscription price: {0}</value>
+  </data>
+  <data name="Invoices.Date" xml:space="preserve">
+    <value>Date</value>
+  </data>
+  <data name="Invoices.DeletePayAsk" xml:space="preserve">
+    <value>Delete this payment? The invoice will return to the matching status, and materials may lock if the account is no longer paid.</value>
+  </data>
+  <data name="Invoices.DeletePayYes" xml:space="preserve">
+    <value>Yes, delete</value>
+  </data>
+  <data name="Invoices.Discount" xml:space="preserve">
+    <value>Discount</value>
+  </data>
+  <data name="Invoices.DiscountHelp" xml:space="preserve">
+    <value>The permanent discount applies to upcoming periods. Paid records and earlier months stay as they are. The current unpaid month is updated only if no payment has been recorded on it.</value>
+  </data>
+  <data name="Invoices.DiscountType" xml:space="preserve">
+    <value>Discount type</value>
+  </data>
+  <data name="Invoices.DiscountValue" xml:space="preserve">
+    <value>Discount amount</value>
+  </data>
+  <data name="Invoices.DueDate" xml:space="preserve">
+    <value>Due date</value>
+  </data>
+  <data name="Invoices.DueLate" xml:space="preserve">
+    <value>Farthest due date</value>
+  </data>
+  <data name="Invoices.DueSoon" xml:space="preserve">
+    <value>Nearest due date</value>
+  </data>
+  <data name="Invoices.Egp" xml:space="preserve">
+    <value>{0} EGP</value>
+  </data>
+  <data name="Invoices.Empty" xml:space="preserve">
+    <value>No collections for this month.</value>
+  </data>
+  <data name="Invoices.Fee" xml:space="preserve">
+    <value>Subscription price</value>
+  </data>
+  <data name="Invoices.Fixed" xml:space="preserve">
+    <value>Fixed amount</value>
+  </data>
+  <data name="Invoices.FixedApply" xml:space="preserve">
+    <value>A fixed amount of {0} EGP will apply when an invoice is issued with a price.</value>
+  </data>
+  <data name="Invoices.FullName" xml:space="preserve">
+    <value>Full name</value>
+  </data>
+  <data name="Invoices.Grace" xml:space="preserve">
+    <value>Grace</value>
+  </data>
+  <data name="Invoices.GraceTitle" xml:space="preserve">
+    <value>Material access grace</value>
+  </data>
+  <data name="Invoices.Invoice" xml:space="preserve">
+    <value>Invoice</value>
+  </data>
+  <data name="Invoices.LastPayment" xml:space="preserve">
+    <value>Last payment</value>
+  </data>
+  <data name="Invoices.ListSep" xml:space="preserve">
+    <value>, </value>
+  </data>
+  <data name="Invoices.Log" xml:space="preserve">
+    <value>History</value>
+  </data>
+  <data name="Invoices.Method" xml:space="preserve">
+    <value>Method</value>
+  </data>
+  <data name="Invoices.Month" xml:space="preserve">
+    <value>Month</value>
+  </data>
+  <data name="Invoices.NetDue" xml:space="preserve">
+    <value>Net due</value>
+  </data>
+  <data name="Invoices.NewCollection" xml:space="preserve">
+    <value>New payment</value>
+  </data>
+  <data name="Invoices.None" xml:space="preserve">
+    <value>None</value>
+  </data>
+  <data name="Invoices.NoPermanent" xml:space="preserve">
+    <value>No permanent discount. The student pays the full subscription price.</value>
+  </data>
+  <data name="Invoices.Paid" xml:space="preserve">
+    <value>Paid</value>
+  </data>
+  <data name="Invoices.PaidSoFar" xml:space="preserve">
+    <value>Paid</value>
+  </data>
+  <data name="Invoices.Partial" xml:space="preserve">
+    <value>Partially paid</value>
+  </data>
+  <data name="Invoices.PaymentLog" xml:space="preserve">
+    <value>Payment history</value>
+  </data>
+  <data name="Invoices.PayMethod" xml:space="preserve">
+    <value>Payment method</value>
+  </data>
+  <data name="Invoices.PayStatus" xml:space="preserve">
+    <value>Payment status</value>
+  </data>
+  <data name="Invoices.Percent" xml:space="preserve">
+    <value>Percentage</value>
+  </data>
+  <data name="Invoices.PercentApply" xml:space="preserve">
+    <value>A discount of {0}% will apply when an invoice is issued with a price.</value>
+  </data>
+  <data name="Invoices.PermanentDiscount" xml:space="preserve">
+    <value>Permanent discount</value>
+  </data>
+  <data name="Invoices.PreviewLine" xml:space="preserve">
+    <value>Subscription price {0} EGP − discount {1} EGP = net {2} EGP</value>
+  </data>
+  <data name="Invoices.PreviewPlaceholder" xml:space="preserve">
+    <value>The preview will appear here.</value>
+  </data>
+  <data name="Invoices.Previous" xml:space="preserve">
+    <value>Previous payments</value>
+  </data>
+  <data name="Invoices.RecalcAsk" xml:space="preserve">
+    <value>Recalculate this month's invoices from each student's current permanent discount? Invoices that already have a payment will not change.</value>
+  </data>
+  <data name="Invoices.Recalculate" xml:space="preserve">
+    <value>Recalculate discount</value>
+  </data>
+  <data name="Invoices.RecalcYes" xml:space="preserve">
+    <value>Yes, recalculate</value>
+  </data>
+  <data name="Invoices.RecordPayment" xml:space="preserve">
+    <value>Record payment</value>
+  </data>
+  <data name="Invoices.Remaining" xml:space="preserve">
+    <value>Remaining</value>
+  </data>
+  <data name="Invoices.RemoveDiscount" xml:space="preserve">
+    <value>Remove discount</value>
+  </data>
+  <data name="Invoices.SaveCollection" xml:space="preserve">
+    <value>Save payment</value>
+  </data>
+  <data name="Invoices.SaveDiscount" xml:space="preserve">
+    <value>Save discount</value>
+  </data>
+  <data name="Invoices.SearchName" xml:space="preserve">
+    <value>Search by name</value>
+  </data>
+  <data name="Invoices.ShortTitle" xml:space="preserve">
+    <value>Collection</value>
+  </data>
+  <data name="Invoices.Show" xml:space="preserve">
+    <value>Show</value>
+  </data>
+  <data name="Invoices.Sort" xml:space="preserve">
+    <value>Sort</value>
+  </data>
+  <data name="Invoices.Title" xml:space="preserve">
+    <value>Collections</value>
+  </data>
+  <data name="Invoices.TotalPaid" xml:space="preserve">
+    <value>Total paid</value>
+  </data>
+  <data name="Invoices.Unpaid" xml:space="preserve">
+    <value>Unpaid</value>
+  </data>
+  <data name="Invoices.Waived" xml:space="preserve">
+    <value>Waived</value>
+  </data>
+  <data name="Lookups.Grades" xml:space="preserve">
+    <value>Grade levels</value>
+  </data>
+  <data name="Lookups.Sort" xml:space="preserve">
+    <value>Sort order</value>
+  </data>
+  <data name="Lookups.Subjects" xml:space="preserve">
+    <value>Subjects</value>
+  </data>
+  <data name="Lookups.Teachers" xml:space="preserve">
+    <value>Teachers</value>
+  </data>
+  <data name="Materials.Back" xml:space="preserve">
+    <value>Back</value>
+  </data>
+  <data name="Materials.ConnectionFailed" xml:space="preserve">
+    <value>Could not connect to the server</value>
+  </data>
+  <data name="Materials.DeleteAsk" xml:space="preserve">
+    <value>Delete this material and all of its files?</value>
+  </data>
+  <data name="Materials.DeleteFileAsk" xml:space="preserve">
+    <value>Delete this file?</value>
+  </data>
+  <data name="Materials.DescriptionOptional" xml:space="preserve">
+    <value>Description (optional)</value>
+  </data>
+  <data name="Materials.Draft" xml:space="preserve">
+    <value>Draft</value>
+  </data>
+  <data name="Materials.Edit" xml:space="preserve">
+    <value>Edit material</value>
+  </data>
+  <data name="Materials.ErrorStatus" xml:space="preserve">
+    <value>Something went wrong ({0})</value>
+  </data>
+  <data name="Materials.FileRequired" xml:space="preserve">
+    <value>Upload at least one file before publishing</value>
+  </data>
+  <data name="Materials.Files" xml:space="preserve">
+    <value>Files</value>
+  </data>
+  <data name="Materials.FilesHint" xml:space="preserve">
+    <value>Files (mp4/webm video up to 200 MB — PDF — Word — images; documents up to 25 MB)</value>
+  </data>
+  <data name="Materials.GroupRequired" xml:space="preserve">
+    <value>Choose at least one group</value>
+  </data>
+  <data name="Materials.New" xml:space="preserve">
+    <value>New material</value>
+  </data>
+  <data name="Materials.NoGroups" xml:space="preserve">
+    <value>No groups</value>
+  </data>
+  <data name="Materials.Pages" xml:space="preserve">
+    <value> — {0} pages</value>
+  </data>
+  <data name="Materials.Preview" xml:space="preserve">
+    <value>Preview</value>
+  </data>
+  <data name="Materials.Published" xml:space="preserve">
+    <value>Published</value>
+  </data>
+  <data name="Materials.PublishedOn" xml:space="preserve">
+    <value>Published on</value>
+  </data>
+  <data name="Materials.Remove" xml:space="preserve">
+    <value>Remove</value>
+  </data>
+  <data name="Materials.SavedDraft" xml:space="preserve">
+    <value>Saved as draft</value>
+  </data>
+  <data name="Materials.SaveDraft" xml:space="preserve">
+    <value>Save as draft</value>
+  </data>
+  <data name="Materials.SavePublish" xml:space="preserve">
+    <value>Save and publish</value>
+  </data>
+  <data name="Materials.ShareWith" xml:space="preserve">
+    <value>Share this material with</value>
+  </data>
+  <data name="Materials.Title" xml:space="preserve">
+    <value>Title</value>
+  </data>
+  <data name="Materials.TitleRequired" xml:space="preserve">
+    <value>Enter the material title</value>
+  </data>
+  <data name="Materials.TryAgain" xml:space="preserve">
+    <value>Something went wrong, try again</value>
+  </data>
+  <data name="Materials.Uploading" xml:space="preserve">
+    <value>Uploading file {0} of {1}: {2}</value>
+  </data>
+  <data name="Menu.Accounts" xml:space="preserve">
+    <value>Accounts</value>
+  </data>
+  <data name="Menu.Admin" xml:space="preserve">
+    <value>Administration</value>
+  </data>
+  <data name="Menu.AskTeacher" xml:space="preserve">
+    <value>Ask the teacher</value>
+  </data>
+  <data name="Menu.Attendance" xml:space="preserve">
+    <value>Attendance</value>
+  </data>
+  <data name="Menu.CollapseAll" xml:space="preserve">
+    <value>Collapse all</value>
+  </data>
+  <data name="Menu.Content" xml:space="preserve">
+    <value>Content</value>
+  </data>
+  <data name="Menu.Dashboard" xml:space="preserve">
+    <value>Dashboard</value>
+  </data>
+  <data name="Menu.Exams" xml:space="preserve">
+    <value>Exams</value>
+  </data>
+  <data name="Menu.Grace" xml:space="preserve">
+    <value>Access grace</value>
+  </data>
+  <data name="Menu.Groups" xml:space="preserve">
+    <value>Groups</value>
+  </data>
+  <data name="Menu.GroupsSchedule" xml:space="preserve">
+    <value>Groups and schedules</value>
+  </data>
+  <data name="Menu.Homework" xml:space="preserve">
+    <value>Homework</value>
+  </data>
+  <data name="Menu.Invoices" xml:space="preserve">
+    <value>Invoices and collections</value>
+  </data>
+  <data name="Menu.Lookups" xml:space="preserve">
+    <value>Master data</value>
+  </data>
+  <data name="Menu.Materials" xml:space="preserve">
+    <value>Materials</value>
+  </data>
+  <data name="Menu.Messages" xml:space="preserve">
+    <value>Messages</value>
+  </data>
+  <data name="Menu.OfflineGrades" xml:space="preserve">
+    <value>Offline grades</value>
+  </data>
+  <data name="Menu.OnlineExams" xml:space="preserve">
+    <value>Online exams</value>
+  </data>
+  <data name="Menu.OnlineGrades" xml:space="preserve">
+    <value>Online grades</value>
+  </data>
+  <data name="Menu.Reports" xml:space="preserve">
+    <value>Reports</value>
+  </data>
+  <data name="Menu.Roles" xml:space="preserve">
+    <value>Roles and permissions</value>
+  </data>
+  <data name="Menu.Search" xml:space="preserve">
+    <value>Search all screens</value>
+  </data>
+  <data name="Menu.Sessions" xml:space="preserve">
+    <value>Sessions and attendance</value>
+  </data>
+  <data name="Menu.StudentList" xml:space="preserve">
+    <value>Student list</value>
+  </data>
+  <data name="Menu.StudentQuestions" xml:space="preserve">
+    <value>Student questions</value>
+  </data>
+  <data name="Menu.StudentReports" xml:space="preserve">
+    <value>Student reports</value>
+  </data>
+  <data name="Menu.Students" xml:space="preserve">
+    <value>Students</value>
+  </data>
+  <data name="Menu.Users" xml:space="preserve">
+    <value>Users</value>
+  </data>
+  <data name="Messages.ClearChat" xml:space="preserve">
+    <value>Clear chat</value>
+  </data>
+  <data name="Messages.Empty" xml:space="preserve">
+    <value>No messages yet. When a student sends a question, it will show up here.</value>
+  </data>
+  <data name="Messages.Last" xml:space="preserve">
+    <value>Last message</value>
+  </data>
+  <data name="Messages.NoMessages" xml:space="preserve">
+    <value>No messages yet</value>
+  </data>
+  <data name="Messages.ReplyPh" xml:space="preserve">
+    <value>Write a reply...</value>
+  </data>
+  <data name="Messages.Unlinked" xml:space="preserve">
+    <value>Your account isn't linked to a teacher. Link it from Users so you receive your students' questions.</value>
+  </data>
+  <data name="Notify.ClearAll" xml:space="preserve">
+    <value>Clear notifications</value>
+  </data>
+  <data name="Notify.ClearAllAsk" xml:space="preserve">
+    <value>Clear all your notifications?</value>
+  </data>
+  <data name="Notify.ClearChatAsk" xml:space="preserve">
+    <value>Clear this chat?</value>
+  </data>
+  <data name="Notify.Empty" xml:space="preserve">
+    <value>No new notifications</value>
+  </data>
+  <data name="Notify.ReadAll" xml:space="preserve">
+    <value>Mark all as read</value>
+  </data>
+  <data name="Notify.Title" xml:space="preserve">
+    <value>Notifications</value>
+  </data>
+  <data name="Offline.Back" xml:space="preserve">
+    <value>Back</value>
+  </data>
+  <data name="Offline.Date" xml:space="preserve">
+    <value>Date</value>
+  </data>
+  <data name="Offline.DateRequired" xml:space="preserve">
+    <value>Set the exam date</value>
+  </data>
+  <data name="Offline.DeleteAsk" xml:space="preserve">
+    <value>Delete this exam and its grades?</value>
+  </data>
+  <data name="Offline.Empty" xml:space="preserve">
+    <value>There are no offline exams yet. Create an exam with a name and a full score, then enter the group's grades.</value>
+  </data>
+  <data name="Offline.EnterGrades" xml:space="preserve">
+    <value>Enter grades</value>
+  </data>
+  <data name="Offline.Exam" xml:space="preserve">
+    <value>Exam</value>
+  </data>
+  <data name="Offline.ExamDate" xml:space="preserve">
+    <value>Exam date</value>
+  </data>
+  <data name="Offline.ExamName" xml:space="preserve">
+    <value>Exam name</value>
+  </data>
+  <data name="Offline.Graded" xml:space="preserve">
+    <value>Entered</value>
+  </data>
+  <data name="Offline.GradesSaved" xml:space="preserve">
+    <value>Grades saved</value>
+  </data>
+  <data name="Offline.Heading" xml:space="preserve">
+    <value>Offline grade entry</value>
+  </data>
+  <data name="Offline.LoadStudentsFailed" xml:space="preserve">
+    <value>Couldn't load students</value>
+  </data>
+  <data name="Offline.MaxRequired" xml:space="preserve">
+    <value>Enter the full score</value>
+  </data>
+  <data name="Offline.MaxScore" xml:space="preserve">
+    <value>Full score</value>
+  </data>
+  <data name="Offline.NamePh" xml:space="preserve">
+    <value>Example: October monthly exam</value>
+  </data>
+  <data name="Offline.NameRequired" xml:space="preserve">
+    <value>Enter the exam name</value>
+  </data>
+  <data name="Offline.New" xml:space="preserve">
+    <value>New offline exam</value>
+  </data>
+  <data name="Offline.NewPaper" xml:space="preserve">
+    <value>Paper exam</value>
+  </data>
+  <data name="Offline.NoActiveStudents" xml:space="preserve">
+    <value>There are no active students in this group.</value>
+  </data>
+  <data name="Offline.PickGroup" xml:space="preserve">
+    <value>Choose the group</value>
+  </data>
+  <data name="Offline.PickGroupHint" xml:space="preserve">
+    <value>Choose the group to show student grades.</value>
+  </data>
+  <data name="Offline.SaveGrades" xml:space="preserve">
+    <value>Save grades</value>
+  </data>
+  <data name="Offline.Score" xml:space="preserve">
+    <value>Score</value>
+  </data>
+  <data name="Offline.TryAgain" xml:space="preserve">
+    <value>Something went wrong. Try again.</value>
+  </data>
+  <data name="Pay.Cash" xml:space="preserve">
+    <value>Cash</value>
+  </data>
+  <data name="Pay.Transfer" xml:space="preserve">
+    <value>Transfer</value>
+  </data>
+  <data name="Pay.Wallet" xml:space="preserve">
+    <value>Wallet</value>
+  </data>
+  <data name="Perm.Add" xml:space="preserve">
+    <value>Add</value>
+  </data>
+  <data name="Perm.Delete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="Perm.Edit" xml:space="preserve">
+    <value>Edit</value>
+  </data>
+  <data name="Perm.View" xml:space="preserve">
+    <value>View</value>
+  </data>
+  <data name="Portal.AllowFullscreen" xml:space="preserve">
+    <value>Allow full screen so the exam can open.</value>
+  </data>
+  <data name="Portal.AnswersSaved" xml:space="preserve">
+    <value>Your answers were saved. Results will appear for all students on {0}</value>
+  </data>
+  <data name="Portal.AskEmpty" xml:space="preserve">
+    <value>Write your question and it will reach the teacher</value>
+  </data>
+  <data name="Portal.AskPh" xml:space="preserve">
+    <value>Write your question...</value>
+  </data>
+  <data name="Portal.Back" xml:space="preserve">
+    <value>Back</value>
+  </data>
+  <data name="Portal.BackToExam" xml:space="preserve">
+    <value>Back to the exam page</value>
+  </data>
+  <data name="Portal.BeforeStart" xml:space="preserve">
+    <value>Before you start</value>
+  </data>
+  <data name="Portal.ClosedWait" xml:space="preserve">
+    <value>The exam time is over. Results will appear on {0}</value>
+  </data>
+  <data name="Portal.Closes" xml:space="preserve">
+    <value>Closes</value>
+  </data>
+  <data name="Portal.Date" xml:space="preserve">
+    <value>Date</value>
+  </data>
+  <data name="Portal.Download" xml:space="preserve">
+    <value>Download</value>
+  </data>
+  <data name="Portal.EnterExam" xml:space="preserve">
+    <value>Enter the exam</value>
+  </data>
+  <data name="Portal.EscHint" xml:space="preserve">
+    <value>If you pressed Esc by mistake, go back to the exam. If you leave now, it will be submitted.</value>
+  </data>
+  <data name="Portal.Exam" xml:space="preserve">
+    <value>Exam</value>
+  </data>
+  <data name="Portal.ExamClosed" xml:space="preserve">
+    <value>The exam was closed</value>
+  </data>
+  <data name="Portal.ExamRules" xml:space="preserve">
+    <value>The exam opens in full screen. Copy and paste are blocked, and if you leave the tab or the page the exam is submitted and you can't return to it.</value>
+  </data>
+  <data name="Portal.FileCount" xml:space="preserve">
+    <value>{0} files</value>
+  </data>
+  <data name="Portal.FullscreenRequired" xml:space="preserve">
+    <value>Full screen is required</value>
+  </data>
+  <data name="Portal.GateRules" xml:space="preserve">
+    <value>The exam will open in full screen. Copy, paste, and screenshots are blocked, and if you leave the tab the exam is submitted. If you press Esc, a message appears first.</value>
+  </data>
+  <data name="Portal.GraceUntil" xml:space="preserve">
+    <value>Access until {0}</value>
+  </data>
+  <data name="Portal.GraceUntilHomework" xml:space="preserve">
+    <value>You have temporary access until {0}. After that it locks if the balance is still unpaid.</value>
+  </data>
+  <data name="Portal.GraceUntilMaterial" xml:space="preserve">
+    <value>You have temporary access until {0}. After that it locks if the balance is still unpaid.</value>
+  </data>
+  <data name="Portal.HomeworkLocked" xml:space="preserve">
+    <value>You have {0} homework items locked until the balance is paid. Contact the office.</value>
+  </data>
+  <data name="Portal.HomeworkLockedItem" xml:space="preserve">
+    <value>This homework is locked</value>
+  </data>
+  <data name="Portal.Latest5" xml:space="preserve">
+    <value>Latest 5</value>
+  </data>
+  <data name="Portal.LatestHomework" xml:space="preserve">
+    <value>Latest homework</value>
+  </data>
+  <data name="Portal.LatestMaterials" xml:space="preserve">
+    <value>Latest materials</value>
+  </data>
+  <data name="Portal.LeftFullscreen" xml:space="preserve">
+    <value>You left full screen</value>
+  </data>
+  <data name="Portal.LeftSubmitted" xml:space="preserve">
+    <value>You left the exam page, so it was submitted. Results will appear on {0}</value>
+  </data>
+  <data name="Portal.MaterialLocked" xml:space="preserve">
+    <value>This material is locked</value>
+  </data>
+  <data name="Portal.MaterialsLocked" xml:space="preserve">
+    <value>You have {0} materials locked until the balance is paid. Contact the office.</value>
+  </data>
+  <data name="Portal.Missed" xml:space="preserve">
+    <value>You couldn't take the exam in time, and the result is closed.</value>
+  </data>
+  <data name="Portal.NoEditAfter" xml:space="preserve">
+    <value>You can't change your answers after submitting.</value>
+  </data>
+  <data name="Portal.NoFiles" xml:space="preserve">
+    <value>No files</value>
+  </data>
+  <data name="Portal.NoHomework" xml:space="preserve">
+    <value>No homework yet</value>
+  </data>
+  <data name="Portal.NoHomeworkForGroups" xml:space="preserve">
+    <value>No homework is available for your groups yet</value>
+  </data>
+  <data name="Portal.NoMaterials" xml:space="preserve">
+    <value>No materials yet</value>
+  </data>
+  <data name="Portal.NoMaterialsForGroups" xml:space="preserve">
+    <value>No materials are available for your groups yet</value>
+  </data>
+  <data name="Portal.NoOfflineGrades" xml:space="preserve">
+    <value>No offline grades yet</value>
+  </data>
+  <data name="Portal.NoOnlineExams" xml:space="preserve">
+    <value>There are no online exams for your groups right now</value>
+  </data>
+  <data name="Portal.NoScreenshots" xml:space="preserve">
+    <value>Screenshots are not allowed</value>
+  </data>
+  <data name="Portal.NoTeacher" xml:space="preserve">
+    <value>You aren't enrolled in a group yet, so there's no teacher to ask.</value>
+  </data>
+  <data name="Portal.NotGraded" xml:space="preserve">
+    <value>Not entered yet</value>
+  </data>
+  <data name="Portal.Opens" xml:space="preserve">
+    <value>Opens</value>
+  </data>
+  <data name="Portal.OutOf" xml:space="preserve">
+    <value>Out of</value>
+  </data>
+  <data name="Portal.PaperGrades" xml:space="preserve">
+    <value>Paper exam grades</value>
+  </data>
+  <data name="Portal.PayToOpen" xml:space="preserve">
+    <value>Pay the balance or contact the office to unlock it.</value>
+  </data>
+  <data name="Portal.PayToOpenHomework" xml:space="preserve">
+    <value>Pay the balance or contact the office to unlock it.</value>
+  </data>
+  <data name="Portal.Points" xml:space="preserve">
+    <value>{0} points</value>
+  </data>
+  <data name="Portal.QuestionCount" xml:space="preserve">
+    <value>Questions</value>
+  </data>
+  <data name="Portal.QuestionScore" xml:space="preserve">
+    <value>{0} questions · out of {1}</value>
+  </data>
+  <data name="Portal.ResultsAt" xml:space="preserve">
+    <value>Results will appear for all students on {0}</value>
+  </data>
+  <data name="Portal.ResultsForAll" xml:space="preserve">
+    <value>Results appear for all students</value>
+  </data>
+  <data name="Portal.Resume" xml:space="preserve">
+    <value>Continue the exam</value>
+  </data>
+  <data name="Portal.ReturnToExam" xml:space="preserve">
+    <value>Return to the exam</value>
+  </data>
+  <data name="Portal.Score" xml:space="preserve">
+    <value>Score</value>
+  </data>
+  <data name="Portal.ScreenshotBlocked" xml:space="preserve">
+    <value>Taking a screenshot is not allowed during the exam.</value>
+  </data>
+  <data name="Portal.Start" xml:space="preserve">
+    <value>Start the exam</value>
+  </data>
+  <data name="Portal.Submit" xml:space="preserve">
+    <value>Submit</value>
+  </data>
+  <data name="Portal.SubmitAsk" xml:space="preserve">
+    <value>Submit the exam?</value>
+  </data>
+  <data name="Portal.SubmitExam" xml:space="preserve">
+    <value>Submit the exam</value>
+  </data>
+  <data name="Portal.Submitted" xml:space="preserve">
+    <value>Submitted</value>
+  </data>
+  <data name="Portal.SubmittedWait" xml:space="preserve">
+    <value>The exam was submitted. Results will appear for you and everyone on {0}</value>
+  </data>
+  <data name="Portal.TeacherNoAccount" xml:space="preserve">
+    <value>This teacher doesn't have a login yet. The question will be saved, but they won't get a notification.</value>
+  </data>
+  <data name="Portal.TimeoutSaved" xml:space="preserve">
+    <value>Time is up and the answers received were saved. Results will appear on {0}</value>
+  </data>
+  <data name="Portal.Upcoming" xml:space="preserve">
+    <value>The exam hasn't opened yet. It opens on {0}</value>
+  </data>
+  <data name="Portal.YourAttendance" xml:space="preserve">
+    <value>Your attendance</value>
+  </data>
+  <data name="Portal.YourCode" xml:space="preserve">
+    <value>Your code</value>
+  </data>
+  <data name="Portal.YourScore" xml:space="preserve">
+    <value>Your score {0} / {1}</value>
+  </data>
+  <data name="Portal.YourScoreLabel" xml:space="preserve">
+    <value>Your score</value>
+  </data>
+  <data name="Privacy.Body" xml:space="preserve">
+    <value>Use this page to describe the privacy policy.</value>
+  </data>
+  <data name="Privacy.Title" xml:space="preserve">
+    <value>Privacy policy</value>
+  </data>
+  <data name="Report.AllStudents" xml:space="preserve">
+    <value>All students</value>
+  </data>
+  <data name="Report.AttendanceRate" xml:space="preserve">
+    <value>Attendance rate</value>
+  </data>
+  <data name="Report.AttendanceReport" xml:space="preserve">
+    <value>Attendance report</value>
+  </data>
+  <data name="Report.Average" xml:space="preserve">
+    <value>Average</value>
+  </data>
+  <data name="Report.Back" xml:space="preserve">
+    <value>Back</value>
+  </data>
+  <data name="Report.Count" xml:space="preserve">
+    <value>Reports: {0}</value>
+  </data>
+  <data name="Report.Date" xml:space="preserve">
+    <value>Date</value>
+  </data>
+  <data name="Report.Day" xml:space="preserve">
+    <value>Day</value>
+  </data>
+  <data name="Report.Exam" xml:space="preserve">
+    <value>Exam</value>
+  </data>
+  <data name="Report.ExamCount" xml:space="preserve">
+    <value>Exams</value>
+  </data>
+  <data name="Report.From" xml:space="preserve">
+    <value>From</value>
+  </data>
+  <data name="Report.FromTo" xml:space="preserve">
+    <value>From {0} to {1}</value>
+  </data>
+  <data name="Report.Grades" xml:space="preserve">
+    <value>Grades</value>
+  </data>
+  <data name="Report.GradesReport" xml:space="preserve">
+    <value>Grades report</value>
+  </data>
+  <data name="Report.NoOffline" xml:space="preserve">
+    <value>There are no offline exams in this period.</value>
+  </data>
+  <data name="Report.NoOnline" xml:space="preserve">
+    <value>There are no online exams in this period.</value>
+  </data>
+  <data name="Report.NoSessions" xml:space="preserve">
+    <value>There are no sessions in this period.</value>
+  </data>
+  <data name="Report.NoStudents" xml:space="preserve">
+    <value>There are no students in the group during this period.</value>
+  </data>
+  <data name="Report.Note" xml:space="preserve">
+    <value>Note</value>
+  </data>
+  <data name="Report.OfflineExams" xml:space="preserve">
+    <value>Offline exams</value>
+  </data>
+  <data name="Report.OnlineExams" xml:space="preserve">
+    <value>Online exams</value>
+  </data>
+  <data name="Report.ParentSign" xml:space="preserve">
+    <value>Parent signature</value>
+  </data>
+  <data name="Report.Percent" xml:space="preserve">
+    <value>Percent</value>
+  </data>
+  <data name="Report.PickGroup" xml:space="preserve">
+    <value>-- Choose a group --</value>
+  </data>
+  <data name="Report.PickRange" xml:space="preserve">
+    <value>Choose the group and the period to show the report.</value>
+  </data>
+  <data name="Report.Print" xml:space="preserve">
+    <value>Print</value>
+  </data>
+  <data name="Report.Score" xml:space="preserve">
+    <value>Score</value>
+  </data>
+  <data name="Report.Show" xml:space="preserve">
+    <value>Show</value>
+  </data>
+  <data name="Report.Signature" xml:space="preserve">
+    <value>Signature</value>
+  </data>
+  <data name="Report.To" xml:space="preserve">
+    <value>To</value>
+  </data>
+  <data name="Report.Unrecorded" xml:space="preserve">
+    <value>Not recorded</value>
+  </data>
+  <data name="Role.Admin" xml:space="preserve">
+    <value>Admin</value>
+  </data>
+  <data name="Role.Student" xml:space="preserve">
+    <value>Student</value>
+  </data>
+  <data name="Role.Teacher" xml:space="preserve">
+    <value>Teacher</value>
+  </data>
+  <data name="Roles.AllPermissions" xml:space="preserve">
+    <value>All permissions</value>
+  </data>
+  <data name="Roles.DeleteAsk" xml:space="preserve">
+    <value>Delete role {0}?</value>
+  </data>
+  <data name="Roles.Edit" xml:space="preserve">
+    <value>Edit role</value>
+  </data>
+  <data name="Roles.Name" xml:space="preserve">
+    <value>Role name</value>
+  </data>
+  <data name="Roles.NamePh" xml:space="preserve">
+    <value>Example: Reception</value>
+  </data>
+  <data name="Roles.New" xml:space="preserve">
+    <value>New role</value>
+  </data>
+  <data name="Roles.Permissions" xml:space="preserve">
+    <value>Permissions</value>
+  </data>
+  <data name="Roles.Screen" xml:space="preserve">
+    <value>Screen</value>
+  </data>
+  <data name="Roles.UserCount" xml:space="preserve">
+    <value>Users</value>
+  </data>
+  <data name="Screen.exams" xml:space="preserve">
+    <value>Exams</value>
+  </data>
+  <data name="Screen.grace" xml:space="preserve">
+    <value>Material access grace</value>
+  </data>
+  <data name="Screen.groups" xml:space="preserve">
+    <value>Groups</value>
+  </data>
+  <data name="Screen.homework" xml:space="preserve">
+    <value>Homework</value>
+  </data>
+  <data name="Screen.invoices" xml:space="preserve">
+    <value>Invoices and collections</value>
+  </data>
+  <data name="Screen.lookups" xml:space="preserve">
+    <value>Master data</value>
+  </data>
+  <data name="Screen.materials" xml:space="preserve">
+    <value>Materials</value>
+  </data>
+  <data name="Screen.messages" xml:space="preserve">
+    <value>Messages</value>
+  </data>
+  <data name="Screen.reports" xml:space="preserve">
+    <value>Reports</value>
+  </data>
+  <data name="Screen.roles" xml:space="preserve">
+    <value>Roles and permissions</value>
+  </data>
+  <data name="Screen.sessions" xml:space="preserve">
+    <value>Sessions and attendance</value>
+  </data>
+  <data name="Screen.students" xml:space="preserve">
+    <value>Students</value>
+  </data>
+  <data name="Screen.users" xml:space="preserve">
+    <value>Users</value>
+  </data>
+  <data name="Sessions.AllPresent" xml:space="preserve">
+    <value>All present</value>
+  </data>
+  <data name="Sessions.AlreadyMarked" xml:space="preserve">
+    <value>{0} was already marked present</value>
+  </data>
+  <data name="Sessions.AttendedOf" xml:space="preserve">
+    <value>Attended {0} of {1}</value>
+  </data>
+  <data name="Sessions.CameraError" xml:space="preserve">
+    <value>Couldn't start the camera. The camera only works on HTTPS or localhost.</value>
+  </data>
+  <data name="Sessions.CameraLibError" xml:space="preserve">
+    <value>Couldn't load the camera library</value>
+  </data>
+  <data name="Sessions.CancelAsk" xml:space="preserve">
+    <value>Cancel this session?</value>
+  </data>
+  <data name="Sessions.Cancelled" xml:space="preserve">
+    <value>Cancelled</value>
+  </data>
+  <data name="Sessions.Date" xml:space="preserve">
+    <value>Date</value>
+  </data>
+  <data name="Sessions.Day" xml:space="preserve">
+    <value>Day</value>
+  </data>
+  <data name="Sessions.Done" xml:space="preserve">
+    <value>Done</value>
+  </data>
+  <data name="Sessions.Excused" xml:space="preserve">
+    <value>Excused</value>
+  </data>
+  <data name="Sessions.From" xml:space="preserve">
+    <value>From</value>
+  </data>
+  <data name="Sessions.GenerateMonth" xml:space="preserve">
+    <value>Generate this month's sessions</value>
+  </data>
+  <data name="Sessions.LiveOrScheduled" xml:space="preserve">
+    <value>In progress / scheduled</value>
+  </data>
+  <data name="Sessions.Marked" xml:space="preserve">
+    <value>Marked present: {0}</value>
+  </data>
+  <data name="Sessions.Month" xml:space="preserve">
+    <value>Month</value>
+  </data>
+  <data name="Sessions.NoStudentsDay" xml:space="preserve">
+    <value>No students are enrolled in the group on this day.</value>
+  </data>
+  <data name="Sessions.NotYet" xml:space="preserve">
+    <value>Not started yet</value>
+  </data>
+  <data name="Sessions.OpensEarly" xml:space="preserve">
+    <value>Attendance opens 15 minutes before the session</value>
+  </data>
+  <data name="Sessions.PresentAbsent" xml:space="preserve">
+    <value>Present / absent</value>
+  </data>
+  <data name="Sessions.QrHint" xml:space="preserve">
+    <value>Anyone already marked stays as they are. Anyone not recorded yet starts as absent until their code is scanned.</value>
+  </data>
+  <data name="Sessions.QrMode" xml:space="preserve">
+    <value>Attendance by QR</value>
+  </data>
+  <data name="Sessions.ReadyScan" xml:space="preserve">
+    <value>Ready to scan...</value>
+  </data>
+  <data name="Sessions.ResetAll" xml:space="preserve">
+    <value>Reset all</value>
+  </data>
+  <data name="Sessions.ResetAsk" xml:space="preserve">
+    <value>Mark every student absent and start over?</value>
+  </data>
+  <data name="Sessions.ResetDone" xml:space="preserve">
+    <value>Reset done. Start scanning...</value>
+  </data>
+  <data name="Sessions.ResetYes" xml:space="preserve">
+    <value>Yes, reset</value>
+  </data>
+  <data name="Sessions.Restore" xml:space="preserve">
+    <value>Restore</value>
+  </data>
+  <data name="Sessions.RestoreAsk" xml:space="preserve">
+    <value>Restore this session?</value>
+  </data>
+  <data name="Sessions.SaveAttendance" xml:space="preserve">
+    <value>Save attendance</value>
+  </data>
+  <data name="Sessions.ScanPh" xml:space="preserve">
+    <value>Scan with a barcode reader, or type the code and press Enter</value>
+  </data>
+  <data name="Sessions.Show" xml:space="preserve">
+    <value>Show</value>
+  </data>
+  <data name="Sessions.StartCamera" xml:space="preserve">
+    <value>Start camera</value>
+  </data>
+  <data name="Sessions.Stop" xml:space="preserve">
+    <value>Stop</value>
+  </data>
+  <data name="Sessions.TakeAttendance" xml:space="preserve">
+    <value>Take attendance</value>
+  </data>
+  <data name="Sessions.TakeTitle" xml:space="preserve">
+    <value>Session attendance</value>
+  </data>
+  <data name="Sessions.Title" xml:space="preserve">
+    <value>Sessions and attendance</value>
+  </data>
+  <data name="Sessions.To" xml:space="preserve">
+    <value>To</value>
+  </data>
+  <data name="Sessions.UnknownCode" xml:space="preserve">
+    <value>Code {0} is not a student enrolled in this group</value>
+  </data>
+  <data name="Students.AccountAsk" xml:space="preserve">
+    <value>Create a login for the student, or reset the password if they already have one?</value>
+  </data>
+  <data name="Students.AllGrades" xml:space="preserve">
+    <value>All grades</value>
+  </data>
+  <data name="Students.AttendanceOf" xml:space="preserve">
+    <value>Attendance of {0}</value>
+  </data>
+  <data name="Students.AttendanceRate" xml:space="preserve">
+    <value>Attendance rate</value>
+  </data>
+  <data name="Students.BirthDate" xml:space="preserve">
+    <value>Date of birth</value>
+  </data>
+  <data name="Students.CardsTitle" xml:space="preserve">
+    <value>Student cards</value>
+  </data>
+  <data name="Students.ChooseGroup" xml:space="preserve">
+    <value>-- Choose a group --</value>
+  </data>
+  <data name="Students.Close" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="Students.CodeFromGroup" xml:space="preserve">
+    <value>Generated from the group</value>
+  </data>
+  <data name="Students.CodeStays" xml:space="preserve">
+    <value>The student code stays the same ({0}) because it is based on another group.</value>
+  </data>
+  <data name="Students.CodeWillChange" xml:space="preserve">
+    <value>The student code will change from {0} to {1}. The old QR keeps working, and you can print a new card.</value>
+  </data>
+  <data name="Students.Credentials" xml:space="preserve">
+    <value>Student login details</value>
+  </data>
+  <data name="Students.CredentialsHint" xml:space="preserve">
+    <value>Write them down and give them to the student. They won't be shown again.</value>
+  </data>
+  <data name="Students.CurrentCode" xml:space="preserve">
+    <value>Current student code:</value>
+  </data>
+  <data name="Students.CurrentGroup" xml:space="preserve">
+    <value>Current group</value>
+  </data>
+  <data name="Students.DoTransfer" xml:space="preserve">
+    <value>Transfer</value>
+  </data>
+  <data name="Students.Edit" xml:space="preserve">
+    <value>Edit student</value>
+  </data>
+  <data name="Students.FromGroup" xml:space="preserve">
+    <value>From group</value>
+  </data>
+  <data name="Students.LoginAccount" xml:space="preserve">
+    <value>Login account</value>
+  </data>
+  <data name="Students.MoveToAnother" xml:space="preserve">
+    <value>Transfer to another group</value>
+  </data>
+  <data name="Students.MustHaveGroup" xml:space="preserve">
+    <value>A student can't be registered without a group, and their code is based on that group's code.</value>
+  </data>
+  <data name="Students.New" xml:space="preserve">
+    <value>New student</value>
+  </data>
+  <data name="Students.NoAttendanceYet" xml:space="preserve">
+    <value>No attendance recorded yet</value>
+  </data>
+  <data name="Students.NoStudents" xml:space="preserve">
+    <value>No students.</value>
+  </data>
+  <data name="Students.Note" xml:space="preserve">
+    <value>Note</value>
+  </data>
+  <data name="Students.NotEnrolledNow" xml:space="preserve">
+    <value>The student isn't enrolled in any group right now. Enroll them from Groups → Students.</value>
+  </data>
+  <data name="Students.NotInGroup" xml:space="preserve">
+    <value>Not enrolled in any group</value>
+  </data>
+  <data name="Students.OneGroupHint" xml:space="preserve">
+    <value>A student stays in one group. Use transfer to change it.</value>
+  </data>
+  <data name="Students.Parent" xml:space="preserve">
+    <value>Parent</value>
+  </data>
+  <data name="Students.ParentName" xml:space="preserve">
+    <value>Parent name</value>
+  </data>
+  <data name="Students.ParentPhone" xml:space="preserve">
+    <value>Parent phone</value>
+  </data>
+  <data name="Students.PickGroup" xml:space="preserve">
+    <value>Choose a group. A student can't be registered without one.</value>
+  </data>
+  <data name="Students.PickNewGroup" xml:space="preserve">
+    <value>Choose the new group</value>
+  </data>
+  <data name="Students.Print" xml:space="preserve">
+    <value>Print</value>
+  </data>
+  <data name="Students.PrintCard" xml:space="preserve">
+    <value>Print card</value>
+  </data>
+  <data name="Students.PrintStudentCard" xml:space="preserve">
+    <value>Print student card</value>
+  </data>
+  <data name="Students.QrCard" xml:space="preserve">
+    <value>QR card</value>
+  </data>
+  <data name="Students.QrCards" xml:space="preserve">
+    <value>QR cards</value>
+  </data>
+  <data name="Students.Search" xml:space="preserve">
+    <value>Search by name, phone, or code</value>
+  </data>
+  <data name="Students.StudentCode" xml:space="preserve">
+    <value>Student code</value>
+  </data>
+  <data name="Students.StudentPhone" xml:space="preserve">
+    <value>Student phone</value>
+  </data>
+  <data name="Students.ToGroup" xml:space="preserve">
+    <value>To group</value>
+  </data>
+  <data name="Students.TransferAsk" xml:space="preserve">
+    <value>Confirm transferring the student?</value>
+  </data>
+  <data name="Students.TransferInvoiceHint" xml:space="preserve">
+    <value>Invoices: if the transfer month was billed (even partly) in the old group, the new group is billed from next month. If it wasn't billed yet, this month's invoice moves to the new group at its price.</value>
+  </data>
+  <data name="Students.Transferred" xml:space="preserve">
+    <value>Transfer complete</value>
+  </data>
+  <data name="Students.TransferTitle" xml:space="preserve">
+    <value>Transfer student</value>
+  </data>
+  <data name="Students.TransferYes" xml:space="preserve">
+    <value>Yes, transfer</value>
+  </data>
+  <data name="Users.ActiveCanLogin" xml:space="preserve">
+    <value>Active (can sign in)</value>
+  </data>
+  <data name="Users.ChangePassword" xml:space="preserve">
+    <value>Change password</value>
+  </data>
+  <data name="Users.DeleteAsk" xml:space="preserve">
+    <value>Delete user {0}?</value>
+  </data>
+  <data name="Users.Edit" xml:space="preserve">
+    <value>Edit user</value>
+  </data>
+  <data name="Users.EmailOptional" xml:space="preserve">
+    <value>Email (optional)</value>
+  </data>
+  <data name="Users.EmailPhone" xml:space="preserve">
+    <value>Email / phone</value>
+  </data>
+  <data name="Users.FullName" xml:space="preserve">
+    <value>Full name</value>
+  </data>
+  <data name="Users.LinkedTeacher" xml:space="preserve">
+    <value>Linked teacher (if this user is a teacher)</value>
+  </data>
+  <data name="Users.New" xml:space="preserve">
+    <value>New user</value>
+  </data>
+  <data name="Users.NewPassword" xml:space="preserve">
+    <value>New password (at least 6 characters)</value>
+  </data>
+  <data name="Users.PasswordHint" xml:space="preserve">
+    <value>Password (at least 6 characters)</value>
+  </data>
+  <data name="Users.Role" xml:space="preserve">
+    <value>Role</value>
+  </data>
+  <data name="Users.Search" xml:space="preserve">
+    <value>Search by name, username, email, or phone</value>
+  </data>
+  <data name="Users.UserLabel" xml:space="preserve">
+    <value>User</value>
+  </data>
+  <data name="Users.UserName" xml:space="preserve">
+    <value>Username</value>
+  </data>
+  <data name="Users.UserNameLatin" xml:space="preserve">
+    <value>Username (Latin)</value>
+  </data>
+  <data name="Viewer.ExitFullscreen" xml:space="preserve">
+    <value>Exit full screen</value>
+  </data>
+  <data name="Viewer.Fullscreen" xml:space="preserve">
+    <value>Full screen</value>
+  </data>
+</root>

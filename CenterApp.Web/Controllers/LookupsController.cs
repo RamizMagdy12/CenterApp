@@ -1,5 +1,6 @@
 ﻿using CenterApp.Entity.Security;
 using CenterApp.Service;
+using CenterApp.Service.Localization;
 using CenterApp.Service.Models;
 using CenterApp.Web.Security;
 using Microsoft.AspNetCore.Mvc;
@@ -11,20 +12,21 @@ namespace CenterApp.Web.Controllers;
 public class LookupsController : AppController
 {
     private readonly ICatalogService _s;
-    public LookupsController(ICatalogService s) => _s = s;
+    private readonly ILocService _loc;
+    public LookupsController(ICatalogService s, ILocService loc) { _s = s; _loc = loc; }
 
-    static readonly Dictionary<string, string> Titles = new()
+    static readonly Dictionary<string, string> TitleKeys = new()
     {
-        ["subjects"] = "المواد",
-        ["teachers"] = "المدرسين",
-        ["gradelevels"] = "المراحل الدراسية"
+        ["subjects"] = "Lookups.Subjects",
+        ["teachers"] = "Lookups.Teachers",
+        ["gradelevels"] = "Lookups.Grades"
     };
 
     public async Task<IActionResult> Index(string type = "subjects")
     {
-        if (!Titles.ContainsKey(type)) type = "subjects";
+        if (!TitleKeys.ContainsKey(type)) type = "subjects";
         ViewBag.Type = type;
-        ViewBag.Title = Titles[type];
+        ViewBag.Title = _loc.Get(TitleKeys[type]).Value;
         return View(await _s.ListAsync(type));
     }
 

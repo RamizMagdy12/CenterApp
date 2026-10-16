@@ -1,11 +1,11 @@
 ﻿@model StudentVm
 @inject CenterApp.Service.Services.IPermissionService Perm
 @functions {
-    static string Label(GroupPick p)
+    string Label(GroupPick p)
     {
         var s = p.Name;
         if (p.Code.Length > 0) s += $" ({p.Code})";
-        if (p.Free >= 0) s += $" — متبقي {p.Free}";
+        if (p.Free >= 0) s += " — " + L.Get("Groups.SeatsLeft", p.Free).Value;
         if (p.Why != null) s += $" — {p.Why}";
         return s;
     }
@@ -19,40 +19,40 @@
     <input type="hidden" asp-for="Id" />
     <div class="row g-3">
         <div class="col-md-6">
-            <label class="form-label">الاسم</label>
+            <label class="form-label">@L.Get("Common.Name")</label>
             <input asp-for="Name" class="form-control" />
         </div>
         <div class="col-md-3">
-            <label class="form-label">كود الطالب</label>
-            <input id="codeView" class="form-control" dir="ltr" disabled value="@(isNew ? "يتولّد حسب المجموعة" : Model.Code)" />
+            <label class="form-label">@L.Get("Students.StudentCode")</label>
+            <input id="codeView" class="form-control" dir="ltr" disabled value="@(isNew ? L.Get("Students.CodeFromGroup").Value : Model.Code)" />
         </div>
         <div class="col-md-3">
-            <label class="form-label">المرحلة</label>
-            <select asp-for="GradeLevelId" asp-items="grades" class="form-select"><option value="">-- اختر --</option></select>
+            <label class="form-label">@L.Get("Common.Grade")</label>
+            <select asp-for="GradeLevelId" asp-items="grades" class="form-select"><option value="">@L.Get("Common.Choose")</option></select>
         </div>
 
         @if (isNew)
         {
             <div class="col-md-6">
-                <label class="form-label">المجموعة <span class="text-danger">*</span></label>
+                <label class="form-label">@L.Get("Common.Group") <span class="text-danger">*</span></label>
                 <select name="GroupId" id="sGroup" class="form-select">
-                    <option value="">-- اختر المجموعة --</option>
+                    <option value="">@L.Get("Students.ChooseGroup")</option>
                     @foreach (var p in picks)
                     {
                         <option value="@p.Id" data-next="@p.NextCode" disabled="@p.Disabled">@Label(p)</option>
                     }
                 </select>
-                <small class="text-muted">الطالب مينفعش يتسجّل من غير مجموعة، وكوده بيتحدد حسب كودها.</small>
+                <small class="text-muted">@L.Get("Students.MustHaveGroup")</small>
             </div>
         }
         else
         {
             <div class="col-12">
-                <label class="form-label">المجموعة الحالية</label>
+                <label class="form-label">@L.Get("Students.CurrentGroup")</label>
                 <div>
                     @if (Model.GroupNames.Count == 0)
                     {
-                        <span class="text-muted">مش مسجل في أي مجموعة</span>
+                        <span class="text-muted">@L.Get("Students.NotInGroup")</span>
                     }
                     @foreach (var n in Model.GroupNames)
                     {
@@ -61,40 +61,45 @@
                     @if (Model.GroupNames.Count > 0 && Perm.Has(User, Screens.Groups, PermissionAction.Edit))
                     {
                         <button type="button" class="btn btn-sm btn-outline-dark ms-2"
-                                onclick="openForm('@Url.Action("TransferForm", "Students", new { id = Model.Id })', 'نقل طالب', true)">
-                            نقل لمجموعة تانية
+                                onclick="openForm('@Url.Action("TransferForm", "Students", new { id = Model.Id })', stuTransferTitle, true)">
+                            @L.Get("Students.MoveToAnother")
                         </button>
                     }
                 </div>
-                <small class="text-muted">الطالب يفضل في مجموعة واحدة. عشان تغيّرها استخدم نقل.</small>
+                <small class="text-muted">@L.Get("Students.OneGroupHint")</small>
             </div>
         }
 
-        <div class="col-md-4"><label class="form-label">موبايل الطالب</label><input asp-for="Phone" class="form-control" /></div>
-        <div class="col-md-4"><label class="form-label">اسم ولي الأمر</label><input asp-for="ParentName" class="form-control" /></div>
-        <div class="col-md-4"><label class="form-label">موبايل ولي الأمر</label><input asp-for="ParentPhone" class="form-control" /></div>
-        <div class="col-md-4"><label class="form-label">تاريخ الميلاد</label><input asp-for="BirthDate" type="date" class="form-control" /></div>
-        <div class="col-md-8"><label class="form-label">ملاحظات</label><input asp-for="Notes" class="form-control" /></div>
+        <div class="col-md-4"><label class="form-label">@L.Get("Students.StudentPhone")</label><input asp-for="Phone" class="form-control" /></div>
+        <div class="col-md-4"><label class="form-label">@L.Get("Students.ParentName")</label><input asp-for="ParentName" class="form-control" /></div>
+        <div class="col-md-4"><label class="form-label">@L.Get("Students.ParentPhone")</label><input asp-for="ParentPhone" class="form-control" /></div>
+        <div class="col-md-4"><label class="form-label">@L.Get("Students.BirthDate")</label><input asp-for="BirthDate" type="date" class="form-control" /></div>
+        <div class="col-md-8"><label class="form-label">@L.Get("Common.Notes")</label><input asp-for="Notes" class="form-control" /></div>
 
         <div class="col-12 form-check ms-3">
-            <input asp-for="IsActive" class="form-check-input" /><label class="form-check-label">نشط</label>
+            <input asp-for="IsActive" class="form-check-input" /><label class="form-check-label">@L.Get("Common.Active")</label>
         </div>
-        <div class="col-12"><button class="btn btn-success" onclick="saveStudent()">حفظ</button></div>
+        <div class="col-12"><button class="btn btn-success" onclick="saveStudent()">@L.Get("Common.Save")</button></div>
     </div>
 </form>
 
 <script>
     var qrUrl = '@Url.Action("Qr", "Students")';
     var cardUrl = '@Url.Action("Card", "Students")';
+    var stuTransferTitle = @Json.Serialize(L.Get("Students.TransferTitle").Value);
+    var codeFromGroup = @Json.Serialize(L.Get("Students.CodeFromGroup").Value);
+    var pickGroup = @Json.Serialize(L.Get("Students.PickGroup").Value);
+    var printCard = @Json.Serialize(L.Get("Students.PrintCard").Value);
+    var closeText = @Json.Serialize(L.Get("Students.Close").Value);
 
     $('#sGroup').on('change', function () {
         var next = $(this).find('option:selected').attr('data-next');
-        $('#codeView').val(next ? next : 'يتولّد حسب المجموعة');
+        $('#codeView').val(next ? next : codeFromGroup);
     });
 
     function saveStudent() {
         var isNew = $('#studentForm input[name=Id]').val() === '0';
-        if (isNew && !$('#sGroup').val()) { notify('warning', 'اختار المجموعة، الطالب مينفعش يتسجّل من غير مجموعة'); return; }
+        if (isNew && !$('#sGroup').val()) { notify('warning', pickGroup); return; }
 
         postJson('@Url.Action("Save", "Students")', $('#studentForm').serialize(), function (r) {
             if (!isNew) { appModal().hide(); location.reload(); return; }
@@ -105,8 +110,8 @@
                 '<div class="alert alert-success">' + r.message + '</div>' +
                 '<img src="' + qrUrl + '?code=' + encodeURIComponent(p[1]) + '" width="180" alt="QR" />' +
                 '<div class="fw-bold fs-4 my-2" dir="ltr">' + p[0] + '</div>' +
-                '<a class="btn btn-primary" target="_blank" href="' + cardUrl + '/' + r.id + '">طباعة الكارت</a> ' +
-                '<button class="btn btn-secondary" onclick="location.reload()">إغلاق</button>' +
+                '<a class="btn btn-primary" target="_blank" href="' + cardUrl + '/' + r.id + '">' + printCard + '</a> ' +
+                '<button class="btn btn-secondary" onclick="location.reload()">' + closeText + '</button>' +
                 '</div>';
             $('#appModalBody').html(html);
             $('#appModal').off('hidden.bs.modal.stu').one('hidden.bs.modal.stu', function () { location.reload(); });

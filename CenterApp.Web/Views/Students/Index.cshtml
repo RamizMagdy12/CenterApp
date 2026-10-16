@@ -1,32 +1,32 @@
 ﻿@model PagedResult<Student>
 @inject CenterApp.Service.Services.IPermissionService Perm
 @{
-    ViewData["Title"] = "الطلاب";
+    ViewData["Title"] = L.Get("Menu.Students").Value;
     var grades = (List<SelectListItem>)ViewBag.Grades;
     var gid = (ViewBag.GradeId as long?)?.ToString() ?? "";
     var q = (string?)ViewBag.Q;
 }
 <div class="d-flex justify-content-between align-items-center mb-3">
-    <h3>الطلاب <span class="badge bg-secondary">@Model.Total</span></h3>
-    <button class="btn btn-primary" onclick="openForm('@Url.Action("Form", "Students")', 'طالب جديد', true)">+ طالب جديد</button>
+    <h3>@L.Get("Menu.Students") <span class="badge bg-secondary">@Model.Total</span></h3>
+    <button class="btn btn-primary" onclick="openForm('@Url.Action("Form", "Students")', '@L.Get("Students.New")', true)">+ @L.Get("Students.New")</button>
 </div>
 
 <form method="get" class="row g-2 mb-3">
-    <div class="col-md-5"><input name="q" value="@q" class="form-control" placeholder="بحث بالاسم / الموبايل / الكود" /></div>
+    <div class="col-md-5"><input name="q" value="@q" class="form-control" placeholder="@L.Get("Students.Search")" /></div>
     <div class="col-md-3">
         <select name="gradeId" class="form-select">
-            <option value="">كل المراحل</option>
+            <option value="">@L.Get("Students.AllGrades")</option>
             @foreach (var g in grades)
             {
                 <option value="@g.Value" selected="@(g.Value == gid)">@g.Text</option>
             }
         </select>
     </div>
-    <div class="col-auto"><button class="btn btn-outline-primary">بحث</button></div>
+    <div class="col-auto"><button class="btn btn-outline-primary">@L.Get("Common.Search")</button></div>
 </form>
 
 <table class="table table-striped table-hover align-middle">
-    <thead><tr><th>الكود</th><th>الاسم</th><th>الموبايل</th><th>ولي الأمر</th><th>المرحلة</th><th>الحالة</th><th></th></tr></thead>
+    <thead><tr><th>@L.Get("Common.Code")</th><th>@L.Get("Common.Name")</th><th>@L.Get("Common.Phone")</th><th>@L.Get("Students.Parent")</th><th>@L.Get("Common.Grade")</th><th>@L.Get("Common.Status")</th><th></th></tr></thead>
     <tbody>
         @foreach (var s in Model.Items)
         {
@@ -37,19 +37,19 @@
                 <td>@s.ParentName <small class="text-muted">@s.ParentPhone</small></td>
                 <td>@s.GradeLevel?.Name</td>
                 <td>@if (s.IsActive) {
-                    <span class="badge bg-success">نشط</span>
+                    <span class="badge bg-success">@L.Get("Common.Active")</span>
                 } else
                 {
 
-                    <span class="badge bg-secondary">متوقف</span>
+                    <span class="badge bg-secondary">@L.Get("Common.Stopped")</span>
                 }
             </td>
             <td class="text-nowrap">
-                <a class="btn btn-sm btn-outline-success" asp-action="Attendance" asp-route-id="@s.Id">حضور</a>
-                <button class="btn btn-sm btn-outline-primary" onclick="openForm('@Url.Action("Form", "Students", new { id = s.Id })', 'تعديل طالب', true)">تعديل</button>
-                    <a class="btn btn-sm btn-outline-dark" target="_blank" href="@Url.Action("Card", "Students", new { id = s.Id })">كارت QR</a>
-                    <button class="btn btn-sm btn-outline-success" onclick="studentAccount(@s.Id)">حساب الدخول</button>
-                <button class="btn btn-sm btn-outline-danger" onclick="confirmPost('@Url.Action("Delete", "Students")', { id: @s.Id }, 'تأكيد الحذف؟')">حذف</button>
+                <a class="btn btn-sm btn-outline-success" asp-action="Attendance" asp-route-id="@s.Id">@L.Get("Menu.Attendance")</a>
+                <button class="btn btn-sm btn-outline-primary" onclick="openForm('@Url.Action("Form", "Students", new { id = s.Id })', '@L.Get("Students.Edit")', true)">@L.Get("Common.Edit")</button>
+                    <a class="btn btn-sm btn-outline-dark" target="_blank" href="@Url.Action("Card", "Students", new { id = s.Id })">@L.Get("Students.QrCard")</a>
+                    <button class="btn btn-sm btn-outline-success" onclick="studentAccount(@s.Id)">@L.Get("Students.LoginAccount")</button>
+                <button class="btn btn-sm btn-outline-danger" onclick="confirmPost('@Url.Action("Delete", "Students")', { id: @s.Id }, '@L.Get("Common.ConfirmDelete")')">@L.Get("Common.Delete")</button>
             </td>
         </tr>
     }
@@ -72,14 +72,14 @@
 @section Scripts {
     <script>
         function studentAccount(id) {
-            askConfirm('إنشاء حساب دخول للطالب (أو إعادة ضبط كلمة المرور لو عنده حساب)؟', 'نعم').then(function (ok) {
+            askConfirm(@Json.Serialize(L.Get("Students.AccountAsk").Value), @Json.Serialize(L.Get("Common.Yes").Value)).then(function (ok) {
                 if (!ok) return;
                 postJson('@Url.Action("Account", "Students")', { id: id }, function (r) {
                     var p = (r.extra || '').split('|');
                     swalShow({
-                        icon: 'success', title: 'بيانات دخول الطالب',
-                        html: '<div style="font-size:18px;line-height:2">اسم المستخدم: <b dir="ltr">' + p[0] + '</b><br>كلمة المرور: <b dir="ltr">' + p[1] + '</b></div>' +
-                            '<small class="text-muted">سجّلها وسلّمها للطالب، مش هتظهر تاني</small>'
+                        icon: 'success', title: @Json.Serialize(L.Get("Students.Credentials").Value),
+                        html: '<div style="font-size:18px;line-height:2">' + @Json.Serialize(L.Get("Users.UserName").Value) + ': <b dir="ltr">' + p[0] + '</b><br>' + @Json.Serialize(L.Get("Auth.Password").Value) + ': <b dir="ltr">' + p[1] + '</b></div>' +
+                            '<small class="text-muted">' + @Json.Serialize(L.Get("Students.CredentialsHint").Value) + '</small>'
                     });
                 });
             });

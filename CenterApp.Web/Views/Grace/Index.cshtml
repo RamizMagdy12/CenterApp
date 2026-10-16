@@ -1,14 +1,14 @@
 ﻿@model List<GraceRow>
 @{
-    ViewData["Title"] = "سماح الوصول للماتريال";
+    ViewData["Title"] = L.Get("Grace.Title").Value;
 }
 <div class="d-flex justify-content-between align-items-center mb-3">
-    <h3>سماح الوصول للماتريال</h3>
-    <button class="btn btn-primary" onclick="openForm('@Url.Action("Form", "Grace")', 'سماح جديد')">+ سماح جديد</button>
+    <h3>@L.Get("Grace.Title")</h3>
+    <button class="btn btn-primary" onclick="openForm('@Url.Action("Form", "Grace")', '@L.Get("Grace.New")')">+ @L.Get("Grace.New")</button>
 </div>
 
 <table class="table table-striped align-middle">
-    <thead><tr><th>الطالب</th><th>الكود</th><th>المجموعة</th><th>الأيام</th><th>آخر يوم</th><th>السبب</th><th>الحالة</th><th></th></tr></thead>
+    <thead><tr><th>@L.Get("Common.Student")</th><th>@L.Get("Common.Code")</th><th>@L.Get("Common.Group")</th><th>@L.Get("Grace.Days")</th><th>@L.Get("Grace.LastDay")</th><th>@L.Get("Common.Reason")</th><th>@L.Get("Common.Status")</th><th></th></tr></thead>
     <tbody>
         @foreach (var g in Model)
         {
@@ -22,23 +22,23 @@
                 <td>
                     @if (g.IsRevoked)
                     {
-                        <span class="badge bg-secondary">ملغي</span>
+                        <span class="badge bg-secondary">@L.Get("Grace.Revoked")</span>
                     }
                     else if (g.IsActive)
                     {
 
-                        <span class="badge bg-success">ساري</span>
+                        <span class="badge bg-success">@L.Get("Grace.Active")</span>
                     }
                     else
                     {
 
-                        <span class="badge bg-light text-dark border">انتهى</span>
+                        <span class="badge bg-light text-dark border">@L.Get("Grace.Expired")</span>
                     }
                 </td>
                 <td>
                     @if (g.IsActive)
                     {
-                        <button class="btn btn-sm btn-outline-danger" onclick="confirmPost('@Url.Action("Revoke", "Grace")', { id: @g.Id }, 'إلغاء السماح ده؟')">إلغاء</button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="confirmPost('@Url.Action("Revoke", "Grace")', { id: @g.Id }, '@L.Get("Grace.RevokeAsk")')">@L.Get("Common.Cancel")</button>
                     }
                 </td>
             </tr>

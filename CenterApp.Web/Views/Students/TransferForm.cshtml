@@ -1,21 +1,21 @@
 ﻿@model TransferFormVm
 @using System.Text.Json
 @functions {
-    static string Label(GroupPick p)
+    string Label(GroupPick p)
     {
         var s = p.Name;
         if (p.Code.Length > 0) s += $" ({p.Code})";
-        if (p.Free >= 0) s += $" — متبقي {p.Free}";
+        if (p.Free >= 0) s += " — " + L.Get("Groups.SeatsLeft", p.Free).Value;
         if (p.Why != null) s += $" — {p.Why}";
         return s;
     }
 }
 
-<div class="mb-3"><strong>@Model.StudentName</strong> — كود الطالب الحالي: <b dir="ltr">@Model.Code</b></div>
+<div class="mb-3"><strong>@Model.StudentName</strong> — @L.Get("Students.CurrentCode") <b dir="ltr">@Model.Code</b></div>
 
 @if (Model.Current.Count == 0)
 {
-    <div class="alert alert-warning">الطالب مش مسجل في أي مجموعة حالياً. سجّله من المجموعات ← الطلاب.</div>
+    <div class="alert alert-warning">@L.Get("Students.NotEnrolledNow")</div>
 }
 else
 {
@@ -23,7 +23,7 @@ else
         <input type="hidden" name="studentId" value="@Model.StudentId" />
         <div class="row g-3">
             <div class="col-md-6">
-                <label class="form-label">من مجموعة</label>
+                <label class="form-label">@L.Get("Students.FromGroup")</label>
                 <select name="fromGroupId" id="trFrom" class="form-select">
                     @foreach (var c in Model.Current)
                     {
@@ -32,9 +32,9 @@ else
                 </select>
             </div>
             <div class="col-md-6">
-                <label class="form-label">إلى مجموعة</label>
+                <label class="form-label">@L.Get("Students.ToGroup")</label>
                 <select name="toGroupId" id="trTo" class="form-select">
-                    <option value="">-- اختر --</option>
+                    <option value="">@L.Get("Common.Choose")</option>
                     @foreach (var t in Model.Targets)
                     {
                         <option value="@t.Id" data-next="@t.NextCode" disabled="@t.Disabled">@Label(t)</option>
@@ -46,17 +46,25 @@ else
 
             <div class="col-12">
                 <small class="text-muted">
-                    الفواتير: لو شهر النقل اتحاسب (ولو جزئي) في المجموعة القديمة، الجديدة بتتحاسب من الشهر الجاي. ولو لسه ما اتحاسبش، فاتورة الشهر بتتنقل للجديدة بسعرها.
+                    @L.Get("Students.TransferInvoiceHint")
                 </small>
             </div>
 
-            <div class="col-12"><button class="btn btn-success" onclick="doTransfer()">تنفيذ النقل</button></div>
+            <div class="col-12"><button class="btn btn-success" onclick="doTransfer()">@L.Get("Students.DoTransfer")</button></div>
         </div>
     </form>
 
     <script>
         var codeGroupId = @Model.CodeGroupId;
         var curCode = @Html.Raw(JsonSerializer.Serialize(Model.Code));
+        var codeWillChange = @Json.Serialize(L.Get("Students.CodeWillChange").Value);
+        var codeStays = @Json.Serialize(L.Get("Students.CodeStays").Value);
+        var pickNewGroup = @Json.Serialize(L.Get("Students.PickNewGroup").Value);
+        var transferAsk = @Json.Serialize(L.Get("Students.TransferAsk").Value);
+        var transferYes = @Json.Serialize(L.Get("Students.TransferYes").Value);
+        var transferred = @Json.Serialize(L.Get("Students.Transferred").Value);
+        var printStudentCard = @Json.Serialize(L.Get("Students.PrintStudentCard").Value);
+        var okText = @Json.Serialize(L.Get("Common.Ok").Value);
 
         function preview() {
             var to = $('#trTo option:selected');
@@ -65,23 +73,23 @@ else
             var from = parseInt($('#trFrom').val());
             var recode = (codeGroupId === 0 || codeGroupId === from);
             var msg = recode
-                ? 'كود الطالب هيتغيّر من ' + curCode + ' إلى ' + to.attr('data-next') + '. الـ QR القديم هيفضل شغال، وتقدر تطبع كارت جديد.'
-                : 'كود الطالب هيفضل زي ما هو (' + curCode + ') لأنه مبني على مجموعة تانية.';
+                ? codeWillChange.replace('{0}', curCode).replace('{1}', to.attr('data-next'))
+                : codeStays.replace('{0}', curCode);
             $('#trPreview').show().text(msg);
         }
         $('#trTo, #trFrom').on('change', preview);
 
         function doTransfer() {
-            if (!$('#trTo').val()) { notify('warning', 'اختار المجموعة الجديدة'); return; }
+            if (!$('#trTo').val()) { notify('warning', pickNewGroup); return; }
 
-            askConfirm('تأكيد نقل الطالب؟', 'نعم، انقله').then(function (ok) {
+            askConfirm(transferAsk, transferYes).then(function (ok) {
                 if (!ok) return;
                 postJson('@Url.Action("Transfer", "Students")', $('#trForm').serialize(), function (r) {
                     var safe = $('<div>').text(r.message).html();
                     swalShow({
-                        icon: 'success', title: 'تم النقل', confirmButtonText: 'تمام',
+                        icon: 'success', title: transferred, confirmButtonText: okText,
                         html: '<div style="line-height:1.9">' + safe + '</div>' +
-                            '<a class="btn btn-primary mt-3" target="_blank" href="@Url.Action("Card", "Students")/' + r.id + '">طباعة كارت الطالب</a>'
+                            '<a class="btn btn-primary mt-3" target="_blank" href="@Url.Action("Card", "Students")/' + r.id + '">' + printStudentCard + '</a>'
                     }).then(function () { location.reload(); });
                 });
             });

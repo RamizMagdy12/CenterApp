@@ -1,6 +1,7 @@
 ﻿// Security/AppController.cs
 using System.Security.Claims;
 using CenterApp.Entity.Security;
+using CenterApp.Service.Localization;
 using CenterApp.Service.Models;
 using CenterApp.Service.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -15,5 +16,6 @@ public abstract class AppController : Controller
     protected bool Can(string screen, PermissionAction action)
         => HttpContext.RequestServices.GetRequiredService<IPermissionService>().Has(User, screen, action);
 
-    protected IActionResult NoPermission() => Json(OpResult.Fail("معندكش صلاحية للعملية دي"));
+    protected IActionResult NoPermission()
+        => Json(OpResult.Fail(HttpContext.RequestServices.GetRequiredService<ILocService>().Get("Auth.NoPermission")));
 }

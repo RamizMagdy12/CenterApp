@@ -3,7 +3,7 @@
     Layout = "_PortalLayout"; ViewData["Title"] = Model.Row.Title;
 }
 
-<a class="btn btn-sm btn-light mb-3" asp-action="Materials">← الماتريال</a>
+<a class="btn btn-sm btn-light mb-3" asp-action="Materials"><i class="bi @(CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "ar" ? "bi-arrow-right" : "bi-arrow-left")"></i> @L.Get("Menu.Materials")</a>
 <h3>@Model.Row.Title</h3>
 <p class="text-muted">@Model.Row.Groups • @Model.Row.PublishedAt.ToString("yyyy-MM-dd")</p>
 
@@ -11,16 +11,16 @@
 {
     <div class="panel text-center" style="max-width:520px;margin:30px auto;">
         <div style="font-size:56px;color:#c53030"><i class="bi bi-lock-fill"></i></div>
-        <h4 class="mt-2">الماتريال دي مقفولة</h4>
+        <h4 class="mt-2">@L.Get("Portal.MaterialLocked")</h4>
         <p class="text-muted">@Model.Row.Reason</p>
-        <p>سدّد الحساب أو كلّم الإدارة عشان تفتحها.</p>
+        <p>@L.Get("Portal.PayToOpen")</p>
     </div>
 }
 else
 {
     @if (Model.Row.GraceUntil.HasValue)
     {
-        <div class="alert alert-warning">عندك سماح مؤقت لحد @Model.Row.GraceUntil.Value.AddDays(-1).ToString("yyyy-MM-dd"). بعدها هتتقفل لو الحساب لسه ما اتسددش.</div>
+        <div class="alert alert-warning">@L.Get("Portal.GraceUntilMaterial", Model.Row.GraceUntil.Value.AddDays(-1).ToString("yyyy-MM-dd"))</div>
     }
     <partial name="_MaterialViewer" model="Model.Viewer" />
 }

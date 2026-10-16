@@ -4,17 +4,17 @@
 }
 <div class="chat-wrap">
     <div class="chat-head">
-        <a class="btn btn-sm btn-outline-secondary" asp-action="Index"><i class="bi bi-arrow-right"></i></a>
+        <a class="btn btn-sm btn-outline-secondary" asp-action="Index"><i class="bi @(CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "ar" ? "bi-arrow-right" : "bi-arrow-left")"></i></a>
         <div>
             <b>@Model.Title</b>
             <div class="text-muted small">@Model.Subtitle</div>
         </div>
-        <button type="button" class="btn btn-sm btn-outline-danger chat-delete" id="chatDelete">مسح الشات</button>
+        <button type="button" class="btn btn-sm btn-outline-danger chat-delete" id="chatDelete">@L.Get("Messages.ClearChat")</button>
     </div>
     <div class="chat-log" id="chatLog">
         @if (Model.Messages.Count == 0)
         {
-            <div class="chat-empty">لسه مفيش رسائل</div>
+            <div class="chat-empty">@L.Get("Messages.NoMessages")</div>
         }
         @foreach (var m in Model.Messages)
         {
@@ -26,8 +26,8 @@
         }
     </div>
     <form id="chatForm" class="chat-form">
-        <textarea id="chatBody" rows="2" maxlength="2000" placeholder="اكتب الرد..."></textarea>
-        <button class="btn btn-primary" type="submit">إرسال</button>
+        <textarea id="chatBody" rows="2" maxlength="2000" placeholder="@L.Get("Messages.ReplyPh")"></textarea>
+        <button class="btn btn-primary" type="submit">@L.Get("Common.Send")</button>
     </form>
 </div>
 <script>

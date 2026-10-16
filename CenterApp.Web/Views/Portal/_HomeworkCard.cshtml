@@ -4,14 +4,14 @@
     <div class="mcard-body">
         <b>@Model.Title</b>
         <small>@Model.Groups • @Model.PublishedAt.ToString("yyyy-MM-dd")</small>
-        <small><i class="bi bi-file-earmark-arrow-down"></i> @Model.FilesCount ملف</small>
+        <small><i class="bi bi-file-earmark-arrow-down"></i> @L.Get("Portal.FileCount", Model.FilesCount)</small>
         @if (Model.IsLocked)
         {
             <span class="pill pill-danger">@Model.Reason</span>
         }
         else if (Model.GraceUntil.HasValue)
         {
-            <span class="pill pill-warn">سماح لحد @Model.GraceUntil.Value.AddDays(-1).ToString("yyyy-MM-dd")</span>
+            <span class="pill pill-warn">@L.Get("Portal.GraceUntil", Model.GraceUntil.Value.AddDays(-1).ToString("yyyy-MM-dd"))</span>
         }
     </div>
 </a>

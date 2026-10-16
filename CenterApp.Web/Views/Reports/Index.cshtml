@@ -1,6 +1,6 @@
 @model ReportPageVm
 @{
-    ViewData["Title"] = "تقارير الطلاب";
+    ViewData["Title"] = L.Get("Menu.StudentReports").Value;
     var from = Model.From.ToString("yyyy-MM-dd");
     var to = Model.To.ToString("yyyy-MM-dd");
     string Tab(string kind) => Url.Action("Index", new { groupId = Model.GroupId, studentId = Model.StudentId, from, to, kind })!;
@@ -29,7 +29,7 @@
     .sheet-brand { font-weight: 800; color: var(--primary); }
     .sheet h3 { font-size: 16px; font-weight: 800; margin: 16px 0 8px; }
     .meta, .grid { width: 100%; border-collapse: collapse; margin-bottom: 12px; }
-    .meta th, .meta td, .grid th, .grid td { border: 1px solid var(--line); padding: 8px 10px; text-align: right; }
+    .meta th, .meta td, .grid th, .grid td { border: 1px solid var(--line); padding: 8px 10px; text-align: start; }
     .meta th, .grid th { background: #f7f7fb; font-weight: 700; }
     .summary { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
     .summary span { background: #f7f7fb; border-radius: 10px; padding: 6px 10px; font-size: 13px; }
@@ -43,9 +43,9 @@
 
 <form method="get" class="row g-2 mb-3 align-items-end">
     <div class="col-md-3">
-        <label class="form-label">المجموعة</label>
+        <label class="form-label">@L.Get("Common.Group")</label>
         <select name="groupId" class="form-select" onchange="this.form.studentId.value=''; this.form.submit()">
-            <option value="0">-- اختر المجموعة --</option>
+            <option value="0">@L.Get("Report.PickGroup")</option>
             @foreach (var g in Model.Groups)
             {
                 <option value="@g.Id" selected="@(g.Id == Model.GroupId)">@g.Name</option>
@@ -53,17 +53,17 @@
         </select>
     </div>
     <div class="col-md-2">
-        <label class="form-label">من</label>
+        <label class="form-label">@L.Get("Report.From")</label>
         <input type="date" name="from" value="@from" class="form-control" />
     </div>
     <div class="col-md-2">
-        <label class="form-label">إلى</label>
+        <label class="form-label">@L.Get("Report.To")</label>
         <input type="date" name="to" value="@to" class="form-control" />
     </div>
     <div class="col-md-3">
-        <label class="form-label">الطالب</label>
+        <label class="form-label">@L.Get("Common.Student")</label>
         <select name="studentId" class="form-select">
-            <option value="">كل الطلاب</option>
+            <option value="">@L.Get("Report.AllStudents")</option>
             @foreach (var s in Model.Students)
             {
                 <option value="@s.Id" selected="@(Model.StudentId == s.Id)">@s.Name @(string.IsNullOrEmpty(s.Code) ? "" : "(" + s.Code + ")")</option>
@@ -72,14 +72,14 @@
     </div>
     <input type="hidden" name="kind" value="@Model.Kind" />
     <div class="col-md-2">
-        <button type="submit" class="btn btn-primary w-100">عرض</button>
+        <button type="submit" class="btn btn-primary w-100">@L.Get("Report.Show")</button>
     </div>
 </form>
 
 <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
     <div class="rpt-tabs">
-        <a class="@(Model.Kind == "attendance" ? "active" : "")" href="@Tab("attendance")">الحضور</a>
-        <a class="@(Model.Kind == "grades" ? "active" : "")" href="@Tab("grades")">الدرجات</a>
+        <a class="@(Model.Kind == "attendance" ? "active" : "")" href="@Tab("attendance")">@L.Get("Menu.Attendance")</a>
+        <a class="@(Model.Kind == "grades" ? "active" : "")" href="@Tab("grades")">@L.Get("Report.Grades")</a>
     </div>
     @if (Model.GroupId != 0)
     {
@@ -89,21 +89,21 @@
            asp-route-studentId="@Model.StudentId"
            asp-route-from="@from"
            asp-route-to="@to"
-           asp-route-kind="@Model.Kind">طباعة</a>
+           asp-route-kind="@Model.Kind">@L.Get("Report.Print")</a>
     }
 </div>
 
 @if (Model.GroupId == 0)
 {
-    <div class="panel"><div class="empty-box">اختار المجموعة والفترة عشان يظهر التقرير.</div></div>
+    <div class="panel"><div class="empty-box">@L.Get("Report.PickRange")</div></div>
 }
 else if (Model.Reports.Count == 0)
 {
-    <div class="panel"><div class="empty-box">مفيش طلاب في المجموعة خلال الفترة دي.</div></div>
+    <div class="panel"><div class="empty-box">@L.Get("Report.NoStudents")</div></div>
 }
 else
 {
-    <p class="text-muted mb-2">عدد التقارير: @Model.Reports.Count</p>
+    <p class="text-muted mb-2">@L.Get("Report.Count", Model.Reports.Count)</p>
     @foreach (var report in Model.Reports)
     {
         <partial name="_Sheet" model="new ReportSheetModel { Kind = Model.Kind, Report = report }" />
