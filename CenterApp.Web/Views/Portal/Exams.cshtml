@@ -1,11 +1,11 @@
 @model StudentExamsVm
 @{
-    Layout = "_PortalLayout"; ViewData["Title"] = "الاختبارات";
+    Layout = "_PortalLayout"; ViewData["Title"] = L.Get("Menu.Exams").Value;
 }
-<h3 class="mb-3">الاختبارات الأونلاين</h3>
+<h3 class="mb-3">@L.Get("Menu.OnlineExams")</h3>
 @if (Model.Online.Count == 0)
 {
-    <div class="panel empty-box">مفيش اختبارات أونلاين لمجموعاتك دلوقتي</div>
+    <div class="panel empty-box">@L.Get("Portal.NoOnlineExams")</div>
 }
 <div class="mgrid mb-4">
     @foreach (var m in Model.Online)
@@ -15,10 +15,10 @@
             <span class="mcard-body">
                 <b>@m.Title</b>
                 <small>@m.OpensAt.ToString("yyyy-MM-dd HH:mm") → @m.ClosesAt.ToString("HH:mm")</small>
-                <small>@m.QuestionsCount سؤال · من @m.MaxScore.ToString("0.##")</small>
+                <small>@L.Get("Portal.QuestionScore", m.QuestionsCount, m.MaxScore.ToString("0.##"))</small>
                 @if (m.Phase == "result" && m.Score != null)
                 {
-                    <span class="pill pill-ok">درجتك @m.Score.Value.ToString("0.##") / @m.MaxScore.ToString("0.##")</span>
+                    <span class="pill pill-ok">@L.Get("Portal.YourScore", m.Score.Value.ToString("0.##"), m.MaxScore.ToString("0.##"))</span>
                 }
                 else
                 {
@@ -29,16 +29,16 @@
     }
 </div>
 
-<h3 class="mb-3">درجات الاختبارات الورقية</h3>
+<h3 class="mb-3">@L.Get("Portal.PaperGrades")</h3>
 @if (Model.Offline.Count == 0)
 {
-    <div class="panel empty-box">لسه مفيش درجات أوفلاين</div>
+    <div class="panel empty-box">@L.Get("Portal.NoOfflineGrades")</div>
 }
 else
 {
     <div class="panel">
         <table class="table table-striped align-middle mb-0">
-            <thead><tr><th>الامتحان</th><th>المجموعة</th><th>التاريخ</th><th>الدرجة</th></tr></thead>
+            <thead><tr><th>@L.Get("Portal.Exam")</th><th>@L.Get("Common.Group")</th><th>@L.Get("Portal.Date")</th><th>@L.Get("Portal.Score")</th></tr></thead>
             <tbody>
                 @foreach (var m in Model.Offline)
                 {
@@ -49,7 +49,7 @@ else
                         <td>
                             @if (m.Score == null)
                             {
-                                <span class="text-muted">لسه مترصدتش</span>
+                                <span class="text-muted">@L.Get("Portal.NotGraded")</span>
                             }
                             else
                             {

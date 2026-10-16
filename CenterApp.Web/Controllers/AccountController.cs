@@ -1,8 +1,10 @@
 ﻿using CenterApp.Entity.Identity;
 using CenterApp.Entity.Security;
+using CenterApp.Service.Localization;
 using CenterApp.Web.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CenterApp.Web.Controllers;
@@ -11,8 +13,14 @@ public class AccountController : Controller
 {
     private readonly SignInManager<AppUser> _sm;
     private readonly UserManager<AppUser> _um;
+    private readonly ILocService _loc;
 
-    public AccountController(SignInManager<AppUser> sm, UserManager<AppUser> um) { _sm = sm; _um = um; }
+    public AccountController(SignInManager<AppUser> sm, UserManager<AppUser> um, ILocService loc)
+    {
+        _sm = sm;
+        _um = um;
+        _loc = loc;
+    }
 
     [AllowAnonymous, HttpGet]
     public IActionResult Login(string? returnUrl = null, bool replaced = false)
@@ -27,7 +35,7 @@ public class AccountController : Controller
         return View(new LoginVm
         {
             ReturnUrl = returnUrl,
-            Error = replaced ? "الحساب اتفتح من جهاز تاني، والجلسة هنا اتقفلت." : null
+            Error = replaced ? _loc.Get("Auth.SessionReplaced").Value : null
         });
     }
 
@@ -36,7 +44,7 @@ public class AccountController : Controller
     {
         if (!ModelState.IsValid)
         {
-            vm.Error = "ادخل اسم المستخدم وكلمة المرور";
+            vm.Error = _loc.Get("Auth.EnterCredentials");
             return View(vm);
         }
 
@@ -45,12 +53,12 @@ public class AccountController : Controller
 
         if (user == null)
         {
-            vm.Error = "اسم المستخدم أو كلمة المرور غير صحيحة";
+            vm.Error = _loc.Get("Auth.BadCredentials");
             return View(vm);
         }
         if (!user.IsActive)
         {
-            vm.Error = "الحساب ده متوقف، كلّم مدير النظام";
+            vm.Error = _loc.Get("Auth.Inactive");
             return View(vm);
         }
 
@@ -71,8 +79,8 @@ public class AccountController : Controller
         }
 
         vm.Error = result.IsLockedOut
-            ? "الحساب اتقفل مؤقتاً بسبب محاولات غلط كتير، جرّب بعد 5 دقايق"
-            : "اسم المستخدم أو كلمة المرور غير صحيحة";
+            ? _loc.Get("Auth.LockedOut")
+            : _loc.Get("Auth.BadCredentials");
         return View(vm);
     }
 
@@ -84,4 +92,25 @@ public class AccountController : Controller
     }
 
     public IActionResult AccessDenied() => View();
+
+    [AllowAnonymous, HttpPost, ValidateAntiForgeryToken]
+    public IActionResult SetLanguage(string culture, string? returnUrl)
+    {
+        var name = culture == "en" ? "en" : "ar-EG";
+        Response.Cookies.Append(
+            CookieRequestCultureProvider.DefaultCookieName,
+            CookieRequestCultureProvider.MakeCookieValue(new RequestCulture(name)),
+            new CookieOptions
+            {
+                Expires = DateTimeOffset.UtcNow.AddYears(1),
+                IsEssential = true,
+                Path = "/",
+                SameSite = SameSiteMode.Lax
+            });
+
+        if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+            return LocalRedirect(returnUrl);
+
+        return RedirectToAction(nameof(Login));
+    }
 }

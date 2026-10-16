@@ -1,4 +1,5 @@
 ﻿using CenterApp.Entity.Center;
+using CenterApp.Service.Localization;
 using CenterApp.Service.Models;
 using CenterApp.Service.Unitofwork;
 using Microsoft.EntityFrameworkCore;
@@ -6,7 +7,8 @@ using Microsoft.EntityFrameworkCore;
 public class DashboardService : IDashboardService
 {
     private readonly IUnitOfWork _u;
-    public DashboardService(IUnitOfWork u) => _u = u;
+    private readonly ILocService _loc;
+    public DashboardService(IUnitOfWork u, ILocService loc) { _u = u; _loc = loc; }
 
     private static bool IsPresent(AttendanceStatus s) => s == AttendanceStatus.Present || s == AttendanceStatus.Late;
 
@@ -61,7 +63,7 @@ public class DashboardService : IDashboardService
         var names = await _u.GradeLevel.GetAll().ToDictionaryAsync(g => g.Id, g => g.Name);
 
         vm.Grades = byGrade.OrderByDescending(x => x.C)
-            .Select(x => new GradeSlice(x.Id.HasValue && names.TryGetValue(x.Id.Value, out var n) ? n : "بدون مرحلة", x.C))
+            .Select(x => new GradeSlice(x.Id.HasValue && names.TryGetValue(x.Id.Value, out var n) ? n : _loc.Get("Dash.NoGrade"), x.C))
             .ToList();
 
         // ── حسابات الشهر

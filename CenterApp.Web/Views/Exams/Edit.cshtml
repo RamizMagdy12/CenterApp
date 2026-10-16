@@ -1,64 +1,63 @@
 @model OnlineExamEditVm
 @using System.Text.Json
 @{
-    ViewData["Title"] = Model.Id == 0 ? "اختبار أونلاين جديد" : "تعديل اختبار";
+    ViewData["Title"] = Model.Id == 0 ? L.Get("Exam.NewOnline").Value : L.Get("Exam.EditTitle").Value;
     var qjson = JsonSerializer.Serialize(Model.Questions, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
 }
 <div class="panel">
     <div class="row g-3">
         <div class="col-md-8">
-            <label class="form-label">عنوان الاختبار</label>
+            <label class="form-label">@L.Get("Exam.ExamTitle")</label>
             <input id="mTitle" class="form-control" value="@Model.Title" @(Model.Locked ? "disabled" : "") />
         </div>
         <div class="col-md-4 d-flex align-items-end">
             @if (Model.Status == ExamStatus.Published)
             {
-                <span class="badge bg-success">منشور</span>
+                <span class="badge bg-success">@L.Get("Exam.Published")</span>
             }
             else if (Model.Id != 0)
             {
-                <span class="badge bg-secondary">مسودة</span>
+                <span class="badge bg-secondary">@L.Get("Exam.Draft")</span>
             }
         </div>
         <div class="col-12">
-            <label class="form-label">وصف للطالب (اختياري)</label>
+            <label class="form-label">@L.Get("Exam.StudentDescription")</label>
             <textarea id="mDesc" class="form-control" rows="2" @(Model.Locked ? "disabled" : "")>@Model.Description</textarea>
         </div>
         <div class="col-md-4">
-            <label class="form-label">يفتح من</label>
+            <label class="form-label">@L.Get("Exam.OpensFrom")</label>
             <input id="mOpen" type="datetime-local" class="form-control" value="@Model.OpensAt?.ToString("yyyy-MM-ddTHH:mm")" @(Model.Locked ? "disabled" : "") />
         </div>
         <div class="col-md-4">
-            <label class="form-label">يقفل في</label>
+            <label class="form-label">@L.Get("Exam.ClosesAt")</label>
             <input id="mClose" type="datetime-local" class="form-control" value="@Model.ClosesAt?.ToString("yyyy-MM-ddTHH:mm")" @(Model.Locked ? "disabled" : "") />
         </div>
         <div class="col-md-4">
-            <label class="form-label">النتيجة تظهر لكل الطلاب في</label>
+            <label class="form-label">@L.Get("Exam.ResultsAtLabel")</label>
             <input id="mResult" type="datetime-local" class="form-control" value="@Model.ResultsAt?.ToString("yyyy-MM-ddTHH:mm")" />
         </div>
         <div class="col-12">
             <div class="alert alert-info mb-0">
-                الاختبار يتفتح بس في الفترة دي، وممنوع فيه النسخ واللصق، ولو الطالب خرج من التاب أو من الصفحة الاختبار بيتسلّم لوحده.
-                تقدر تضيف صورة جنب السؤال لو فيه رسم. الدرجة بتتحسب وقت التسليم، والطالب يشوفها هو وزملاؤه في وقت ظهور النتيجة مع بعض.
+                @L.Get("Exam.Rules")
             </div>
         </div>
         @if (Model.Locked)
         {
             <div class="col-12">
-                <div class="alert alert-warning mb-0">الاختبار بدأ أو فيه محاولات، فتقدر تعدّل وقت ظهور النتيجة بس.</div>
+                <div class="alert alert-warning mb-0">@L.Get("Exam.LockedHint")</div>
             </div>
         }
 
         <div class="col-12">
-            <label class="form-label">المجموعات</label>
+            <label class="form-label">@L.Get("Exam.Groups")</label>
             <div class="form-check mb-1">
                 <input type="checkbox" class="form-check-input" id="gAll" @(Model.Locked ? "disabled" : "") />
-                <label for="gAll" class="form-check-label fw-bold">كل المجموعات</label>
+                <label for="gAll" class="form-check-label fw-bold">@L.Get("Common.AllGroups")</label>
             </div>
             <div class="border rounded p-2" style="max-height:200px;overflow:auto">
                 @if (Model.Groups.Count == 0)
                 {
-                    <span class="text-muted">مفيش مجموعات</span>
+                    <span class="text-muted">@L.Get("Exam.NoGroups")</span>
                 }
                 @foreach (var g in Model.Groups)
                 {
@@ -71,10 +70,10 @@
         </div>
 
         <div class="col-12 d-flex justify-content-between align-items-center">
-            <label class="form-label mb-0">الأسئلة <span class="text-muted" id="totalPts"></span></label>
+            <label class="form-label mb-0">@L.Get("Exam.Questions") <span class="text-muted" id="totalPts"></span></label>
             @if (!Model.Locked)
             {
-                <button type="button" class="btn btn-sm btn-outline-primary" onclick="addQuestion()">+ سؤال</button>
+                <button type="button" class="btn btn-sm btn-outline-primary" onclick="addQuestion()">+ @L.Get("Exam.Question")</button>
             }
         </div>
         <div class="col-12" id="qList"></div>
@@ -82,14 +81,14 @@
         <div class="col-12 d-flex gap-2">
             @if (!Model.Locked)
             {
-                <button class="btn btn-outline-primary" id="btnDraft" onclick="saveAll(false)">حفظ كمسودة</button>
-                <button class="btn btn-success" id="btnPub" onclick="saveAll(true)">حفظ ونشر</button>
+                <button class="btn btn-outline-primary" id="btnDraft" onclick="saveAll(false)">@L.Get("Exam.SaveDraft")</button>
+                <button class="btn btn-success" id="btnPub" onclick="saveAll(true)">@L.Get("Exam.SavePublish")</button>
             }
             else
             {
-                <button class="btn btn-primary" id="btnDraft" onclick="saveAll(false)">حفظ وقت النتيجة</button>
+                <button class="btn btn-primary" id="btnDraft" onclick="saveAll(false)">@L.Get("Exam.SaveResultsTime")</button>
             }
-            <a class="btn btn-light" asp-action="Index">رجوع</a>
+            <a class="btn btn-light" asp-action="Index">@L.Get("Exam.Back")</a>
         </div>
     </div>
 </div>
@@ -100,6 +99,26 @@
         var examId = @Model.Id;
         var locked = @(Model.Locked ? "true" : "false");
         var questions = JSON.parse(document.getElementById('qSeed').textContent || '[]');
+        var lblQuestionImage = @Json.Serialize(L.Get("Exam.QuestionImage").Value);
+        var lblRemoveImage = @Json.Serialize(L.Get("Exam.RemoveImage").Value);
+        var lblImageTooBig = @Json.Serialize(L.Get("Exam.ImageTooBig").Value);
+        var lblTotal = @Json.Serialize(L.Get("Exam.TotalPoints").Value);
+        var lblChoice = @Json.Serialize(L.Get("Exam.Choice").Value);
+        var lblDelete = @Json.Serialize(L.Get("Common.Delete").Value);
+        var lblQuestionN = @Json.Serialize(L.Get("Exam.QuestionN").Value);
+        var lblDeleteQuestion = @Json.Serialize(L.Get("Exam.DeleteQuestion").Value);
+        var lblQuestionText = @Json.Serialize(L.Get("Exam.QuestionTextPh").Value);
+        var lblQuestionPoints = @Json.Serialize(L.Get("Exam.QuestionPoints").Value);
+        var lblMarkCorrect = @Json.Serialize(L.Get("Exam.MarkCorrect").Value);
+        var lblAddChoice = @Json.Serialize(L.Get("Exam.Choice").Value);
+        var lblTitleRequired = @Json.Serialize(L.Get("Exam.TitleRequired").Value);
+        var lblScheduleRequired = @Json.Serialize(L.Get("Exam.ScheduleRequired").Value);
+        var lblGroupRequired = @Json.Serialize(L.Get("Exam.GroupRequired").Value);
+        var lblResultsRequired = @Json.Serialize(L.Get("Exam.ResultsRequired").Value);
+        var lblImageFailed = @Json.Serialize(L.Get("Exam.ImageUploadFailed").Value);
+        var lblPublished = @Json.Serialize(L.Get("Common.Published").Value);
+        var lblSaved = @Json.Serialize(L.Get("Common.Saved").Value);
+        var lblTryAgain = @Json.Serialize(L.Get("Exam.TryAgain").Value);
 
         $('#gAll').on('change', function () { $('.g-chk').prop('checked', this.checked); });
         $('.g-chk').on('change', function () { $('#gAll').prop('checked', $('.g-chk').length > 0 && $('.g-chk').length === $('.g-chk:checked').length); });
@@ -112,8 +131,8 @@
             if (q.file) html += '<img alt="" style="max-width:220px;max-height:160px;border-radius:8px;display:block;margin-bottom:8px" src="' + URL.createObjectURL(q.file) + '" />';
             else if (q.imageStoredName) html += '<img alt="" style="max-width:220px;max-height:160px;border-radius:8px;display:block;margin-bottom:8px" src="@Url.Action("QuestionImage", "Exams")?examId=' + examId + '&name=' + encodeURIComponent(q.imageStoredName) + '" />';
             if (!locked) {
-                html += '<label class="btn btn-sm btn-outline-secondary mb-0">صورة السؤال<input type="file" accept="image/png,image/jpeg,image/webp,image/gif" hidden onchange="pickImage(' + qi + ', this)" /></label> ';
-                if (q.imageStoredName || q.file) html += '<button type="button" class="btn btn-sm btn-outline-danger" onclick="clearImage(' + qi + ')">شيل الصورة</button>';
+                html += '<label class="btn btn-sm btn-outline-secondary mb-0">' + esc(lblQuestionImage) + '<input type="file" accept="image/png,image/jpeg,image/webp,image/gif" hidden onchange="pickImage(' + qi + ', this)" /></label> ';
+                if (q.imageStoredName || q.file) html += '<button type="button" class="btn btn-sm btn-outline-danger" onclick="clearImage(' + qi + ')">' + esc(lblRemoveImage) + '</button>';
             }
             return html + '</div>';
         }
@@ -122,7 +141,7 @@
             var f = input.files && input.files[0];
             if (!f) return;
             if (f.size > 4 * 1024 * 1024) {
-                notify('warning', 'الصورة أكبر من 4 ميجا');
+                notify('warning', lblImageTooBig);
                 return;
             }
             questions[qi].file = f;
@@ -142,32 +161,32 @@
 
         function render() {
             var total = questions.reduce(function (s, q) { return s + (parseFloat(q.points) || 0); }, 0);
-            $('#totalPts').text(questions.length ? '· المجموع ' + total : '');
+            $('#totalPts').text(questions.length ? lblTotal.replace('{0}', total) : '');
             $('#qList').html(questions.map(function (q, qi) {
                 var choices = (q.choices || []).map(function (c, ci) {
                     return '<div class="d-flex gap-2 align-items-center mb-2">' +
                         '<input type="radio" name="ok_' + qi + '" ' + (c.isCorrect ? 'checked' : '') + (locked ? ' disabled' : '') + ' onchange="markCorrect(' + qi + ',' + ci + ')" />' +
-                        '<input class="form-control" placeholder="اختيار" value="' + esc(c.text) + '" ' + (locked ? 'disabled' : '') + ' oninput="questions[' + qi + '].choices[' + ci + '].text=this.value" />' +
-                        (locked ? '' : '<button type="button" class="btn btn-sm btn-outline-danger" onclick="removeChoice(' + qi + ',' + ci + ')">حذف</button>') +
+                        '<input class="form-control" placeholder="' + esc(lblChoice) + '" value="' + esc(c.text) + '" ' + (locked ? 'disabled' : '') + ' oninput="questions[' + qi + '].choices[' + ci + '].text=this.value" />' +
+                        (locked ? '' : '<button type="button" class="btn btn-sm btn-outline-danger" onclick="removeChoice(' + qi + ',' + ci + ')">' + esc(lblDelete) + '</button>') +
                         '</div>';
                 }).join('');
                 return '<div class="border rounded p-3 mb-3">' +
-                    '<div class="d-flex justify-content-between mb-2"><strong>سؤال ' + (qi + 1) + '</strong>' +
-                    (locked ? '' : '<button type="button" class="btn btn-sm btn-outline-danger" onclick="questions.splice(' + qi + ',1);render()">حذف السؤال</button>') +
+                    '<div class="d-flex justify-content-between mb-2"><strong>' + esc(lblQuestionN.replace('{0}', qi + 1)) + '</strong>' +
+                    (locked ? '' : '<button type="button" class="btn btn-sm btn-outline-danger" onclick="questions.splice(' + qi + ',1);render()">' + esc(lblDeleteQuestion) + '</button>') +
                     '</div>' +
-                    '<textarea class="form-control mb-2" rows="2" placeholder="نص السؤال" ' + (locked ? 'disabled' : '') + ' oninput="questions[' + qi + '].text=this.value">' + esc(q.text) + '</textarea>' +
+                    '<textarea class="form-control mb-2" rows="2" placeholder="' + esc(lblQuestionText) + '" ' + (locked ? 'disabled' : '') + ' oninput="questions[' + qi + '].text=this.value">' + esc(q.text) + '</textarea>' +
                     imageBox(q, qi) +
-                    '<div class="row g-2 mb-2"><div class="col-md-3"><label class="form-label">درجة السؤال</label>' +
+                    '<div class="row g-2 mb-2"><div class="col-md-3"><label class="form-label">' + esc(lblQuestionPoints) + '</label>' +
                     '<input type="number" min="0.5" step="0.5" class="form-control" value="' + (q.points || 1) + '" ' + (locked ? 'disabled' : '') + ' oninput="questions[' + qi + '].points=parseFloat(this.value)||0;renderTotal()" /></div></div>' +
-                    '<div class="small text-muted mb-1">علّم الإجابة الصحيحة</div>' + choices +
-                    (locked ? '' : '<button type="button" class="btn btn-sm btn-outline-secondary" onclick="addChoice(' + qi + ')">+ اختيار</button>') +
+                    '<div class="small text-muted mb-1">' + esc(lblMarkCorrect) + '</div>' + choices +
+                    (locked ? '' : '<button type="button" class="btn btn-sm btn-outline-secondary" onclick="addChoice(' + qi + ')">+ ' + esc(lblAddChoice) + '</button>') +
                     '</div>';
             }).join(''));
         }
 
         function renderTotal() {
             var total = questions.reduce(function (s, q) { return s + (parseFloat(q.points) || 0); }, 0);
-            $('#totalPts').text(questions.length ? '· المجموع ' + total : '');
+            $('#totalPts').text(questions.length ? lblTotal.replace('{0}', total) : '');
         }
 
         function markCorrect(qi, ci) {
@@ -211,11 +230,11 @@
             var title = $.trim($('#mTitle').val());
             var groups = $('.g-chk:checked').map(function () { return parseInt(this.value); }).get();
             if (!locked) {
-                if (!title) return notify('warning', 'اكتب عنوان الاختبار');
-                if (!$('#mOpen').val() || !$('#mClose').val() || !$('#mResult').val()) return notify('warning', 'حدد موعد الفتح والقفل وظهور النتيجة');
-                if (!groups.length) return notify('warning', 'اختار مجموعة واحدة على الأقل');
+                if (!title) return notify('warning', lblTitleRequired);
+                if (!$('#mOpen').val() || !$('#mClose').val() || !$('#mResult').val()) return notify('warning', lblScheduleRequired);
+                if (!groups.length) return notify('warning', lblGroupRequired);
             } else if (!$('#mResult').val()) {
-                return notify('warning', 'حدد وقت ظهور النتيجة');
+                return notify('warning', lblResultsRequired);
             }
             setBusy(true);
             try {
@@ -246,18 +265,18 @@
                         type: 'POST', data: fd, processData: false, contentType: false,
                         headers: { 'X-Requested-With': 'XMLHttpRequest' }
                     });
-                    if (!up.ok) throw up.message || 'الصورة ما اترفعتش';
+                    if (!up.ok) throw up.message || lblImageFailed;
                 }
                 if (publish) {
                     var p = await $.post('@Url.Action("Publish", "Exams")', { id: examId });
                     if (!p.ok) throw p.message;
                 }
-                await Swal.fire({ icon: 'success', title: publish ? 'تم النشر' : 'تم الحفظ', timer: 1200, showConfirmButton: false, heightAuto: false });
+                await Swal.fire({ icon: 'success', title: publish ? lblPublished : lblSaved, timer: 1200, showConfirmButton: false, heightAuto: false });
                 location.href = '@Url.Action("Index", "Exams")';
             } catch (e) {
                 setBusy(false);
                 if (e && e.status && sessionReplaced(e)) return;
-                notify('error', typeof e === 'string' ? e : 'حصل خطأ، جرّب تاني');
+                notify('error', typeof e === 'string' ? e : lblTryAgain);
             }
         }
 

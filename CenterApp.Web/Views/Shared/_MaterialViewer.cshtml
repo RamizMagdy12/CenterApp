@@ -28,7 +28,7 @@
                 <div class="vwrap">
                     <video controls controlsList="nodownload nofullscreen noremoteplayback" disablePictureInPicture disableRemotePlayback
                            playsinline preload="metadata" src="@Url.Action("Video", "Media", new { id = f.Id, t = f.Token })"></video>
-                    <button type="button" class="vfs btn btn-sm btn-dark">ملء الشاشة</button>
+                    <button type="button" class="vfs btn btn-sm btn-dark">@L.Get("Viewer.Fullscreen")</button>
                 </div>
             }
             else
@@ -64,7 +64,7 @@
 
         function label(w) {
             var b = w.querySelector('.vfs');
-            if (b) b.textContent = (fsEl() === w || w.classList.contains('vfake')) ? 'تصغير' : 'ملء الشاشة';
+            if (b) b.textContent = (fsEl() === w || w.classList.contains('vfake')) ? @Json.Serialize(L.Get("Viewer.ExitFullscreen").Value) : @Json.Serialize(L.Get("Viewer.Fullscreen").Value);
         }
 
         function setFake(w, on) {

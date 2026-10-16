@@ -1,7 +1,7 @@
 @model StudentAttendanceVm
 @{
     Layout = "_PortalLayout";
-    ViewData["Title"] = "الحضور";
+    ViewData["Title"] = L.Get("Menu.Attendance").Value;
 }
-<h3 class="mb-3">حضورك <span class="badge bg-secondary">@Model.Total</span></h3>
+<h3 class="mb-3">@L.Get("Portal.YourAttendance") <span class="badge bg-secondary">@Model.Total</span></h3>
 <partial name="_StudentAttendance" model="Model" />

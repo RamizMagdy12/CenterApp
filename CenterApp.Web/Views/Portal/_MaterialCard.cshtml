@@ -12,7 +12,7 @@
         else if (Model.GraceUntil.HasValue)
         {
 
-            <span class="pill pill-warn">سماح لحد @Model.GraceUntil.Value.AddDays(-1).ToString("yyyy-MM-dd")</span>
+            <span class="pill pill-warn">@L.Get("Portal.GraceUntil", Model.GraceUntil.Value.AddDays(-1).ToString("yyyy-MM-dd"))</span>
         }
     </div>
 </a>

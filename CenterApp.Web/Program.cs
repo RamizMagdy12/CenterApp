@@ -1,12 +1,15 @@
+using System.Globalization;
 using CenterApp.Entity.Identity;
 using CenterApp.Service.Data;
 using CenterApp.Service.IRepository;
+using CenterApp.Service.Localization;
 using CenterApp.Service.Repository;
 using CenterApp.Service.Services;
 using CenterApp.Service.Unitofwork;
 using CenterApp.Web.Hubs;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,6 +17,18 @@ var builder = WebApplication.CreateBuilder(args);
 
 // كل الصفحات محتاجة تسجيل دخول (ماعدا اللي عليها AllowAnonymous)
 builder.Services.AddControllersWithViews(o => o.Filters.Add(new AuthorizeFilter()));
+builder.Services.AddLocalization();
+builder.Services.AddScoped<ILocService, LocService>();
+
+var arabic = new CultureInfo("ar-EG");
+var english = new CultureInfo("en");
+builder.Services.Configure<RequestLocalizationOptions>(o =>
+{
+    o.DefaultRequestCulture = new RequestCulture(arabic, arabic);
+    o.SupportedCultures = new[] { arabic, english };
+    o.SupportedUICultures = new[] { arabic, english };
+    o.RequestCultureProviders = new List<IRequestCultureProvider> { new CookieRequestCultureProvider() };
+});
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddMemoryCache();
@@ -123,6 +138,14 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+app.UseRequestLocalization();
+app.Use(async (ctx, next) =>
+{
+    var culture = (CultureInfo)CultureInfo.CurrentCulture.Clone();
+    culture.NumberFormat = CultureInfo.InvariantCulture.NumberFormat;
+    CultureInfo.CurrentCulture = culture;
+    await next();
+});
 
 app.UseAuthentication();
 app.UseAuthorization();

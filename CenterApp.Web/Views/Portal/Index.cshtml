@@ -1,39 +1,39 @@
 ﻿@model PortalHomeVm
 @{
-    Layout = "_PortalLayout"; ViewData["Title"] = "الرئيسية";
+    Layout = "_PortalLayout"; ViewData["Title"] = L.Get("Common.Home").Value;
 }
 
 <div class="hello">
     <div class="avatar">@Model.Student.Name.Substring(0, 1)</div>
     <div>
-        <h2>أهلاً، @Model.Student.Name 👋</h2>
-        <p>كودك: <b dir="ltr">@Model.Student.Code</b></p>
+        <h2>@L.Get("Dash.Hello", Model.Student.Name)</h2>
+        <p>@L.Get("Portal.YourCode"): <b dir="ltr">@Model.Student.Code</b></p>
     </div>
 </div>
 
 @if (Model.Locked > 0)
 {
-    <div class="alert alert-warning"><i class="bi bi-lock-fill"></i> عندك @Model.Locked ماتريال مقفولة لحد ما يتسدد الحساب. كلّم الإدارة.</div>
+    <div class="alert alert-warning"><i class="bi bi-lock-fill"></i> @L.Get("Portal.MaterialsLocked", Model.Locked)</div>
 }
 @if (Model.HomeworkLocked > 0)
 {
-    <div class="alert alert-warning"><i class="bi bi-lock-fill"></i> عندك @Model.HomeworkLocked واجب مقفول لحد ما يتسدد الحساب. كلّم الإدارة.</div>
+    <div class="alert alert-warning"><i class="bi bi-lock-fill"></i> @L.Get("Portal.HomeworkLocked", Model.HomeworkLocked)</div>
 }
 
 <div class="tiles">
-    <a class="tile" asp-action="Materials"><i class="bi bi-collection-play"></i><b>الماتريال</b><span class="pill pill-primary">@Model.Total</span></a>
-    <a class="tile" asp-action="Attendance"><i class="bi bi-calendar-check"></i><b>الحضور</b><span class="pill pill-primary">@Model.AttendancePresent / @Model.AttendanceTotal</span></a>
-    <a class="tile" asp-action="Homework"><i class="bi bi-journal-check"></i><b>الواجبات</b><span class="pill pill-primary">@Model.HomeworkTotal</span></a>
-    <a class="tile" asp-action="Exams"><i class="bi bi-patch-question"></i><b>الاختبارات</b><span class="pill pill-primary">@Model.OpenExams</span></a>
-    <a class="tile" asp-action="Ask"><i class="bi bi-chat-dots"></i><b>اسأل المدرس</b><span class="pill pill-primary">@Model.UnreadChats</span></a>
+    <a class="tile" asp-action="Materials"><i class="bi bi-collection-play"></i><b>@L.Get("Menu.Materials")</b><span class="pill pill-primary">@Model.Total</span></a>
+    <a class="tile" asp-action="Attendance"><i class="bi bi-calendar-check"></i><b>@L.Get("Menu.Attendance")</b><span class="pill pill-primary">@Model.AttendancePresent / @Model.AttendanceTotal</span></a>
+    <a class="tile" asp-action="Homework"><i class="bi bi-journal-check"></i><b>@L.Get("Menu.Homework")</b><span class="pill pill-primary">@Model.HomeworkTotal</span></a>
+    <a class="tile" asp-action="Exams"><i class="bi bi-patch-question"></i><b>@L.Get("Menu.Exams")</b><span class="pill pill-primary">@Model.OpenExams</span></a>
+    <a class="tile" asp-action="Ask"><i class="bi bi-chat-dots"></i><b>@L.Get("Menu.AskTeacher")</b><span class="pill pill-primary">@Model.UnreadChats</span></a>
 </div>
 
 <div class="panel">
-    <h3>آخر الماتريال</h3>
-    <div class="sub">أحدث 5</div>
+    <h3>@L.Get("Portal.LatestMaterials")</h3>
+    <div class="sub">@L.Get("Portal.Latest5")</div>
     @if (Model.Latest.Count == 0)
     {
-        <div class="empty-box">مفيش ماتريال لسه</div>
+        <div class="empty-box">@L.Get("Portal.NoMaterials")</div>
     }
     <div class="mgrid">
         @foreach (var m in Model.Latest)
@@ -44,11 +44,11 @@
 </div>
 
 <div class="panel mt-4">
-    <h3>آخر الواجبات</h3>
-    <div class="sub">أحدث 5</div>
+    <h3>@L.Get("Portal.LatestHomework")</h3>
+    <div class="sub">@L.Get("Portal.Latest5")</div>
     @if (Model.LatestHomework.Count == 0)
     {
-        <div class="empty-box">مفيش واجبات لسه</div>
+        <div class="empty-box">@L.Get("Portal.NoHomework")</div>
     }
     <div class="mgrid">
         @foreach (var h in Model.LatestHomework)

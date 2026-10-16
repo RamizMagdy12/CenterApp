@@ -2,7 +2,7 @@
 @inject CenterApp.Service.Services.IPermissionService Perm
 @using System.Globalization
 @functions {
-    static string MethodName(PaymentMethod m) => m == PaymentMethod.Cash ? "نقدي" : m == PaymentMethod.Wallet ? "محفظة" : "تحويل";
+    string MethodName(PaymentMethod m) => m == PaymentMethod.Cash ? L.Get("Pay.Cash").Value : m == PaymentMethod.Wallet ? L.Get("Pay.Wallet").Value : L.Get("Pay.Transfer").Value;
 }
 @{
     var inv = CultureInfo.InvariantCulture;
@@ -12,14 +12,14 @@
 
 <div class="mb-3">
     <div><strong>@Model.StudentName</strong> — @Model.GroupName</div>
-    <div>فاتورة @Model.Month/@Model.Year — المبلغ: @Model.Amount.ToString("N2") — الخصم: @Model.Discount.ToString("N2") — المدفوع: @Model.Paid.ToString("N2") — <b>المتبقي: @Model.Remaining.ToString("N2")</b></div>
+    <div>@L.Get("Invoices.Invoice") @Model.Month/@Model.Year — @L.Get("Invoices.Amount"): @Model.Amount.ToString("N2") — @L.Get("Invoices.Discount"): @Model.Discount.ToString("N2") — @L.Get("Invoices.PaidSoFar"): @Model.Paid.ToString("N2") — <b>@L.Get("Invoices.Remaining"): @Model.Remaining.ToString("N2")</b></div>
 </div>
 
 @if (Model.Payments.Any())
 {
-    <h6>التحصيلات السابقة</h6>
+    <h6>@L.Get("Invoices.Previous")</h6>
     <table class="table table-sm align-middle">
-        <thead><tr><th>التاريخ</th><th>المبلغ</th><th>الطريقة</th><th>ملاحظة</th><th></th></tr></thead>
+        <thead><tr><th>@L.Get("Invoices.Date")</th><th>@L.Get("Invoices.Amount")</th><th>@L.Get("Invoices.Method")</th><th>@L.Get("Common.Notes")</th><th></th></tr></thead>
         <tbody>
             @foreach (var p in Model.Payments)
             {
@@ -30,10 +30,10 @@
                     <td class="c-method">@MethodName(p.Method)</td>
                     <td class="c-note">@p.Note</td>
                     <td class="c-act text-nowrap">
-                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="editPay(this)">تعديل</button>
+                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="editPay(this)">@L.Get("Common.Edit")</button>
                         @if (canDelete)
                         {
-                            <button type="button" class="btn btn-sm btn-outline-danger" onclick="delPay(@p.Id)">حذف</button>
+                            <button type="button" class="btn btn-sm btn-outline-danger" onclick="delPay(@p.Id)">@L.Get("Common.Delete")</button>
                         }
                     </td>
                 </tr>
@@ -43,34 +43,34 @@
     <hr />
 }
 
-<h6>تحصيل جديد</h6>
+<h6>@L.Get("Invoices.NewCollection")</h6>
 <form id="payForm" onsubmit="return false;">
     <input type="hidden" name="invoiceId" value="@Model.Id" />
     <div class="row g-3">
         <div class="col-md-4">
-            <label class="form-label">الخصم</label>
+            <label class="form-label">@L.Get("Invoices.Discount")</label>
             <input name="discount" type="number" min="0" step="0.01" class="form-control" value="@Model.Discount.ToString("0.##", inv)" />
         </div>
         <div class="col-md-4">
-            <label class="form-label">المبلغ المدفوع الآن (المتبقي @Model.Remaining.ToString("N2"))</label>
+            <label class="form-label">@L.Get("Invoices.AmountNow", Model.Remaining.ToString("N2"))</label>
             <input name="amount" type="number" min="0" step="0.01" class="form-control" value="@Model.Remaining.ToString("0.##", inv)" />
         </div>
         <div class="col-md-4">
-            <label class="form-label">طريقة الدفع</label>
+            <label class="form-label">@L.Get("Invoices.PayMethod")</label>
             <select name="method" class="form-select">
-                <option value="0">نقدي</option>
-                <option value="1">محفظة</option>
-                <option value="2">تحويل</option>
+                <option value="0">@L.Get("Pay.Cash")</option>
+                <option value="1">@L.Get("Pay.Wallet")</option>
+                <option value="2">@L.Get("Pay.Transfer")</option>
             </select>
         </div>
-        <div class="col-12"><label class="form-label">ملاحظة</label><input name="note" class="form-control" /></div>
-        <div class="col-12"><button class="btn btn-success" onclick="submitForm('#payForm', '@Url.Action("Pay", "Invoices")')">حفظ التحصيل</button></div>
+        <div class="col-12"><label class="form-label">@L.Get("Common.Notes")</label><input name="note" class="form-control" /></div>
+        <div class="col-12"><button class="btn btn-success" onclick="submitForm('#payForm', '@Url.Action("Pay", "Invoices")')">@L.Get("Invoices.SaveCollection")</button></div>
     </div>
 </form>
 
 <script>
     var payUrl = '@payUrl';
-    function reopenPay() { openForm(payUrl, 'تحصيل'); }
+    function reopenPay() { openForm(payUrl, @Json.Serialize(L.Get("Invoices.ShortTitle").Value)); }
 
     // أي تعديل بيتعمل جوه النافذة، فنحدّث الصفحة اللي ورا لما النافذة تتقفل
     $('#appModal').off('hidden.bs.modal.pay').one('hidden.bs.modal.pay', function () { location.reload(); });
@@ -82,9 +82,9 @@
 
         $r.find('.c-date').html('<input type="date" class="form-control form-control-sm e-date" max="@DateTime.Today.ToString("yyyy-MM-dd")">');
         $r.find('.c-amount').html('<input type="number" min="0.01" step="0.01" class="form-control form-control-sm e-amount">');
-        $r.find('.c-method').html('<select class="form-select form-select-sm e-method"><option value="0">نقدي</option><option value="1">محفظة</option><option value="2">تحويل</option></select>');
+        $r.find('.c-method').html('<select class="form-select form-select-sm e-method"><option value="0">' + @Json.Serialize(L.Get("Pay.Cash").Value) + '</option><option value="1">' + @Json.Serialize(L.Get("Pay.Wallet").Value) + '</option><option value="2">' + @Json.Serialize(L.Get("Pay.Transfer").Value) + '</option></select>');
         $r.find('.c-note').html('<input class="form-control form-control-sm e-note">');
-        $r.find('.c-act').html('<button type="button" class="btn btn-sm btn-success" onclick="savePay(this)">حفظ</button> <button type="button" class="btn btn-sm btn-light" onclick="reopenPay()">إلغاء</button>');
+        $r.find('.c-act').html('<button type="button" class="btn btn-sm btn-success" onclick="savePay(this)">' + @Json.Serialize(L.Get("Common.Save").Value) + '</button> <button type="button" class="btn btn-sm btn-light" onclick="reopenPay()">' + @Json.Serialize(L.Get("Common.Cancel").Value) + '</button>');
 
         $r.find('.e-date').val($r.attr('data-date'));
         $r.find('.e-amount').val($r.attr('data-amount'));
@@ -104,7 +104,7 @@
     }
 
     function delPay(id) {
-        askConfirm('حذف التحصيل ده؟ الفاتورة هترجع للحالة المناسبة، والماتريال ممكن تتقفل لو الحساب مبقاش مدفوع.', 'نعم، احذف').then(function (ok) {
+        askConfirm(@Json.Serialize(L.Get("Invoices.DeletePayAsk").Value), @Json.Serialize(L.Get("Invoices.DeletePayYes").Value)).then(function (ok) {
             if (!ok) return;
             postJson('@Url.Action("DeletePayment", "Invoices")', { id: id }, function (r) { notify('success', r.message, reopenPay); });
         });

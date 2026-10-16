@@ -1,0 +1,13 @@
+@{
+    var isAr = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "ar";
+    var returnUrl = $"{Context.Request.PathBase}{Context.Request.Path}{Context.Request.QueryString}";
+}
+<form asp-controller="Account" asp-action="SetLanguage" method="post" class="tb-lang">
+    <input type="hidden" name="returnUrl" value="@returnUrl" />
+    <button type="submit" name="culture" value="ar-EG" class="tb-lang-btn @(isAr ? "on" : "")">
+        <span class="lang-code">AR</span><span class="tb-lang-name">العربية</span>
+    </button>
+    <button type="submit" name="culture" value="en" class="tb-lang-btn @(!isAr ? "on" : "")">
+        <span class="lang-code">EN</span><span class="tb-lang-name">English</span>
+    </button>
+</form>

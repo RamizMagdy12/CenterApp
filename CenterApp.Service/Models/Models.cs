@@ -1,4 +1,5 @@
-﻿using CenterApp.Entity.Center;
+﻿using System.Globalization;
+using CenterApp.Entity.Center;
 
 namespace CenterApp.Service.Models;
 
@@ -21,7 +22,12 @@ public class PagedResult<T>
 public static class ArabicDays
 {
     static readonly string[] Names = { "الأحد", "الإثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت" };
-    public static string Name(DayOfWeek d) => Names[(int)d];
+    public static string Name(DayOfWeek d)
+    {
+        if (CultureInfo.CurrentUICulture.TwoLetterISOLanguageName.Equals("ar", StringComparison.OrdinalIgnoreCase))
+            return Names[(int)d];
+        return CultureInfo.CurrentUICulture.DateTimeFormat.GetDayName(d);
+    }
     public static int Order(DayOfWeek d) => ((int)d + 1) % 7;   // السبت أولاً
     public static readonly DayOfWeek[] WeekFromSaturday =
     {

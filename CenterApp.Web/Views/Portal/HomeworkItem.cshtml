@@ -3,7 +3,7 @@
     Layout = "_PortalLayout"; ViewData["Title"] = Model.Row.Title;
 }
 
-<a class="btn btn-sm btn-light mb-3" asp-action="Homework">← الواجبات</a>
+<a class="btn btn-sm btn-light mb-3" asp-action="Homework"><i class="bi @(CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "ar" ? "bi-arrow-right" : "bi-arrow-left")"></i> @L.Get("Menu.Homework")</a>
 <h3>@Model.Row.Title</h3>
 <p class="text-muted">@Model.Row.Groups • @Model.Row.PublishedAt.ToString("yyyy-MM-dd")</p>
 @if (!string.IsNullOrWhiteSpace(Model.Row.Description))
@@ -15,21 +15,21 @@
 {
     <div class="panel text-center" style="max-width:520px;margin:30px auto;">
         <div style="font-size:56px;color:#c53030"><i class="bi bi-lock-fill"></i></div>
-        <h4 class="mt-2">الواجب ده مقفول</h4>
+        <h4 class="mt-2">@L.Get("Portal.HomeworkLockedItem")</h4>
         <p class="text-muted">@Model.Row.Reason</p>
-        <p>سدّد الحساب أو كلّم الإدارة عشان تفتحه.</p>
+        <p>@L.Get("Portal.PayToOpenHomework")</p>
     </div>
 }
 else
 {
     @if (Model.Row.GraceUntil.HasValue)
     {
-        <div class="alert alert-warning">عندك سماح مؤقت لحد @Model.Row.GraceUntil.Value.AddDays(-1).ToString("yyyy-MM-dd"). بعدها هيتقفل لو الحساب لسه ما اتسددش.</div>
+        <div class="alert alert-warning">@L.Get("Portal.GraceUntilHomework", Model.Row.GraceUntil.Value.AddDays(-1).ToString("yyyy-MM-dd"))</div>
     }
     <div class="panel" style="max-width:640px">
         @if (Model.Files.Count == 0)
         {
-            <div class="empty-box">مفيش ملفات</div>
+            <div class="empty-box">@L.Get("Portal.NoFiles")</div>
         }
         @foreach (var f in Model.Files)
         {
@@ -37,7 +37,7 @@ else
                 <i class="bi @(f.Kind == HomeworkFileKind.Pdf ? "bi-file-earmark-pdf" : "bi-file-earmark-word")"></i>
                 <span>@f.Name</span>
                 <small class="text-muted">@f.Size</small>
-                <a class="btn btn-sm btn-primary ms-auto" asp-action="Download" asp-route-id="@f.Id"><i class="bi bi-download"></i> تنزيل</a>
+                <a class="btn btn-sm btn-primary ms-auto" asp-action="Download" asp-route-id="@f.Id"><i class="bi bi-download"></i> @L.Get("Portal.Download")</a>
             </div>
         }
     </div>

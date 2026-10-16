@@ -1,25 +1,25 @@
 @model List<ConversationRow>
 @{
-    ViewData["Title"] = "الرسائل";
+    ViewData["Title"] = L.Get("Menu.Messages").Value;
     var unlinked = ViewBag.Unlinked as bool? == true;
 }
 <div class="d-flex justify-content-between align-items-center mb-3">
-    <h3>أسئلة الطلاب <span class="badge bg-secondary">@Model.Count</span></h3>
-    <button type="button" class="btn btn-sm btn-outline-danger" onclick="confirmPost('@Url.Action("Clear", "Notifications")', {}, 'مسح كل إشعاراتك؟')">مسح الإشعارات</button>
+    <h3>@L.Get("Menu.StudentQuestions") <span class="badge bg-secondary">@Model.Count</span></h3>
+    <button type="button" class="btn btn-sm btn-outline-danger" onclick="confirmPost('@Url.Action("Clear", "Notifications")', {}, '@L.Get("Notify.ClearAllAsk")')">@L.Get("Notify.ClearAll")</button>
 </div>
 
 @if (unlinked)
 {
-    <div class="alert alert-warning">حسابك مش مربوط بمدرس. من شاشة المستخدمين اربط الحساب بالمدرس عشان توصلك أسئلة طلابه.</div>
+    <div class="alert alert-warning">@L.Get("Messages.Unlinked")</div>
 }
 else if (Model.Count == 0)
 {
-    <div class="empty-box">مفيش رسائل لسه. لما طالب يبعت سؤال هيظهر هنا.</div>
+    <div class="empty-box">@L.Get("Messages.Empty")</div>
 }
 else
 {
     <table class="table table-hover align-middle">
-        <thead><tr><th>الطالب</th><th>المدرس</th><th>آخر رسالة</th><th>الوقت</th><th></th></tr></thead>
+        <thead><tr><th>@L.Get("Common.Student")</th><th>@L.Get("Common.Teacher")</th><th>@L.Get("Messages.Last")</th><th>@L.Get("Common.Time")</th><th></th></tr></thead>
         <tbody>
         @foreach (var c in Model)
         {
@@ -33,8 +33,8 @@ else
                     {
                         <span class="badge bg-danger">@c.Unread</span>
                     }
-                    <a class="btn btn-sm btn-outline-primary" asp-action="Thread" asp-route-id="@c.Id">فتح</a>
-                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="confirmPost('@Url.Action("Delete", "Messages")', { id: @c.Id }, 'مسح الشات ده؟')">مسح</button>
+                    <a class="btn btn-sm btn-outline-primary" asp-action="Thread" asp-route-id="@c.Id">@L.Get("Common.Open")</a>
+                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="confirmPost('@Url.Action("Delete", "Messages")', { id: @c.Id }, '@L.Get("Notify.ClearChatAsk")')">@L.Get("Common.Clear")</button>
                 </td>
             </tr>
         }

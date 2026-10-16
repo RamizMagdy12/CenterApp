@@ -1,5 +1,10 @@
 ﻿var APP_COLOR = '#4b2fd0';
 
+function t(key, fallback) {
+    var v = window.L10n && window.L10n[key];
+    return v || fallback;
+}
+
 function appModal() {
     return bootstrap.Modal.getOrCreateInstance(document.getElementById('appModal'));
 }
@@ -14,8 +19,8 @@ function swalShow(opts) {
     } catch (e) { }
 
     return Swal.fire($.extend({
-        confirmButtonText: 'حسناً',
-        cancelButtonText: 'إلغاء',
+        confirmButtonText: t('ok', 'حسناً'),
+        cancelButtonText: t('cancel', 'إلغاء'),
         confirmButtonColor: APP_COLOR,
         heightAuto: false
     }, opts)).then(function (r) {
@@ -33,7 +38,7 @@ function notify(icon, text, cb) {
 function askConfirm(text, okText) {
     return swalShow({
         icon: 'warning', title: text, showCancelButton: true,
-        confirmButtonText: okText || 'تأكيد', reverseButtons: true
+        confirmButtonText: okText || t('confirm', 'تأكيد'), reverseButtons: true
     }).then(function (r) { return r.isConfirmed; });
 }
 
@@ -66,7 +71,7 @@ function openForm(url, title, large) {
     }).fail(function (xhr) {
         if (sessionReplaced(xhr)) return;
         if (xhr.status === 409) notify('warning', xhr.responseText);
-        else notify('error', 'تعذر التحميل (' + xhr.status + ')');
+        else notify('error', t('loadFailed', 'تعذر التحميل ({0})').replace('{0}', xhr.status));
     });
 }
 
@@ -74,16 +79,16 @@ function handleResult(r, onOk) {
     if (r && r.ok) {
         if (onOk) { onOk(r); return; }
         appModal().hide();
-        Swal.fire({ icon: 'success', title: r.message || 'تم الحفظ', timer: 1200, showConfirmButton: false, heightAuto: false })
+        Swal.fire({ icon: 'success', title: r.message || t('saved', 'تم الحفظ'), timer: 1200, showConfirmButton: false, heightAuto: false })
             .then(function () { location.reload(); });
     } else {
-        notify('error', (r && r.message) || 'حدث خطأ');
+        notify('error', (r && r.message) || t('error', 'حدث خطأ'));
     }
 }
 
 function ajaxFail(xhr) {
     if (sessionReplaced(xhr)) return;
-    notify('error', 'حصل خطأ في السيرفر (' + xhr.status + ')');
+    notify('error', t('serverError', 'حصل خطأ في السيرفر ({0})').replace('{0}', xhr.status));
 }
 
 function postJson(url, data, onOk) {
@@ -103,7 +108,7 @@ function submitForm(formSelector, url, onOk) {
 }
 
 function confirmPost(url, data, msg) {
-    askConfirm(msg || 'تأكيد العملية؟', 'نعم').then(function (ok) {
+    askConfirm(msg || t('confirmAction', 'تأكيد العملية؟'), t('yes', 'نعم')).then(function (ok) {
         if (ok) postJson(url, data, function () { location.reload(); });
     });
 }

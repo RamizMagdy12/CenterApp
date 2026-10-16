@@ -2,33 +2,33 @@
 
 <div class="mb-3 d-flex flex-wrap align-items-center gap-2">
     <strong>@Model.GroupName</strong> — @ArabicDays.Name(Model.Date.DayOfWeek) @Model.Date.ToString("yyyy-MM-dd")
-    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="$('.att-present').prop('checked', true); updateCounter();">الكل حاضر</button>
-    <button type="button" class="btn btn-sm btn-dark" onclick="startQrMode()">تحضير بالـ QR</button>
+    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="$('.att-present').prop('checked', true); updateCounter();">@L.Get("Sessions.AllPresent")</button>
+    <button type="button" class="btn btn-sm btn-dark" onclick="startQrMode()">@L.Get("Sessions.QrMode")</button>
     <span class="badge bg-info text-dark" id="attCounter"></span>
 </div>
 
 <div id="qrPanel" class="border rounded p-3 mb-3" style="display:none">
     <div class="row g-2 align-items-center">
         <div class="col-md-5">
-            <input id="qrInput" class="form-control" autocomplete="off" placeholder="اعمل Scan بقارئ الباركود أو اكتب الكود واضغط Enter" />
+            <input id="qrInput" class="form-control" autocomplete="off" placeholder="@L.Get("Sessions.ScanPh")" />
         </div>
-        <div class="col-md-3"><button type="button" class="btn btn-outline-primary w-100" onclick="startCam()">تشغيل الكاميرا</button></div>
-        <div class="col-md-2"><button type="button" class="btn btn-outline-secondary w-100" onclick="stopCam()">إيقاف</button></div>
-        <div class="col-md-2"><button type="button" class="btn btn-outline-danger w-100" onclick="resetAllAbsent()">تصفير الكل</button></div>
+        <div class="col-md-3"><button type="button" class="btn btn-outline-primary w-100" onclick="startCam()">@L.Get("Sessions.StartCamera")</button></div>
+        <div class="col-md-2"><button type="button" class="btn btn-outline-secondary w-100" onclick="stopCam()">@L.Get("Sessions.Stop")</button></div>
+        <div class="col-md-2"><button type="button" class="btn btn-outline-danger w-100" onclick="resetAllAbsent()">@L.Get("Sessions.ResetAll")</button></div>
     </div>
     <div id="camBox" class="mt-3" style="display:none"><div id="qrReader" style="max-width:360px"></div></div>
     <div id="scanMsg" class="mt-2 fw-bold"></div>
-    <small class="text-muted">اللي اتسجل حضوره قبل كده بيفضل زي ما هو، واللي لسه ما اتسجلش بيبدأ "غائب" لحد ما يتمسح كوده.</small>
+    <small class="text-muted">@L.Get("Sessions.QrHint")</small>
 </div>
 
 @if (Model.Rows.Count == 0)
 {
-    <div class="alert alert-warning">مفيش طلاب مسجلين في المجموعة في اليوم ده.</div>
+    <div class="alert alert-warning">@L.Get("Sessions.NoStudentsDay")</div>
 }
 else
 {
     <table class="table table-sm align-middle">
-        <thead><tr><th>الكود</th><th>الطالب</th><th>حاضر</th><th>غائب</th><th>معذور</th><th>متأخر</th></tr></thead>
+        <thead><tr><th>@L.Get("Common.Code")</th><th>@L.Get("Common.Student")</th><th>@L.Get("Att.Present")</th><th>@L.Get("Att.Absent")</th><th>@L.Get("Sessions.Excused")</th><th>@L.Get("Att.Late")</th></tr></thead>
         <tbody>
             @foreach (var r in Model.Rows)
             {
@@ -43,11 +43,21 @@ else
             }
         </tbody>
     </table>
-    <button class="btn btn-success" onclick="saveAttendance()">حفظ الحضور</button>
+    <button class="btn btn-success" onclick="saveAttendance()">@L.Get("Sessions.SaveAttendance")</button>
 }
 
 <script>
     var qrScanner = null, lastCode = '', lastTime = 0;
+    var attCountTpl = @Json.Serialize(L.Get("Sessions.AttendedOf").Value);
+    var readyScan = @Json.Serialize(L.Get("Sessions.ReadyScan").Value);
+    var resetAsk = @Json.Serialize(L.Get("Sessions.ResetAsk").Value);
+    var resetYes = @Json.Serialize(L.Get("Sessions.ResetYes").Value);
+    var resetDone = @Json.Serialize(L.Get("Sessions.ResetDone").Value);
+    var unknownCode = @Json.Serialize(L.Get("Sessions.UnknownCode").Value);
+    var alreadyMarked = @Json.Serialize(L.Get("Sessions.AlreadyMarked").Value);
+    var markedPresent = @Json.Serialize(L.Get("Sessions.Marked").Value);
+    var cameraError = @Json.Serialize(L.Get("Sessions.CameraError").Value);
+    var cameraLibError = @Json.Serialize(L.Get("Sessions.CameraLibError").Value);
 
     function norm(c) { return (c || '').toString().trim().toUpperCase(); }
 
@@ -74,7 +84,7 @@ else
     function updateCounter() {
         var total = $('.att-row').length;
         var present = $('.att-row input[value="0"]:checked, .att-row input[value="3"]:checked').length;
-        $('#attCounter').text('حضر ' + present + ' من ' + total);
+        $('#attCounter').text(attCountTpl.replace('{0}', present).replace('{1}', total));
     }
 
     // وضع الـ QR: المسجّل قبل كده يفضل زي ما هو، وغير المسجّل يبدأ غائب
@@ -92,17 +102,17 @@ else
         });
         $('#qrPanel').show();
         updateCounter();
-        showMsg('جاهز للمسح...', true);
+        showMsg(readyScan, true);
         $('#qrInput').focus();
     }
 
     function resetAllAbsent() {
-        askConfirm('تحويل كل الطلاب لغائب والبدء من الأول؟', 'نعم، صفّر').then(function (ok) {
+        askConfirm(resetAsk, resetYes).then(function (ok) {
             if (!ok) return;
             $('.att-row').removeClass('table-success scanned');
             $('.att-row input[value="1"]').prop('checked', true);
             updateCounter();
-            showMsg('تم التصفير، ابدأ المسح...', true);
+            showMsg(resetDone, true);
             $('#qrInput').focus();
         });
     }
@@ -115,7 +125,7 @@ else
             return norm($(this).attr('data-code')) === code || norm($(this).attr('data-token')) === code;
         }); if ($row.length === 0) {
             beep(false);
-            showMsg('الكود ' + code + ' مش لطالب مسجل في المجموعة دي', false);
+            showMsg(unknownCode.replace('{0}', code), false);
             return;
         }
 
@@ -124,7 +134,7 @@ else
 
         if ($row.hasClass('scanned')) {
             beep(true);
-            showMsg(name + ' اتسجل حضوره قبل كده', true);
+            showMsg(alreadyMarked.replace('{0}', name), true);
             return;
         }
 
@@ -132,7 +142,7 @@ else
         $row.addClass('table-success scanned');
         if ($row[0].scrollIntoView) $row[0].scrollIntoView({ block: 'nearest' });
         beep(true);
-        showMsg('تم تحضير: ' + name, true);
+        showMsg(markedPresent.replace('{0}', name), true);
         updateCounter();
     }
 
@@ -158,13 +168,13 @@ else
             }).catch(function (err) {
                 $('#camBox').hide();
                 qrScanner = null;
-                notify('error', 'تعذر تشغيل الكاميرا. الكاميرا بتشتغل على HTTPS أو localhost بس.');
+                notify('error', cameraError);
             });
         }
         if (qrScanner) return;
         if (typeof Html5Qrcode === 'undefined') {
             $.getScript('@Url.Content("~/lib/html5-qrcode/html5-qrcode.min.js")', run)
-                .fail(function () { notify('error', 'تعذر تحميل مكتبة الكاميرا'); });
+                .fail(function () { notify('error', cameraLibError); });
         } else run();
     }
 

@@ -4,9 +4,9 @@
 @inject CenterApp.Service.Services.IPermissionService Perm
 
 @{
-    ViewData["Title"] = "لوحة التحكم";
+    ViewData["Title"] = L.Get("Menu.Dashboard").Value;
 
-    var ar = new System.Globalization.CultureInfo("ar-EG");
+    var ui = CultureInfo.CurrentUICulture;
     var gradesTotal = Model.Grades.Sum(g => g.Count);
     var colors = new[] { "#4b2fd0", "#8f73f1", "#2b2663", "#b7a4f7", "#6b4ee0", "#d8cffb" };
     var userName = User.FindFirst("FullName")?.Value ?? User.Identity?.Name ?? "";
@@ -18,24 +18,24 @@
 
 <div class="hello">
     <div class="avatar">
-        @(string.IsNullOrEmpty(userName) ? "؟" : userName.Substring(0, 1))
+        @(string.IsNullOrEmpty(userName) ? L.Get("Common.UnknownMark").Value : userName.Substring(0, 1))
     </div>
 
     <div>
-        <h2>أهلاً، @userName 👋</h2>
-        <p>نورت تاني — ده ملخص النهارده.</p>
+        <h2>@L.Get("Dash.Hello", userName)</h2>
+        <p>@L.Get("Dash.Welcome")</p>
     </div>
 
     <div class="date-pill">
         <i class="bi bi-calendar3"></i>
-        @DateTime.Now.ToString("dddd، dd MMMM yyyy", ar)
+        @DateTime.Now.ToString("dddd, dd MMMM yyyy", ui)
     </div>
 </div>
 
 <div class="stats">
     <div class="stat">
         <span class="pill pill-primary">
-            @Model.EnrolledStudents مسجل في مجموعات
+            @L.Get("Dash.Enrolled", Model.EnrolledStudents)
         </span>
 
         <div class="stat-ico dark">
@@ -43,19 +43,19 @@
         </div>
 
         <div class="stat-num">@Model.TotalStudents</div>
-        <div class="stat-label">إجمالي الطلاب</div>
+        <div class="stat-label">@L.Get("Dash.TotalStudents")</div>
     </div>
 
     <div class="stat">
         @if (Model.TodayPresentRate.HasValue)
         {
             <span class="pill pill-ok">
-                @Model.TodaySessionsCount حصة اليوم
+                @L.Get("Dash.TodaySessions", Model.TodaySessionsCount)
             </span>
         }
         else
         {
-            <span class="pill pill-warn">لا توجد بيانات</span>
+            <span class="pill pill-warn">@L.Get("Dash.NoData")</span>
         }
 
         <div class="stat-ico light">
@@ -68,40 +68,40 @@
                 : "—")
         </div>
 
-        <div class="stat-label">حضور النهارده</div>
+        <div class="stat-label">@L.Get("Dash.TodayAttendance")</div>
     </div>
 
     <div class="stat">
-        <span class="pill pill-primary">@Model.ActiveGroups نشطة</span>
+        <span class="pill pill-primary">@L.Get("Dash.ActiveCount", Model.ActiveGroups)</span>
 
         <div class="stat-ico dark">
             <i class="bi bi-collection"></i>
         </div>
 
         <div class="stat-num">@Model.ActiveGroups</div>
-        <div class="stat-label">المجموعات</div>
+        <div class="stat-label">@L.Get("Menu.Groups")</div>
     </div>
 
     <div class="stat">
-        <span class="pill pill-primary">@Model.Teachers مدرس</span>
+        <span class="pill pill-primary">@L.Get("Dash.TeacherCount", Model.Teachers)</span>
 
         <div class="stat-ico light">
             <i class="bi bi-person-workspace"></i>
         </div>
 
         <div class="stat-num">@Model.Teachers</div>
-        <div class="stat-label">المدرسين</div>
+        <div class="stat-label">@L.Get("Lookups.Teachers")</div>
     </div>
 </div>
 
 <div class="grid-2-1">
     <div class="panel">
-        <h3>نظرة عامة على الحضور</h3>
-        <div class="sub">نسبة الحضور اليومية — آخر 7 أيام</div>
+        <h3>@L.Get("Dash.AttendanceOverview")</h3>
+        <div class="sub">@L.Get("Dash.AttendanceSub")</div>
 
         @if (!hasAtt)
         {
-            <div class="empty-note">لسه مفيش بيانات حضور</div>
+            <div class="empty-note">@L.Get("Dash.NoAttendanceYet")</div>
         }
 
         <div class="chart-box">
@@ -110,12 +110,12 @@
     </div>
 
     <div class="panel">
-        <h3>الطلاب حسب المرحلة</h3>
-        <div class="sub">الإجمالي: @gradesTotal طالب نشط</div>
+        <h3>@L.Get("Dash.ByGrade")</h3>
+        <div class="sub">@L.Get("Dash.ActiveStudents", gradesTotal)</div>
 
         @if (gradesTotal == 0)
         {
-            <div class="empty-box">مفيش طلاب لسه</div>
+            <div class="empty-box">@L.Get("Dash.NoStudents")</div>
         }
         else
         {
@@ -125,7 +125,7 @@
                 <div class="donut-center">
                     <div>
                         <b>@gradesTotal</b>
-                        <span>إجمالي</span>
+                        <span>@L.Get("Common.Total")</span>
                     </div>
                 </div>
             </div>
@@ -152,16 +152,16 @@
 
 <div class="grid-3">
     <div class="panel">
-        <h3>حصص النهارده</h3>
-        <div class="sub">@Model.TodaySessionsCount حصة</div>
+        <h3>@L.Get("Dash.TodayClasses")</h3>
+        <div class="sub">@L.Get("Dash.SessionCount", Model.TodaySessionsCount)</div>
 
         @if (Model.TodaySessions.Count == 0)
         {
             <div class="empty-box">
-                مفيش حصص النهارده.
+                @L.Get("Dash.NoSessionsToday")
                 <br />
                 <a href="@Url.Action("Index", "Sessions")">
-                    توليد حصص الشهر
+                    @L.Get("Dash.GenerateMonth")
                 </a>
             </div>
         }
@@ -178,20 +178,20 @@
 
                     <small>
                         @(s.Total == 0
-                            ? "لسه متحضرتش"
-                            : $"حضر {s.Present} من {s.Total}")
+                            ? L.Get("Dash.NotTaken").Value
+                            : L.Get("Dash.PresentOf", s.Present, s.Total).Value)
                     </small>
                 </div>
 
                 @if (s.Status == SessionStatus.Done)
                 {
-                    <span class="pill pill-ok">تمت</span>
+                    <span class="pill pill-ok">@L.Get("Dash.Done")</span>
                 }
                 else
                 {
                     <a class="pill pill-warn"
                        href="@Url.Action("Index", "Sessions")">
-                        تحضير
+                        @L.Get("Dash.TakeAttendance")
                     </a>
                 }
             </div>
@@ -202,24 +202,24 @@
     @if (Perm.Has(User, Screens.Invoices, PermissionAction.View))
     {
         <div class="panel">
-            <h3>حسابات الشهر</h3>
+            <h3>@L.Get("Dash.MonthAccounts")</h3>
 
             <div class="sub">
-                @DateTime.Today.ToString("MMMM yyyy", ar)
+                @DateTime.Today.ToString("MMMM yyyy", ui)
             </div>
 
             <div class="fin-row">
-                <span>إجمالي المستحق</span>
+                <span>@L.Get("Dash.Due")</span>
                 <b>@Model.MonthDue.ToString("N2")</b>
             </div>
 
             <div class="fin-row">
-                <span>المحصّل</span>
+                <span>@L.Get("Dash.Collected")</span>
                 <b class="money">@Model.MonthCollected.ToString("N2")</b>
             </div>
 
             <div class="fin-row">
-                <span>المتبقي</span>
+                <span>@L.Get("Dash.Remaining")</span>
                 <b style="color:#c53030">
                     @Model.MonthRemaining.ToString("N2")
                 </b>
@@ -230,13 +230,13 @@
             </div>
 
             <small class="text-muted">
-                تم تحصيل @collectedPct% من فواتير الشهر
+                @L.Get("Dash.CollectedPct", collectedPct)
             </small>
 
             <div class="mt-3">
                 <a class="btn btn-sm btn-outline-primary"
                    href="@Url.Action("Index", "Invoices")">
-                    الفواتير والتحصيل
+                    @L.Get("Menu.Invoices")
                 </a>
             </div>
         </div>
@@ -246,15 +246,15 @@
     @if (Perm.Has(User, Screens.Invoices, PermissionAction.View))
     {
         <div class="panel">
-            <h3>آخر التحصيلات</h3>
+            <h3>@L.Get("Dash.RecentPayments")</h3>
 
             <div class="sub">
-                آخر @Model.RecentPayments.Count عمليات
+                @L.Get("Dash.RecentCount", Model.RecentPayments.Count)
             </div>
 
             @if (Model.RecentPayments.Count == 0)
             {
-                <div class="empty-box">مفيش تحصيلات لسه</div>
+                <div class="empty-box">@L.Get("Dash.NoPayments")</div>
             }
 
             @foreach (var p in Model.RecentPayments)
@@ -262,7 +262,7 @@
                 <div class="row-item">
                     <div class="mini-avatar">
                         @(string.IsNullOrEmpty(p.StudentName)
-                            ? "؟"
+                            ? L.Get("Common.UnknownMark").Value
                             : p.StudentName.Substring(0, 1))
                     </div>
 
@@ -324,7 +324,7 @@
                         callbacks: {
                             label: function (c) {
                                 return c.parsed.y == null
-                                    ? 'لا بيانات'
+                                    ? @Json.Serialize(L.Get("Dash.NoChartData").Value)
                                     : c.parsed.y + '%';
                             }
                         }

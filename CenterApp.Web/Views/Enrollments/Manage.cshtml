@@ -2,13 +2,13 @@
 @using System.Text.Json
 <div class="mb-3">
     <strong>@Model.GroupName</strong> —
-    المسجلين: @Model.Enrolled.Count / @(Model.Capacity == 0 ? "∞" : Model.Capacity.ToString()) —
-    السعر الشهري: @Model.MonthlyFee.ToString("N2")
+    @L.Get("Enroll.Enrolled"): @Model.Enrolled.Count / @(Model.Capacity == 0 ? "∞" : Model.Capacity.ToString()) —
+    @L.Get("Groups.MonthlyFee"): @Model.MonthlyFee.ToString("N2")
 </div>
 
 <div class="row g-2 mb-3">
     <div class="col-md-6">
-        <input id="enrStudent" list="enrList" class="form-control" placeholder="طلاب مش مسجلين في أي مجموعة" autocomplete="off" />
+        <input id="enrStudent" list="enrList" class="form-control" placeholder="@L.Get("Enroll.UnassignedPh")" autocomplete="off" />
         <datalist id="enrList">
             @foreach (var a in Model.Available)
             {
@@ -16,12 +16,12 @@
             }
         </datalist>
     </div>
-    <div class="col-md-3"><input id="enrFee" type="number" min="0" step="0.01" class="form-control" placeholder="سعر خاص (اختياري)" /></div>
-    <div class="col-md-3"><button class="btn btn-success w-100" onclick="addEnrollment()">تسجيل</button></div>
+    <div class="col-md-3"><input id="enrFee" type="number" min="0" step="0.01" class="form-control" placeholder="@L.Get("Enroll.CustomFeePh")" /></div>
+    <div class="col-md-3"><button class="btn btn-success w-100" onclick="addEnrollment()">@L.Get("Enroll.Register")</button></div>
 </div>
 
 <table class="table table-sm table-striped align-middle">
-    <thead><tr><th>الطالب</th><th>الموبايل</th><th>انضم في</th><th>سعر خاص</th><th></th></tr></thead>
+    <thead><tr><th>@L.Get("Common.Student")</th><th>@L.Get("Common.Phone")</th><th>@L.Get("Enroll.JoinedOn")</th><th>@L.Get("Enroll.CustomFee")</th><th></th></tr></thead>
     <tbody>
         @foreach (var e in Model.Enrolled)
         {
@@ -30,8 +30,8 @@
                 <td>@e.Phone</td>
                 <td>@e.JoinedAt.ToString("yyyy-MM-dd")</td>
                 <td>@(e.CustomFee?.ToString("N2") ?? "-")</td>
-                <td><button class="btn btn-sm btn-outline-danger" onclick="removeEnrollment(@e.EnrollmentId)">إلغاء التسجيل</button>
-                    <button class="btn btn-sm btn-outline-secondary" onclick="openForm('@Url.Action("TransferForm", "Students", new { id = e.StudentId, from = Model.GroupId })', 'نقل طالب', true)">نقل</button>
+                <td><button class="btn btn-sm btn-outline-danger" onclick="removeEnrollment(@e.EnrollmentId)">@L.Get("Enroll.Unregister")</button>
+                    <button class="btn btn-sm btn-outline-secondary" onclick="openForm('@Url.Action("TransferForm", "Students", new { id = e.StudentId, from = Model.GroupId })', enrTransferTitle, true)">@L.Get("Enroll.Transfer")</button>
                 </td>
 
             </tr>
@@ -42,18 +42,23 @@
 <script>
     var stuMap = @Html.Raw(JsonSerializer.Serialize(Model.Available.ToDictionary(a => a.Text, a => a.Id)));
     var manageUrl = '@Url.Action("Manage", "Enrollments", new { groupId = Model.GroupId })';
+    var enrTransferTitle = @Json.Serialize(L.Get("Students.TransferTitle").Value);
+    var enrGroupStudents = @Json.Serialize(L.Get("Groups.Students").Value);
+    var pickStudent = @Json.Serialize(L.Get("Enroll.PickStudent").Value);
+    var removeAsk = @Json.Serialize(L.Get("Enroll.RemoveAsk").Value);
+    var removeYes = @Json.Serialize(L.Get("Enroll.RemoveYes").Value);
 
-    function reopen() { openForm(manageUrl, 'طلاب المجموعة', true); }
+    function reopen() { openForm(manageUrl, enrGroupStudents, true); }
 
     function addEnrollment() {
         var id = stuMap[$('#enrStudent').val()];
-        if (!id) { notify('warning', 'اختار الطالب من القائمة'); return; }
+        if (!id) { notify('warning', pickStudent); return; }
         postJson('@Url.Action("Add", "Enrollments")',
             { groupId: @Model.GroupId, studentId: id, customFee: $('#enrFee').val() }, reopen);
     }
 
     function removeEnrollment(id) {
-        askConfirm('إلغاء تسجيل الطالب من المجموعة؟ هيتشال من حسابات الشهر الحالي والجاي، إلا لو الفاتورة عليها تحصيل.', 'نعم، إلغاء التسجيل').then(function (ok) {
+        askConfirm(removeAsk, removeYes).then(function (ok) {
             if (ok) postJson('@Url.Action("Remove", "Enrollments")', { id: id }, reopen);
         });
     }

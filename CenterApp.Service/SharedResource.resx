@@ -1,0 +1,1898 @@
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="App.Name" xml:space="preserve">
+    <value>السنتر</value>
+  </data>
+  <data name="Att.Absent" xml:space="preserve">
+    <value>غائب</value>
+  </data>
+  <data name="Att.Excused" xml:space="preserve">
+    <value>بعذر</value>
+  </data>
+  <data name="Att.Late" xml:space="preserve">
+    <value>متأخر</value>
+  </data>
+  <data name="Att.Present" xml:space="preserve">
+    <value>حاضر</value>
+  </data>
+  <data name="Auth.BackHome" xml:space="preserve">
+    <value>الرجوع للرئيسية</value>
+  </data>
+  <data name="Auth.BadCredentials" xml:space="preserve">
+    <value>اسم المستخدم أو كلمة المرور غير صحيحة</value>
+  </data>
+  <data name="Auth.DeniedHeading" xml:space="preserve">
+    <value>معندكش صلاحية تفتح الصفحة دي</value>
+  </data>
+  <data name="Auth.DeniedHint" xml:space="preserve">
+    <value>لو محتاج الصلاحية دي، كلّم مدير النظام.</value>
+  </data>
+  <data name="Auth.DeniedTitle" xml:space="preserve">
+    <value>غير مسموح</value>
+  </data>
+  <data name="Auth.EnterCredentials" xml:space="preserve">
+    <value>ادخل اسم المستخدم وكلمة المرور</value>
+  </data>
+  <data name="Auth.Forgot" xml:space="preserve">
+    <value>نسيت كلمة المرور؟</value>
+  </data>
+  <data name="Auth.ForgotHint" xml:space="preserve">
+    <value>كلّم مدير النظام وهو يغيّرها لك.</value>
+  </data>
+  <data name="Auth.Inactive" xml:space="preserve">
+    <value>الحساب ده متوقف، كلّم مدير النظام</value>
+  </data>
+  <data name="Auth.LockedOut" xml:space="preserve">
+    <value>الحساب اتقفل مؤقتاً بسبب محاولات غلط كتير، جرّب بعد 5 دقايق</value>
+  </data>
+  <data name="Auth.LoginSub" xml:space="preserve">
+    <value>ادخل على لوحة التحكم</value>
+  </data>
+  <data name="Auth.LoginTitle" xml:space="preserve">
+    <value>تسجيل الدخول</value>
+  </data>
+  <data name="Auth.Logout" xml:space="preserve">
+    <value>تسجيل الخروج</value>
+  </data>
+  <data name="Auth.LogoutShort" xml:space="preserve">
+    <value>خروج</value>
+  </data>
+  <data name="Auth.NoPermission" xml:space="preserve">
+    <value>معندكش صلاحية للعملية دي</value>
+  </data>
+  <data name="Auth.Password" xml:space="preserve">
+    <value>كلمة المرور</value>
+  </data>
+  <data name="Auth.SessionReplaced" xml:space="preserve">
+    <value>الحساب اتفتح من جهاز تاني، والجلسة هنا اتقفلت.</value>
+  </data>
+  <data name="Auth.ShowPassword" xml:space="preserve">
+    <value>إظهار كلمة المرور</value>
+  </data>
+  <data name="Auth.SignIn" xml:space="preserve">
+    <value>دخول</value>
+  </data>
+  <data name="Auth.UserOrEmail" xml:space="preserve">
+    <value>اسم المستخدم أو البريد الإلكتروني</value>
+  </data>
+  <data name="Auth.UserOrEmailPh" xml:space="preserve">
+    <value>اسم المستخدم أو البريد</value>
+  </data>
+  <data name="Chat.You" xml:space="preserve">
+    <value>أنت</value>
+  </data>
+  <data name="Common.Active" xml:space="preserve">
+    <value>نشط</value>
+  </data>
+  <data name="Common.Add" xml:space="preserve">
+    <value>إضافة</value>
+  </data>
+  <data name="Common.All" xml:space="preserve">
+    <value>الكل</value>
+  </data>
+  <data name="Common.AllGroups" xml:space="preserve">
+    <value>كل المجموعات</value>
+  </data>
+  <data name="Common.Cancel" xml:space="preserve">
+    <value>إلغاء</value>
+  </data>
+  <data name="Common.Choose" xml:space="preserve">
+    <value>-- اختر --</value>
+  </data>
+  <data name="Common.Clear" xml:space="preserve">
+    <value>مسح</value>
+  </data>
+  <data name="Common.Code" xml:space="preserve">
+    <value>الكود</value>
+  </data>
+  <data name="Common.Confirm" xml:space="preserve">
+    <value>تأكيد</value>
+  </data>
+  <data name="Common.ConfirmAction" xml:space="preserve">
+    <value>تأكيد العملية؟</value>
+  </data>
+  <data name="Common.ConfirmDelete" xml:space="preserve">
+    <value>تأكيد الحذف؟</value>
+  </data>
+  <data name="Common.Delete" xml:space="preserve">
+    <value>حذف</value>
+  </data>
+  <data name="Common.Edit" xml:space="preserve">
+    <value>تعديل</value>
+  </data>
+  <data name="Common.Error" xml:space="preserve">
+    <value>حصل خطأ</value>
+  </data>
+  <data name="Common.Grade" xml:space="preserve">
+    <value>المرحلة</value>
+  </data>
+  <data name="Common.Group" xml:space="preserve">
+    <value>المجموعة</value>
+  </data>
+  <data name="Common.Home" xml:space="preserve">
+    <value>الرئيسية</value>
+  </data>
+  <data name="Common.InactiveAlt" xml:space="preserve">
+    <value>غير نشط</value>
+  </data>
+  <data name="Common.LoadFailed" xml:space="preserve">
+    <value>تعذر التحميل ({0})</value>
+  </data>
+  <data name="Common.Menu" xml:space="preserve">
+    <value>القائمة</value>
+  </data>
+  <data name="Common.Name" xml:space="preserve">
+    <value>الاسم</value>
+  </data>
+  <data name="Common.No" xml:space="preserve">
+    <value>-- لا --</value>
+  </data>
+  <data name="Common.Notes" xml:space="preserve">
+    <value>ملاحظات</value>
+  </data>
+  <data name="Common.Ok" xml:space="preserve">
+    <value>حسناً</value>
+  </data>
+  <data name="Common.Open" xml:space="preserve">
+    <value>فتح</value>
+  </data>
+  <data name="Common.Phone" xml:space="preserve">
+    <value>الموبايل</value>
+  </data>
+  <data name="Common.Published" xml:space="preserve">
+    <value>تم النشر</value>
+  </data>
+  <data name="Common.Reason" xml:space="preserve">
+    <value>السبب</value>
+  </data>
+  <data name="Common.ReasonOptional" xml:space="preserve">
+    <value>السبب (اختياري)</value>
+  </data>
+  <data name="Common.Save" xml:space="preserve">
+    <value>حفظ</value>
+  </data>
+  <data name="Common.Saved" xml:space="preserve">
+    <value>تم الحفظ</value>
+  </data>
+  <data name="Common.Search" xml:space="preserve">
+    <value>بحث</value>
+  </data>
+  <data name="Common.Send" xml:space="preserve">
+    <value>إرسال</value>
+  </data>
+  <data name="Common.ServerError" xml:space="preserve">
+    <value>حصل خطأ في السيرفر ({0})</value>
+  </data>
+  <data name="Common.Status" xml:space="preserve">
+    <value>الحالة</value>
+  </data>
+  <data name="Common.Stopped" xml:space="preserve">
+    <value>متوقف</value>
+  </data>
+  <data name="Common.Student" xml:space="preserve">
+    <value>الطالب</value>
+  </data>
+  <data name="Common.Subject" xml:space="preserve">
+    <value>المادة</value>
+  </data>
+  <data name="Common.Teacher" xml:space="preserve">
+    <value>المدرس</value>
+  </data>
+  <data name="Common.Time" xml:space="preserve">
+    <value>الوقت</value>
+  </data>
+  <data name="Common.Total" xml:space="preserve">
+    <value>إجمالي</value>
+  </data>
+  <data name="Common.UnknownMark" xml:space="preserve">
+    <value>؟</value>
+  </data>
+  <data name="Common.Yes" xml:space="preserve">
+    <value>نعم</value>
+  </data>
+  <data name="Dash.ActiveCount" xml:space="preserve">
+    <value>{0} نشطة</value>
+  </data>
+  <data name="Dash.ActiveStudents" xml:space="preserve">
+    <value>الإجمالي: {0} طالب نشط</value>
+  </data>
+  <data name="Dash.AttendanceOverview" xml:space="preserve">
+    <value>نظرة عامة على الحضور</value>
+  </data>
+  <data name="Dash.AttendanceSub" xml:space="preserve">
+    <value>نسبة الحضور اليومية — آخر 7 أيام</value>
+  </data>
+  <data name="Dash.ByGrade" xml:space="preserve">
+    <value>الطلاب حسب المرحلة</value>
+  </data>
+  <data name="Dash.Collected" xml:space="preserve">
+    <value>المحصّل</value>
+  </data>
+  <data name="Dash.CollectedPct" xml:space="preserve">
+    <value>تم تحصيل {0}% من فواتير الشهر</value>
+  </data>
+  <data name="Dash.Done" xml:space="preserve">
+    <value>تمت</value>
+  </data>
+  <data name="Dash.Due" xml:space="preserve">
+    <value>إجمالي المستحق</value>
+  </data>
+  <data name="Dash.Enrolled" xml:space="preserve">
+    <value>{0} مسجل في مجموعات</value>
+  </data>
+  <data name="Dash.GenerateMonth" xml:space="preserve">
+    <value>توليد حصص الشهر</value>
+  </data>
+  <data name="Dash.Hello" xml:space="preserve">
+    <value>أهلاً، {0} 👋</value>
+  </data>
+  <data name="Dash.MonthAccounts" xml:space="preserve">
+    <value>حسابات الشهر</value>
+  </data>
+  <data name="Dash.NoAttendanceYet" xml:space="preserve">
+    <value>لسه مفيش بيانات حضور</value>
+  </data>
+  <data name="Dash.NoChartData" xml:space="preserve">
+    <value>لا بيانات</value>
+  </data>
+  <data name="Dash.NoData" xml:space="preserve">
+    <value>لا توجد بيانات</value>
+  </data>
+  <data name="Dash.NoGrade" xml:space="preserve">
+    <value>بدون مرحلة</value>
+  </data>
+  <data name="Dash.NoPayments" xml:space="preserve">
+    <value>مفيش تحصيلات لسه</value>
+  </data>
+  <data name="Dash.NoSessionsToday" xml:space="preserve">
+    <value>مفيش حصص النهارده.</value>
+  </data>
+  <data name="Dash.NoStudents" xml:space="preserve">
+    <value>مفيش طلاب لسه</value>
+  </data>
+  <data name="Dash.NotTaken" xml:space="preserve">
+    <value>لسه متحضرتش</value>
+  </data>
+  <data name="Dash.PresentOf" xml:space="preserve">
+    <value>حضر {0} من {1}</value>
+  </data>
+  <data name="Dash.RecentCount" xml:space="preserve">
+    <value>آخر {0} عمليات</value>
+  </data>
+  <data name="Dash.RecentPayments" xml:space="preserve">
+    <value>آخر التحصيلات</value>
+  </data>
+  <data name="Dash.Remaining" xml:space="preserve">
+    <value>المتبقي</value>
+  </data>
+  <data name="Dash.SessionCount" xml:space="preserve">
+    <value>{0} حصة</value>
+  </data>
+  <data name="Dash.TakeAttendance" xml:space="preserve">
+    <value>تحضير</value>
+  </data>
+  <data name="Dash.TeacherCount" xml:space="preserve">
+    <value>{0} مدرس</value>
+  </data>
+  <data name="Dash.TodayAttendance" xml:space="preserve">
+    <value>حضور النهارده</value>
+  </data>
+  <data name="Dash.TodayClasses" xml:space="preserve">
+    <value>حصص النهارده</value>
+  </data>
+  <data name="Dash.TodaySessions" xml:space="preserve">
+    <value>{0} حصة اليوم</value>
+  </data>
+  <data name="Dash.TotalStudents" xml:space="preserve">
+    <value>إجمالي الطلاب</value>
+  </data>
+  <data name="Dash.Welcome" xml:space="preserve">
+    <value>نورت تاني — ده ملخص النهارده.</value>
+  </data>
+  <data name="Enroll.CustomFee" xml:space="preserve">
+    <value>سعر خاص</value>
+  </data>
+  <data name="Enroll.CustomFeePh" xml:space="preserve">
+    <value>سعر خاص (اختياري)</value>
+  </data>
+  <data name="Enroll.Enrolled" xml:space="preserve">
+    <value>المسجلين</value>
+  </data>
+  <data name="Enroll.JoinedOn" xml:space="preserve">
+    <value>انضم في</value>
+  </data>
+  <data name="Enroll.PickStudent" xml:space="preserve">
+    <value>اختار الطالب من القائمة</value>
+  </data>
+  <data name="Enroll.Register" xml:space="preserve">
+    <value>تسجيل</value>
+  </data>
+  <data name="Enroll.RemoveAsk" xml:space="preserve">
+    <value>إلغاء تسجيل الطالب من المجموعة؟ هيتشال من حسابات الشهر الحالي والجاي، إلا لو الفاتورة عليها تحصيل.</value>
+  </data>
+  <data name="Enroll.RemoveYes" xml:space="preserve">
+    <value>نعم، إلغاء التسجيل</value>
+  </data>
+  <data name="Enroll.Transfer" xml:space="preserve">
+    <value>نقل</value>
+  </data>
+  <data name="Enroll.UnassignedPh" xml:space="preserve">
+    <value>طلاب مش مسجلين في أي مجموعة</value>
+  </data>
+  <data name="Enroll.Unregister" xml:space="preserve">
+    <value>إلغاء التسجيل</value>
+  </data>
+  <data name="Error.Body" xml:space="preserve">
+    <value>حصل خطأ أثناء تنفيذ الطلب.</value>
+  </data>
+  <data name="Error.Heading" xml:space="preserve">
+    <value>خطأ</value>
+  </data>
+  <data name="Error.RequestId" xml:space="preserve">
+    <value>رقم الطلب:</value>
+  </data>
+  <data name="Error.Title" xml:space="preserve">
+    <value>خطأ</value>
+  </data>
+  <data name="Exam.Back" xml:space="preserve">
+    <value>رجوع</value>
+  </data>
+  <data name="Exam.Choice" xml:space="preserve">
+    <value>اختيار</value>
+  </data>
+  <data name="Exam.Closes" xml:space="preserve">
+    <value>يقفل</value>
+  </data>
+  <data name="Exam.ClosesAt" xml:space="preserve">
+    <value>يقفل في</value>
+  </data>
+  <data name="Exam.DeleteAsk" xml:space="preserve">
+    <value>حذف الاختبار؟</value>
+  </data>
+  <data name="Exam.DeleteQuestion" xml:space="preserve">
+    <value>حذف السؤال</value>
+  </data>
+  <data name="Exam.Draft" xml:space="preserve">
+    <value>مسودة</value>
+  </data>
+  <data name="Exam.EditTitle" xml:space="preserve">
+    <value>تعديل اختبار</value>
+  </data>
+  <data name="Exam.Empty" xml:space="preserve">
+    <value>لسه مفيش اختبارات أونلاين</value>
+  </data>
+  <data name="Exam.ExamTitle" xml:space="preserve">
+    <value>عنوان الاختبار</value>
+  </data>
+  <data name="Exam.Grades" xml:space="preserve">
+    <value>الدرجات</value>
+  </data>
+  <data name="Exam.GroupRequired" xml:space="preserve">
+    <value>اختار مجموعة واحدة على الأقل</value>
+  </data>
+  <data name="Exam.Groups" xml:space="preserve">
+    <value>المجموعات</value>
+  </data>
+  <data name="Exam.ImageTooBig" xml:space="preserve">
+    <value>الصورة أكبر من 4 ميجا</value>
+  </data>
+  <data name="Exam.ImageUploadFailed" xml:space="preserve">
+    <value>الصورة ما اترفعتش</value>
+  </data>
+  <data name="Exam.LockedHint" xml:space="preserve">
+    <value>الاختبار بدأ أو فيه محاولات، فتقدر تعدّل وقت ظهور النتيجة بس.</value>
+  </data>
+  <data name="Exam.MarkCorrect" xml:space="preserve">
+    <value>علّم الإجابة الصحيحة</value>
+  </data>
+  <data name="Exam.Minutes" xml:space="preserve">
+    <value>المدة بالدقايق</value>
+  </data>
+  <data name="Exam.MinutesRange" xml:space="preserve">
+    <value>من 5 لـ 360 دقيقة</value>
+  </data>
+  <data name="Exam.New" xml:space="preserve">
+    <value>اختبار جديد</value>
+  </data>
+  <data name="Exam.NewOnline" xml:space="preserve">
+    <value>اختبار أونلاين جديد</value>
+  </data>
+  <data name="Exam.NoExamsForGrades" xml:space="preserve">
+    <value>لسه مفيش اختبارات عشان نعرض درجاتها</value>
+  </data>
+  <data name="Exam.NoGroups" xml:space="preserve">
+    <value>مفيش مجموعات</value>
+  </data>
+  <data name="Exam.NoStudents" xml:space="preserve">
+    <value>مفيش طلاب في مجموعات الاختبار ده.</value>
+  </data>
+  <data name="Exam.OnlineGradesTitle" xml:space="preserve">
+    <value>درجات الاختبارات الأونلاين</value>
+  </data>
+  <data name="Exam.OpenNow" xml:space="preserve">
+    <value>افتح</value>
+  </data>
+  <data name="Exam.Opens" xml:space="preserve">
+    <value>يفتح</value>
+  </data>
+  <data name="Exam.OpensFrom" xml:space="preserve">
+    <value>يفتح من</value>
+  </data>
+  <data name="Exam.Published" xml:space="preserve">
+    <value>منشور</value>
+  </data>
+  <data name="Exam.Question" xml:space="preserve">
+    <value>سؤال</value>
+  </data>
+  <data name="Exam.QuestionAttempts" xml:space="preserve">
+    <value>{0} سؤال · {1} محاولة</value>
+  </data>
+  <data name="Exam.QuestionImage" xml:space="preserve">
+    <value>صورة السؤال</value>
+  </data>
+  <data name="Exam.QuestionN" xml:space="preserve">
+    <value>سؤال {0}</value>
+  </data>
+  <data name="Exam.QuestionPoints" xml:space="preserve">
+    <value>درجة السؤال</value>
+  </data>
+  <data name="Exam.Questions" xml:space="preserve">
+    <value>الأسئلة</value>
+  </data>
+  <data name="Exam.QuestionTextPh" xml:space="preserve">
+    <value>نص السؤال</value>
+  </data>
+  <data name="Exam.RemoveImage" xml:space="preserve">
+    <value>شيل الصورة</value>
+  </data>
+  <data name="Exam.Reopen" xml:space="preserve">
+    <value>إعادة فتح</value>
+  </data>
+  <data name="Exam.ReopenFor" xml:space="preserve">
+    <value>إعادة فتح لـ {0}</value>
+  </data>
+  <data name="Exam.Result" xml:space="preserve">
+    <value>النتيجة</value>
+  </data>
+  <data name="Exam.ResultsAtLabel" xml:space="preserve">
+    <value>النتيجة تظهر لكل الطلاب في</value>
+  </data>
+  <data name="Exam.ResultsOn" xml:space="preserve">
+    <value>الطلاب هيشوفوا النتيجة {0}</value>
+  </data>
+  <data name="Exam.ResultsRequired" xml:space="preserve">
+    <value>حدد وقت ظهور النتيجة</value>
+  </data>
+  <data name="Exam.Rules" xml:space="preserve">
+    <value>الاختبار يتفتح بس في الفترة دي، وممنوع فيه النسخ واللصق، ولو الطالب خرج من التاب أو من الصفحة الاختبار بيتسلّم لوحده. تقدر تضيف صورة جنب السؤال لو فيه رسم. الدرجة بتتحسب وقت التسليم، والطالب يشوفها هو وزملاؤه في وقت ظهور النتيجة مع بعض.</value>
+  </data>
+  <data name="Exam.SaveDraft" xml:space="preserve">
+    <value>حفظ كمسودة</value>
+  </data>
+  <data name="Exam.SavePublish" xml:space="preserve">
+    <value>حفظ ونشر</value>
+  </data>
+  <data name="Exam.SaveResultsTime" xml:space="preserve">
+    <value>حفظ وقت النتيجة</value>
+  </data>
+  <data name="Exam.ScheduleRequired" xml:space="preserve">
+    <value>حدد موعد الفتح والقفل وظهور النتيجة</value>
+  </data>
+  <data name="Exam.Score" xml:space="preserve">
+    <value>الدرجة</value>
+  </data>
+  <data name="Exam.StudentDescription" xml:space="preserve">
+    <value>وصف للطالب (اختياري)</value>
+  </data>
+  <data name="Exam.StudentsSeeResults" xml:space="preserve">
+    <value>الطلاب شايفين النتيجة</value>
+  </data>
+  <data name="Exam.SubmittedAt" xml:space="preserve">
+    <value>وقت التسليم</value>
+  </data>
+  <data name="Exam.Title" xml:space="preserve">
+    <value>الاختبار</value>
+  </data>
+  <data name="Exam.TitleCol" xml:space="preserve">
+    <value>العنوان</value>
+  </data>
+  <data name="Exam.TitleRequired" xml:space="preserve">
+    <value>اكتب عنوان الاختبار</value>
+  </data>
+  <data name="Exam.TotalPoints" xml:space="preserve">
+    <value>· المجموع {0}</value>
+  </data>
+  <data name="Exam.TryAgain" xml:space="preserve">
+    <value>حصل خطأ، جرّب تاني</value>
+  </data>
+  <data name="Exam.Violations" xml:space="preserve">
+    <value>مخالفات</value>
+  </data>
+  <data name="Exam.WindowScore" xml:space="preserve">
+    <value>من {0} إلى {1} · الدرجة من {2}</value>
+  </data>
+  <data name="Grace.Active" xml:space="preserve">
+    <value>ساري</value>
+  </data>
+  <data name="Grace.DayCount" xml:space="preserve">
+    <value>عدد الأيام (من النهارده)</value>
+  </data>
+  <data name="Grace.Days" xml:space="preserve">
+    <value>الأيام</value>
+  </data>
+  <data name="Grace.Expired" xml:space="preserve">
+    <value>انتهى</value>
+  </data>
+  <data name="Grace.Grant" xml:space="preserve">
+    <value>إعطاء السماح</value>
+  </data>
+  <data name="Grace.LastDay" xml:space="preserve">
+    <value>آخر يوم</value>
+  </data>
+  <data name="Grace.New" xml:space="preserve">
+    <value>سماح جديد</value>
+  </data>
+  <data name="Grace.PickStudent" xml:space="preserve">
+    <value>اختار الطالب من القائمة</value>
+  </data>
+  <data name="Grace.RevokeAsk" xml:space="preserve">
+    <value>إلغاء السماح ده؟</value>
+  </data>
+  <data name="Grace.Revoked" xml:space="preserve">
+    <value>ملغي</value>
+  </data>
+  <data name="Grace.SearchStudent" xml:space="preserve">
+    <value>ابحث بالاسم أو الكود...</value>
+  </data>
+  <data name="Grace.Title" xml:space="preserve">
+    <value>سماح الوصول للماتريال</value>
+  </data>
+  <data name="Groups.Active" xml:space="preserve">
+    <value>نشطة</value>
+  </data>
+  <data name="Groups.AddSlot" xml:space="preserve">
+    <value>+ ميعاد</value>
+  </data>
+  <data name="Groups.CapacityHint" xml:space="preserve">
+    <value>الحد الأقصى للطلاب (0 = بلا حد)</value>
+  </data>
+  <data name="Groups.CodeHint" xml:space="preserve">
+    <value>كود المجموعة بيتحط جنب رقم الطالب (مثال: 001A). مينفعش يتغيّر بعد ما يتسجّل فيها طلاب.</value>
+  </data>
+  <data name="Groups.Edit" xml:space="preserve">
+    <value>تعديل مجموعة</value>
+  </data>
+  <data name="Groups.Fee" xml:space="preserve">
+    <value>السعر</value>
+  </data>
+  <data name="Groups.GroupName" xml:space="preserve">
+    <value>اسم المجموعة</value>
+  </data>
+  <data name="Groups.MonthlyFee" xml:space="preserve">
+    <value>السعر الشهري</value>
+  </data>
+  <data name="Groups.New" xml:space="preserve">
+    <value>مجموعة جديدة</value>
+  </data>
+  <data name="Groups.NoCode" xml:space="preserve">
+    <value>بدون كود</value>
+  </data>
+  <data name="Groups.None" xml:space="preserve">
+    <value>-- بدون --</value>
+  </data>
+  <data name="Groups.Room" xml:space="preserve">
+    <value>القاعة</value>
+  </data>
+  <data name="Groups.Schedule" xml:space="preserve">
+    <value>المواعيد</value>
+  </data>
+  <data name="Groups.Search" xml:space="preserve">
+    <value>بحث باسم المجموعة</value>
+  </data>
+  <data name="Groups.SeatsLeft" xml:space="preserve">
+    <value>متبقي {0}</value>
+  </data>
+  <data name="Groups.Students" xml:space="preserve">
+    <value>طلاب المجموعة</value>
+  </data>
+  <data name="Groups.WeeklySchedule" xml:space="preserve">
+    <value>المواعيد الأسبوعية</value>
+  </data>
+  <data name="Homework.Back" xml:space="preserve">
+    <value>رجوع</value>
+  </data>
+  <data name="Homework.ConnectionFailed" xml:space="preserve">
+    <value>فشل الاتصال بالسيرفر</value>
+  </data>
+  <data name="Homework.DeleteAsk" xml:space="preserve">
+    <value>حذف الواجب وكل ملفاته؟</value>
+  </data>
+  <data name="Homework.DeleteFileAsk" xml:space="preserve">
+    <value>حذف الملف ده؟</value>
+  </data>
+  <data name="Homework.DescriptionOptional" xml:space="preserve">
+    <value>الوصف (اختياري)</value>
+  </data>
+  <data name="Homework.Download" xml:space="preserve">
+    <value>تنزيل</value>
+  </data>
+  <data name="Homework.Draft" xml:space="preserve">
+    <value>مسودة</value>
+  </data>
+  <data name="Homework.Edit" xml:space="preserve">
+    <value>تعديل واجب</value>
+  </data>
+  <data name="Homework.ErrorStatus" xml:space="preserve">
+    <value>حصل خطأ ({0})</value>
+  </data>
+  <data name="Homework.FileRequired" xml:space="preserve">
+    <value>ارفع ملف واحد على الأقل قبل النشر</value>
+  </data>
+  <data name="Homework.Files" xml:space="preserve">
+    <value>الملفات</value>
+  </data>
+  <data name="Homework.FilesHint" xml:space="preserve">
+    <value>الملفات (PDF أو Word، حتى 25 ميجا، والطالب ينزّلها زي ما هي)</value>
+  </data>
+  <data name="Homework.GroupRequired" xml:space="preserve">
+    <value>اختار مجموعة واحدة على الأقل</value>
+  </data>
+  <data name="Homework.New" xml:space="preserve">
+    <value>واجب جديد</value>
+  </data>
+  <data name="Homework.NoGroups" xml:space="preserve">
+    <value>مفيش مجموعات</value>
+  </data>
+  <data name="Homework.Published" xml:space="preserve">
+    <value>منشور</value>
+  </data>
+  <data name="Homework.PublishedOn" xml:space="preserve">
+    <value>تاريخ النشر</value>
+  </data>
+  <data name="Homework.Remove" xml:space="preserve">
+    <value>إزالة</value>
+  </data>
+  <data name="Homework.SavedDraft" xml:space="preserve">
+    <value>تم الحفظ كمسودة</value>
+  </data>
+  <data name="Homework.SaveDraft" xml:space="preserve">
+    <value>حفظ كمسودة</value>
+  </data>
+  <data name="Homework.SavePublish" xml:space="preserve">
+    <value>حفظ ونشر</value>
+  </data>
+  <data name="Homework.ShareWith" xml:space="preserve">
+    <value>إتاحة الواجب لـ</value>
+  </data>
+  <data name="Homework.Title" xml:space="preserve">
+    <value>العنوان</value>
+  </data>
+  <data name="Homework.TitleRequired" xml:space="preserve">
+    <value>اكتب عنوان الواجب</value>
+  </data>
+  <data name="Homework.TryAgain" xml:space="preserve">
+    <value>حصل خطأ، جرّب تاني</value>
+  </data>
+  <data name="Homework.Uploading" xml:space="preserve">
+    <value>رفع ملف {0} من {1}: {2}</value>
+  </data>
+  <data name="Invoices.Amount" xml:space="preserve">
+    <value>المبلغ</value>
+  </data>
+  <data name="Invoices.AmountNow" xml:space="preserve">
+    <value>المبلغ المدفوع الآن (المتبقي {0})</value>
+  </data>
+  <data name="Invoices.BalanceHigh" xml:space="preserve">
+    <value>المتبقي من الأعلى</value>
+  </data>
+  <data name="Invoices.BalanceLow" xml:space="preserve">
+    <value>المتبقي من الأقل</value>
+  </data>
+  <data name="Invoices.CurrentPrices" xml:space="preserve">
+    <value>سعر الاشتراك الحالي: {0}</value>
+  </data>
+  <data name="Invoices.Date" xml:space="preserve">
+    <value>التاريخ</value>
+  </data>
+  <data name="Invoices.DeletePayAsk" xml:space="preserve">
+    <value>حذف التحصيل ده؟ الفاتورة هترجع للحالة المناسبة، والماتريال ممكن تتقفل لو الحساب مبقاش مدفوع.</value>
+  </data>
+  <data name="Invoices.DeletePayYes" xml:space="preserve">
+    <value>نعم، احذف</value>
+  </data>
+  <data name="Invoices.Discount" xml:space="preserve">
+    <value>الخصم</value>
+  </data>
+  <data name="Invoices.DiscountHelp" xml:space="preserve">
+    <value>يُطبَّق الخصم الدائم على الفترات القادمة. السجلات المدفوعة والشهور السابقة تبقى كما هي. فترة الشهر الحالي غير المدفوعة تُحدَّث فقط إذا لم تُسجَّل عليها أي دفعة.</value>
+  </data>
+  <data name="Invoices.DiscountType" xml:space="preserve">
+    <value>نوع الخصم</value>
+  </data>
+  <data name="Invoices.DiscountValue" xml:space="preserve">
+    <value>قيمة الخصم</value>
+  </data>
+  <data name="Invoices.DueDate" xml:space="preserve">
+    <value>تاريخ الاستحقاق</value>
+  </data>
+  <data name="Invoices.DueLate" xml:space="preserve">
+    <value>تاريخ الاستحقاق الأبعد</value>
+  </data>
+  <data name="Invoices.DueSoon" xml:space="preserve">
+    <value>تاريخ الاستحقاق الأقرب</value>
+  </data>
+  <data name="Invoices.Egp" xml:space="preserve">
+    <value>{0} ج.م</value>
+  </data>
+  <data name="Invoices.Empty" xml:space="preserve">
+    <value>لا توجد تحصيلات لهذا الشهر.</value>
+  </data>
+  <data name="Invoices.Fee" xml:space="preserve">
+    <value>سعر الاشتراك</value>
+  </data>
+  <data name="Invoices.Fixed" xml:space="preserve">
+    <value>مبلغ ثابت</value>
+  </data>
+  <data name="Invoices.FixedApply" xml:space="preserve">
+    <value>سيُطبَّق مبلغ {0} ج.م عند إصدار فاتورة بسعر.</value>
+  </data>
+  <data name="Invoices.FullName" xml:space="preserve">
+    <value>الاسم الكامل</value>
+  </data>
+  <data name="Invoices.Grace" xml:space="preserve">
+    <value>سماح</value>
+  </data>
+  <data name="Invoices.GraceTitle" xml:space="preserve">
+    <value>سماح وصول للماتريال</value>
+  </data>
+  <data name="Invoices.Invoice" xml:space="preserve">
+    <value>فاتورة</value>
+  </data>
+  <data name="Invoices.LastPayment" xml:space="preserve">
+    <value>آخر دفعة</value>
+  </data>
+  <data name="Invoices.ListSep" xml:space="preserve">
+    <value>، </value>
+  </data>
+  <data name="Invoices.Log" xml:space="preserve">
+    <value>السجل</value>
+  </data>
+  <data name="Invoices.Method" xml:space="preserve">
+    <value>الطريقة</value>
+  </data>
+  <data name="Invoices.Month" xml:space="preserve">
+    <value>الشهر</value>
+  </data>
+  <data name="Invoices.NetDue" xml:space="preserve">
+    <value>صافي المستحق</value>
+  </data>
+  <data name="Invoices.NewCollection" xml:space="preserve">
+    <value>تحصيل جديد</value>
+  </data>
+  <data name="Invoices.None" xml:space="preserve">
+    <value>بدون</value>
+  </data>
+  <data name="Invoices.NoPermanent" xml:space="preserve">
+    <value>لا يوجد خصم دائم. يدفع الطالب سعر الاشتراك كاملاً.</value>
+  </data>
+  <data name="Invoices.Paid" xml:space="preserve">
+    <value>مدفوع</value>
+  </data>
+  <data name="Invoices.PaidSoFar" xml:space="preserve">
+    <value>المدفوع</value>
+  </data>
+  <data name="Invoices.Partial" xml:space="preserve">
+    <value>مدفوع جزئياً</value>
+  </data>
+  <data name="Invoices.PaymentLog" xml:space="preserve">
+    <value>سجل الدفعات</value>
+  </data>
+  <data name="Invoices.PayMethod" xml:space="preserve">
+    <value>طريقة الدفع</value>
+  </data>
+  <data name="Invoices.PayStatus" xml:space="preserve">
+    <value>حالة الدفع</value>
+  </data>
+  <data name="Invoices.Percent" xml:space="preserve">
+    <value>نسبة مئوية</value>
+  </data>
+  <data name="Invoices.PercentApply" xml:space="preserve">
+    <value>ستُطبَّق نسبة {0}% عند إصدار فاتورة بسعر.</value>
+  </data>
+  <data name="Invoices.PermanentDiscount" xml:space="preserve">
+    <value>الخصم الدائم</value>
+  </data>
+  <data name="Invoices.PreviewLine" xml:space="preserve">
+    <value>سعر الاشتراك {0} ج.م − الخصم {1} ج.م = الصافي {2} ج.م</value>
+  </data>
+  <data name="Invoices.PreviewPlaceholder" xml:space="preserve">
+    <value>ستظهر المعاينة هنا.</value>
+  </data>
+  <data name="Invoices.Previous" xml:space="preserve">
+    <value>التحصيلات السابقة</value>
+  </data>
+  <data name="Invoices.RecalcAsk" xml:space="preserve">
+    <value>إعادة حساب الخصم لفواتير الشهر ده حسب الخصم الدائم الحالي للطلاب؟ الفواتير اللي عليها تحصيل مش هتتغيّر.</value>
+  </data>
+  <data name="Invoices.Recalculate" xml:space="preserve">
+    <value>إعادة حساب الخصم</value>
+  </data>
+  <data name="Invoices.RecalcYes" xml:space="preserve">
+    <value>نعم، أعد الحساب</value>
+  </data>
+  <data name="Invoices.RecordPayment" xml:space="preserve">
+    <value>تسجيل دفعة</value>
+  </data>
+  <data name="Invoices.Remaining" xml:space="preserve">
+    <value>المتبقي</value>
+  </data>
+  <data name="Invoices.RemoveDiscount" xml:space="preserve">
+    <value>إزالة الخصم</value>
+  </data>
+  <data name="Invoices.SaveCollection" xml:space="preserve">
+    <value>حفظ التحصيل</value>
+  </data>
+  <data name="Invoices.SaveDiscount" xml:space="preserve">
+    <value>حفظ الخصم</value>
+  </data>
+  <data name="Invoices.SearchName" xml:space="preserve">
+    <value>بحث بالاسم</value>
+  </data>
+  <data name="Invoices.ShortTitle" xml:space="preserve">
+    <value>تحصيل</value>
+  </data>
+  <data name="Invoices.Show" xml:space="preserve">
+    <value>عرض</value>
+  </data>
+  <data name="Invoices.Sort" xml:space="preserve">
+    <value>الترتيب</value>
+  </data>
+  <data name="Invoices.Title" xml:space="preserve">
+    <value>التحصيل</value>
+  </data>
+  <data name="Invoices.TotalPaid" xml:space="preserve">
+    <value>إجمالي المدفوع</value>
+  </data>
+  <data name="Invoices.Unpaid" xml:space="preserve">
+    <value>غير مدفوع</value>
+  </data>
+  <data name="Invoices.Waived" xml:space="preserve">
+    <value>معفى</value>
+  </data>
+  <data name="Lookups.Grades" xml:space="preserve">
+    <value>المراحل الدراسية</value>
+  </data>
+  <data name="Lookups.Sort" xml:space="preserve">
+    <value>الترتيب</value>
+  </data>
+  <data name="Lookups.Subjects" xml:space="preserve">
+    <value>المواد</value>
+  </data>
+  <data name="Lookups.Teachers" xml:space="preserve">
+    <value>المدرسين</value>
+  </data>
+  <data name="Materials.Back" xml:space="preserve">
+    <value>رجوع</value>
+  </data>
+  <data name="Materials.ConnectionFailed" xml:space="preserve">
+    <value>فشل الاتصال بالسيرفر</value>
+  </data>
+  <data name="Materials.DeleteAsk" xml:space="preserve">
+    <value>حذف الماتريال وكل ملفاته؟</value>
+  </data>
+  <data name="Materials.DeleteFileAsk" xml:space="preserve">
+    <value>حذف الملف ده؟</value>
+  </data>
+  <data name="Materials.DescriptionOptional" xml:space="preserve">
+    <value>الوصف (اختياري)</value>
+  </data>
+  <data name="Materials.Draft" xml:space="preserve">
+    <value>مسودة</value>
+  </data>
+  <data name="Materials.Edit" xml:space="preserve">
+    <value>تعديل ماتريال</value>
+  </data>
+  <data name="Materials.ErrorStatus" xml:space="preserve">
+    <value>حصل خطأ ({0})</value>
+  </data>
+  <data name="Materials.FileRequired" xml:space="preserve">
+    <value>ارفع ملف واحد على الأقل قبل النشر</value>
+  </data>
+  <data name="Materials.Files" xml:space="preserve">
+    <value>الملفات</value>
+  </data>
+  <data name="Materials.FilesHint" xml:space="preserve">
+    <value>الملفات (فيديو mp4/webm حتى 200 ميجا — PDF — Word — صور، والمستندات حتى 25 ميجا)</value>
+  </data>
+  <data name="Materials.GroupRequired" xml:space="preserve">
+    <value>اختار مجموعة واحدة على الأقل</value>
+  </data>
+  <data name="Materials.New" xml:space="preserve">
+    <value>ماتريال جديد</value>
+  </data>
+  <data name="Materials.NoGroups" xml:space="preserve">
+    <value>مفيش مجموعات</value>
+  </data>
+  <data name="Materials.Pages" xml:space="preserve">
+    <value> — {0} صفحة</value>
+  </data>
+  <data name="Materials.Preview" xml:space="preserve">
+    <value>معاينة</value>
+  </data>
+  <data name="Materials.Published" xml:space="preserve">
+    <value>منشور</value>
+  </data>
+  <data name="Materials.PublishedOn" xml:space="preserve">
+    <value>تاريخ النشر</value>
+  </data>
+  <data name="Materials.Remove" xml:space="preserve">
+    <value>إزالة</value>
+  </data>
+  <data name="Materials.SavedDraft" xml:space="preserve">
+    <value>تم الحفظ كمسودة</value>
+  </data>
+  <data name="Materials.SaveDraft" xml:space="preserve">
+    <value>حفظ كمسودة</value>
+  </data>
+  <data name="Materials.SavePublish" xml:space="preserve">
+    <value>حفظ ونشر</value>
+  </data>
+  <data name="Materials.ShareWith" xml:space="preserve">
+    <value>إتاحة الماتريال لـ</value>
+  </data>
+  <data name="Materials.Title" xml:space="preserve">
+    <value>العنوان</value>
+  </data>
+  <data name="Materials.TitleRequired" xml:space="preserve">
+    <value>اكتب عنوان الماتريال</value>
+  </data>
+  <data name="Materials.TryAgain" xml:space="preserve">
+    <value>حصل خطأ، جرّب تاني</value>
+  </data>
+  <data name="Materials.Uploading" xml:space="preserve">
+    <value>رفع ملف {0} من {1}: {2}</value>
+  </data>
+  <data name="Menu.Accounts" xml:space="preserve">
+    <value>الحسابات</value>
+  </data>
+  <data name="Menu.Admin" xml:space="preserve">
+    <value>الإدارة</value>
+  </data>
+  <data name="Menu.AskTeacher" xml:space="preserve">
+    <value>اسأل المدرس</value>
+  </data>
+  <data name="Menu.Attendance" xml:space="preserve">
+    <value>الحضور</value>
+  </data>
+  <data name="Menu.CollapseAll" xml:space="preserve">
+    <value>طي الكل</value>
+  </data>
+  <data name="Menu.Content" xml:space="preserve">
+    <value>المحتوى</value>
+  </data>
+  <data name="Menu.Dashboard" xml:space="preserve">
+    <value>لوحة التحكم</value>
+  </data>
+  <data name="Menu.Exams" xml:space="preserve">
+    <value>الاختبارات</value>
+  </data>
+  <data name="Menu.Grace" xml:space="preserve">
+    <value>سماح الوصول</value>
+  </data>
+  <data name="Menu.Groups" xml:space="preserve">
+    <value>المجموعات</value>
+  </data>
+  <data name="Menu.GroupsSchedule" xml:space="preserve">
+    <value>المجموعات والمواعيد</value>
+  </data>
+  <data name="Menu.Homework" xml:space="preserve">
+    <value>الواجبات</value>
+  </data>
+  <data name="Menu.Invoices" xml:space="preserve">
+    <value>الفواتير والتحصيل</value>
+  </data>
+  <data name="Menu.Lookups" xml:space="preserve">
+    <value>البيانات الأساسية</value>
+  </data>
+  <data name="Menu.Materials" xml:space="preserve">
+    <value>الماتريال</value>
+  </data>
+  <data name="Menu.Messages" xml:space="preserve">
+    <value>الرسائل</value>
+  </data>
+  <data name="Menu.OfflineGrades" xml:space="preserve">
+    <value>رصد الأوفلاين</value>
+  </data>
+  <data name="Menu.OnlineExams" xml:space="preserve">
+    <value>الاختبارات الأونلاين</value>
+  </data>
+  <data name="Menu.OnlineGrades" xml:space="preserve">
+    <value>درجات الأونلاين</value>
+  </data>
+  <data name="Menu.Reports" xml:space="preserve">
+    <value>التقارير</value>
+  </data>
+  <data name="Menu.Roles" xml:space="preserve">
+    <value>الأدوار والصلاحيات</value>
+  </data>
+  <data name="Menu.Search" xml:space="preserve">
+    <value>ابحث في كل الشاشات</value>
+  </data>
+  <data name="Menu.Sessions" xml:space="preserve">
+    <value>الحصص والتحضير</value>
+  </data>
+  <data name="Menu.StudentList" xml:space="preserve">
+    <value>قائمة الطلاب</value>
+  </data>
+  <data name="Menu.StudentQuestions" xml:space="preserve">
+    <value>أسئلة الطلاب</value>
+  </data>
+  <data name="Menu.StudentReports" xml:space="preserve">
+    <value>تقارير الطلاب</value>
+  </data>
+  <data name="Menu.Students" xml:space="preserve">
+    <value>الطلاب</value>
+  </data>
+  <data name="Menu.Users" xml:space="preserve">
+    <value>المستخدمين</value>
+  </data>
+  <data name="Messages.ClearChat" xml:space="preserve">
+    <value>مسح الشات</value>
+  </data>
+  <data name="Messages.Empty" xml:space="preserve">
+    <value>مفيش رسائل لسه. لما طالب يبعت سؤال هيظهر هنا.</value>
+  </data>
+  <data name="Messages.Last" xml:space="preserve">
+    <value>آخر رسالة</value>
+  </data>
+  <data name="Messages.NoMessages" xml:space="preserve">
+    <value>لسه مفيش رسائل</value>
+  </data>
+  <data name="Messages.ReplyPh" xml:space="preserve">
+    <value>اكتب الرد...</value>
+  </data>
+  <data name="Messages.Unlinked" xml:space="preserve">
+    <value>حسابك مش مربوط بمدرس. من شاشة المستخدمين اربط الحساب بالمدرس عشان توصلك أسئلة طلابه.</value>
+  </data>
+  <data name="Notify.ClearAll" xml:space="preserve">
+    <value>مسح الإشعارات</value>
+  </data>
+  <data name="Notify.ClearAllAsk" xml:space="preserve">
+    <value>مسح كل إشعاراتك؟</value>
+  </data>
+  <data name="Notify.ClearChatAsk" xml:space="preserve">
+    <value>مسح الشات ده؟</value>
+  </data>
+  <data name="Notify.Empty" xml:space="preserve">
+    <value>مفيش إشعارات جديدة</value>
+  </data>
+  <data name="Notify.ReadAll" xml:space="preserve">
+    <value>تعليم الكل كمقروء</value>
+  </data>
+  <data name="Notify.Title" xml:space="preserve">
+    <value>الإشعارات</value>
+  </data>
+  <data name="Offline.Back" xml:space="preserve">
+    <value>رجوع</value>
+  </data>
+  <data name="Offline.Date" xml:space="preserve">
+    <value>التاريخ</value>
+  </data>
+  <data name="Offline.DateRequired" xml:space="preserve">
+    <value>حدد تاريخ الامتحان</value>
+  </data>
+  <data name="Offline.DeleteAsk" xml:space="preserve">
+    <value>حذف الامتحان ودرجاته؟</value>
+  </data>
+  <data name="Offline.Empty" xml:space="preserve">
+    <value>لسه مفيش امتحانات أوفلاين. اعمل امتحان باسمه ودرجته، وبعدين ارصد درجات المجموعة.</value>
+  </data>
+  <data name="Offline.EnterGrades" xml:space="preserve">
+    <value>رصد الدرجات</value>
+  </data>
+  <data name="Offline.Exam" xml:space="preserve">
+    <value>الامتحان</value>
+  </data>
+  <data name="Offline.ExamDate" xml:space="preserve">
+    <value>تاريخ الامتحان</value>
+  </data>
+  <data name="Offline.ExamName" xml:space="preserve">
+    <value>اسم الامتحان</value>
+  </data>
+  <data name="Offline.Graded" xml:space="preserve">
+    <value>المرصود</value>
+  </data>
+  <data name="Offline.GradesSaved" xml:space="preserve">
+    <value>تم حفظ الدرجات</value>
+  </data>
+  <data name="Offline.Heading" xml:space="preserve">
+    <value>رصد درجات الأوفلاين</value>
+  </data>
+  <data name="Offline.LoadStudentsFailed" xml:space="preserve">
+    <value>متعذر تحميل الطلاب</value>
+  </data>
+  <data name="Offline.MaxRequired" xml:space="preserve">
+    <value>اكتب الدرجة النهائية</value>
+  </data>
+  <data name="Offline.MaxScore" xml:space="preserve">
+    <value>الدرجة النهائية</value>
+  </data>
+  <data name="Offline.NamePh" xml:space="preserve">
+    <value>مثال: امتحان شهر أكتوبر</value>
+  </data>
+  <data name="Offline.NameRequired" xml:space="preserve">
+    <value>اكتب اسم الامتحان</value>
+  </data>
+  <data name="Offline.New" xml:space="preserve">
+    <value>امتحان أوفلاين جديد</value>
+  </data>
+  <data name="Offline.NewPaper" xml:space="preserve">
+    <value>امتحان ورقي</value>
+  </data>
+  <data name="Offline.NoActiveStudents" xml:space="preserve">
+    <value>مفيش طلاب نشطين في المجموعة دي.</value>
+  </data>
+  <data name="Offline.PickGroup" xml:space="preserve">
+    <value>اختار المجموعة</value>
+  </data>
+  <data name="Offline.PickGroupHint" xml:space="preserve">
+    <value>اختار المجموعة عشان تظهر درجات الطلاب.</value>
+  </data>
+  <data name="Offline.SaveGrades" xml:space="preserve">
+    <value>حفظ الدرجات</value>
+  </data>
+  <data name="Offline.Score" xml:space="preserve">
+    <value>الدرجة</value>
+  </data>
+  <data name="Offline.TryAgain" xml:space="preserve">
+    <value>حصل خطأ، جرّب تاني</value>
+  </data>
+  <data name="Pay.Cash" xml:space="preserve">
+    <value>نقدي</value>
+  </data>
+  <data name="Pay.Transfer" xml:space="preserve">
+    <value>تحويل</value>
+  </data>
+  <data name="Pay.Wallet" xml:space="preserve">
+    <value>محفظة</value>
+  </data>
+  <data name="Perm.Add" xml:space="preserve">
+    <value>إضافة</value>
+  </data>
+  <data name="Perm.Delete" xml:space="preserve">
+    <value>حذف</value>
+  </data>
+  <data name="Perm.Edit" xml:space="preserve">
+    <value>تعديل</value>
+  </data>
+  <data name="Perm.View" xml:space="preserve">
+    <value>عرض</value>
+  </data>
+  <data name="Portal.AllowFullscreen" xml:space="preserve">
+    <value>اسمح بملء الشاشة عشان الاختبار يفتح.</value>
+  </data>
+  <data name="Portal.AnswersSaved" xml:space="preserve">
+    <value>إجاباتك اتسجلت. النتيجة هتظهر لكل الطلاب في {0}</value>
+  </data>
+  <data name="Portal.AskEmpty" xml:space="preserve">
+    <value>اكتب سؤالك وهيوصل للمدرس</value>
+  </data>
+  <data name="Portal.AskPh" xml:space="preserve">
+    <value>اكتب سؤالك...</value>
+  </data>
+  <data name="Portal.Back" xml:space="preserve">
+    <value>رجوع</value>
+  </data>
+  <data name="Portal.BackToExam" xml:space="preserve">
+    <value>رجوع لصفحة الاختبار</value>
+  </data>
+  <data name="Portal.BeforeStart" xml:space="preserve">
+    <value>قبل ما تبدأ</value>
+  </data>
+  <data name="Portal.ClosedWait" xml:space="preserve">
+    <value>وقت الاختبار خلّص. النتيجة هتظهر {0}</value>
+  </data>
+  <data name="Portal.Closes" xml:space="preserve">
+    <value>يقفل</value>
+  </data>
+  <data name="Portal.Date" xml:space="preserve">
+    <value>التاريخ</value>
+  </data>
+  <data name="Portal.Download" xml:space="preserve">
+    <value>تنزيل</value>
+  </data>
+  <data name="Portal.EnterExam" xml:space="preserve">
+    <value>دخول الاختبار</value>
+  </data>
+  <data name="Portal.EscHint" xml:space="preserve">
+    <value>لو دست Esc بالغلط ارجع للاختبار. لو هتسيبه دلوقتي هيتسلّم.</value>
+  </data>
+  <data name="Portal.Exam" xml:space="preserve">
+    <value>الامتحان</value>
+  </data>
+  <data name="Portal.ExamClosed" xml:space="preserve">
+    <value>الاختبار اتقفل</value>
+  </data>
+  <data name="Portal.ExamRules" xml:space="preserve">
+    <value>الاختبار بيفتح ملء الشاشة. النسخ واللصق ممنوع، ولو خرجت من التاب أو من الصفحة الاختبار هيتسلّم ومش هتقدر ترجعله.</value>
+  </data>
+  <data name="Portal.FileCount" xml:space="preserve">
+    <value>{0} ملف</value>
+  </data>
+  <data name="Portal.FullscreenRequired" xml:space="preserve">
+    <value>ملء الشاشة مطلوب</value>
+  </data>
+  <data name="Portal.GateRules" xml:space="preserve">
+    <value>الاختبار هيفتح ملء الشاشة. النسخ واللصق والتصوير ممنوعين، ولو خرجت من التاب الاختبار هيتسلّم. لو ضغطت Esc هتظهر رسالة الأول.</value>
+  </data>
+  <data name="Portal.GraceUntil" xml:space="preserve">
+    <value>سماح لحد {0}</value>
+  </data>
+  <data name="Portal.GraceUntilHomework" xml:space="preserve">
+    <value>عندك سماح مؤقت لحد {0}. بعدها هيتقفل لو الحساب لسه ما اتسددش.</value>
+  </data>
+  <data name="Portal.GraceUntilMaterial" xml:space="preserve">
+    <value>عندك سماح مؤقت لحد {0}. بعدها هتتقفل لو الحساب لسه ما اتسددش.</value>
+  </data>
+  <data name="Portal.HomeworkLocked" xml:space="preserve">
+    <value>عندك {0} واجب مقفول لحد ما يتسدد الحساب. كلّم الإدارة.</value>
+  </data>
+  <data name="Portal.HomeworkLockedItem" xml:space="preserve">
+    <value>الواجب ده مقفول</value>
+  </data>
+  <data name="Portal.Latest5" xml:space="preserve">
+    <value>أحدث 5</value>
+  </data>
+  <data name="Portal.LatestHomework" xml:space="preserve">
+    <value>آخر الواجبات</value>
+  </data>
+  <data name="Portal.LatestMaterials" xml:space="preserve">
+    <value>آخر الماتريال</value>
+  </data>
+  <data name="Portal.LeftFullscreen" xml:space="preserve">
+    <value>خرجت من ملء الشاشة</value>
+  </data>
+  <data name="Portal.LeftSubmitted" xml:space="preserve">
+    <value>خرجت من صفحة الاختبار فاتسلّم. النتيجة هتظهر في {0}</value>
+  </data>
+  <data name="Portal.MaterialLocked" xml:space="preserve">
+    <value>الماتريال دي مقفولة</value>
+  </data>
+  <data name="Portal.MaterialsLocked" xml:space="preserve">
+    <value>عندك {0} ماتريال مقفولة لحد ما يتسدد الحساب. كلّم الإدارة.</value>
+  </data>
+  <data name="Portal.Missed" xml:space="preserve">
+    <value>مقدرتش تدخل الاختبار في وقته، والنتيجة اتقفلت على كده.</value>
+  </data>
+  <data name="Portal.NoEditAfter" xml:space="preserve">
+    <value>بعد التسليم مش هتقدر تعدّل إجاباتك.</value>
+  </data>
+  <data name="Portal.NoFiles" xml:space="preserve">
+    <value>مفيش ملفات</value>
+  </data>
+  <data name="Portal.NoHomework" xml:space="preserve">
+    <value>مفيش واجبات لسه</value>
+  </data>
+  <data name="Portal.NoHomeworkForGroups" xml:space="preserve">
+    <value>مفيش واجبات متاحة لمجموعاتك لسه</value>
+  </data>
+  <data name="Portal.NoMaterials" xml:space="preserve">
+    <value>مفيش ماتريال لسه</value>
+  </data>
+  <data name="Portal.NoMaterialsForGroups" xml:space="preserve">
+    <value>مفيش ماتريال متاحة لمجموعاتك لسه</value>
+  </data>
+  <data name="Portal.NoOfflineGrades" xml:space="preserve">
+    <value>لسه مفيش درجات أوفلاين</value>
+  </data>
+  <data name="Portal.NoOnlineExams" xml:space="preserve">
+    <value>مفيش اختبارات أونلاين لمجموعاتك دلوقتي</value>
+  </data>
+  <data name="Portal.NoScreenshots" xml:space="preserve">
+    <value>التصوير ممنوع</value>
+  </data>
+  <data name="Portal.NoTeacher" xml:space="preserve">
+    <value>لسه مش متسجل في مجموعة، فمفيش مدرس تسأله.</value>
+  </data>
+  <data name="Portal.NotGraded" xml:space="preserve">
+    <value>لسه مترصدتش</value>
+  </data>
+  <data name="Portal.Opens" xml:space="preserve">
+    <value>يفتح</value>
+  </data>
+  <data name="Portal.OutOf" xml:space="preserve">
+    <value>الدرجة من</value>
+  </data>
+  <data name="Portal.PaperGrades" xml:space="preserve">
+    <value>درجات الاختبارات الورقية</value>
+  </data>
+  <data name="Portal.PayToOpen" xml:space="preserve">
+    <value>سدّد الحساب أو كلّم الإدارة عشان تفتحها.</value>
+  </data>
+  <data name="Portal.PayToOpenHomework" xml:space="preserve">
+    <value>سدّد الحساب أو كلّم الإدارة عشان تفتحه.</value>
+  </data>
+  <data name="Portal.Points" xml:space="preserve">
+    <value>{0} درجة</value>
+  </data>
+  <data name="Portal.QuestionCount" xml:space="preserve">
+    <value>عدد الأسئلة</value>
+  </data>
+  <data name="Portal.QuestionScore" xml:space="preserve">
+    <value>{0} سؤال · من {1}</value>
+  </data>
+  <data name="Portal.ResultsAt" xml:space="preserve">
+    <value>النتيجة هتظهر لكل الطلاب في {0}</value>
+  </data>
+  <data name="Portal.ResultsForAll" xml:space="preserve">
+    <value>النتيجة تظهر لكل الطلاب</value>
+  </data>
+  <data name="Portal.Resume" xml:space="preserve">
+    <value>كمّل الاختبار</value>
+  </data>
+  <data name="Portal.ReturnToExam" xml:space="preserve">
+    <value>ارجع للاختبار</value>
+  </data>
+  <data name="Portal.Score" xml:space="preserve">
+    <value>الدرجة</value>
+  </data>
+  <data name="Portal.ScreenshotBlocked" xml:space="preserve">
+    <value>تصوير الشاشة مش مسموح أثناء الاختبار.</value>
+  </data>
+  <data name="Portal.Start" xml:space="preserve">
+    <value>ابدأ الاختبار</value>
+  </data>
+  <data name="Portal.Submit" xml:space="preserve">
+    <value>تسليم</value>
+  </data>
+  <data name="Portal.SubmitAsk" xml:space="preserve">
+    <value>تسليم الاختبار؟</value>
+  </data>
+  <data name="Portal.SubmitExam" xml:space="preserve">
+    <value>سلّم الاختبار</value>
+  </data>
+  <data name="Portal.Submitted" xml:space="preserve">
+    <value>تم التسليم</value>
+  </data>
+  <data name="Portal.SubmittedWait" xml:space="preserve">
+    <value>الاختبار اتسلّم. النتيجة هتظهر لك ولكل الطلاب في {0}</value>
+  </data>
+  <data name="Portal.TeacherNoAccount" xml:space="preserve">
+    <value>المدرس ده لسه ملوش حساب دخول، السؤال هيتسجل بس مش هيوصله إشعار.</value>
+  </data>
+  <data name="Portal.TimeoutSaved" xml:space="preserve">
+    <value>وقت الاختبار خلّص والإجابات اللي وصلت اتسجلت. النتيجة هتظهر في {0}</value>
+  </data>
+  <data name="Portal.Upcoming" xml:space="preserve">
+    <value>الاختبار لسه مافتحش. هيتفتح {0}</value>
+  </data>
+  <data name="Portal.YourAttendance" xml:space="preserve">
+    <value>حضورك</value>
+  </data>
+  <data name="Portal.YourCode" xml:space="preserve">
+    <value>كودك</value>
+  </data>
+  <data name="Portal.YourScore" xml:space="preserve">
+    <value>درجتك {0} / {1}</value>
+  </data>
+  <data name="Portal.YourScoreLabel" xml:space="preserve">
+    <value>درجتك</value>
+  </data>
+  <data name="Privacy.Body" xml:space="preserve">
+    <value>الصفحة دي لتفاصيل سياسة الخصوصية.</value>
+  </data>
+  <data name="Privacy.Title" xml:space="preserve">
+    <value>سياسة الخصوصية</value>
+  </data>
+  <data name="Report.AllStudents" xml:space="preserve">
+    <value>كل الطلاب</value>
+  </data>
+  <data name="Report.AttendanceRate" xml:space="preserve">
+    <value>نسبة الحضور</value>
+  </data>
+  <data name="Report.AttendanceReport" xml:space="preserve">
+    <value>تقرير الحضور</value>
+  </data>
+  <data name="Report.Average" xml:space="preserve">
+    <value>المتوسط</value>
+  </data>
+  <data name="Report.Back" xml:space="preserve">
+    <value>رجوع</value>
+  </data>
+  <data name="Report.Count" xml:space="preserve">
+    <value>عدد التقارير: {0}</value>
+  </data>
+  <data name="Report.Date" xml:space="preserve">
+    <value>التاريخ</value>
+  </data>
+  <data name="Report.Day" xml:space="preserve">
+    <value>اليوم</value>
+  </data>
+  <data name="Report.Exam" xml:space="preserve">
+    <value>الامتحان</value>
+  </data>
+  <data name="Report.ExamCount" xml:space="preserve">
+    <value>عدد الامتحانات</value>
+  </data>
+  <data name="Report.From" xml:space="preserve">
+    <value>من</value>
+  </data>
+  <data name="Report.FromTo" xml:space="preserve">
+    <value>من {0} إلى {1}</value>
+  </data>
+  <data name="Report.Grades" xml:space="preserve">
+    <value>الدرجات</value>
+  </data>
+  <data name="Report.GradesReport" xml:space="preserve">
+    <value>تقرير الدرجات</value>
+  </data>
+  <data name="Report.NoOffline" xml:space="preserve">
+    <value>مفيش امتحانات أوفلاين في الفترة دي.</value>
+  </data>
+  <data name="Report.NoOnline" xml:space="preserve">
+    <value>مفيش امتحانات أونلاين في الفترة دي.</value>
+  </data>
+  <data name="Report.NoSessions" xml:space="preserve">
+    <value>مفيش حصص في الفترة دي.</value>
+  </data>
+  <data name="Report.NoStudents" xml:space="preserve">
+    <value>مفيش طلاب في المجموعة خلال الفترة دي.</value>
+  </data>
+  <data name="Report.Note" xml:space="preserve">
+    <value>ملاحظة</value>
+  </data>
+  <data name="Report.OfflineExams" xml:space="preserve">
+    <value>امتحانات أوفلاين</value>
+  </data>
+  <data name="Report.OnlineExams" xml:space="preserve">
+    <value>امتحانات أونلاين</value>
+  </data>
+  <data name="Report.ParentSign" xml:space="preserve">
+    <value>توقيع ولي الأمر</value>
+  </data>
+  <data name="Report.Percent" xml:space="preserve">
+    <value>النسبة</value>
+  </data>
+  <data name="Report.PickGroup" xml:space="preserve">
+    <value>-- اختر المجموعة --</value>
+  </data>
+  <data name="Report.PickRange" xml:space="preserve">
+    <value>اختار المجموعة والفترة عشان يظهر التقرير.</value>
+  </data>
+  <data name="Report.Print" xml:space="preserve">
+    <value>طباعة</value>
+  </data>
+  <data name="Report.Score" xml:space="preserve">
+    <value>الدرجة</value>
+  </data>
+  <data name="Report.Show" xml:space="preserve">
+    <value>عرض</value>
+  </data>
+  <data name="Report.Signature" xml:space="preserve">
+    <value>التوقيع</value>
+  </data>
+  <data name="Report.To" xml:space="preserve">
+    <value>إلى</value>
+  </data>
+  <data name="Report.Unrecorded" xml:space="preserve">
+    <value>لم يُسجل</value>
+  </data>
+  <data name="Role.Admin" xml:space="preserve">
+    <value>مدير النظام</value>
+  </data>
+  <data name="Role.Student" xml:space="preserve">
+    <value>طالب</value>
+  </data>
+  <data name="Role.Teacher" xml:space="preserve">
+    <value>مدرس</value>
+  </data>
+  <data name="Roles.AllPermissions" xml:space="preserve">
+    <value>كل الصلاحيات</value>
+  </data>
+  <data name="Roles.DeleteAsk" xml:space="preserve">
+    <value>حذف الدور {0}؟</value>
+  </data>
+  <data name="Roles.Edit" xml:space="preserve">
+    <value>تعديل دور</value>
+  </data>
+  <data name="Roles.Name" xml:space="preserve">
+    <value>اسم الدور</value>
+  </data>
+  <data name="Roles.NamePh" xml:space="preserve">
+    <value>مثال: استقبال</value>
+  </data>
+  <data name="Roles.New" xml:space="preserve">
+    <value>دور جديد</value>
+  </data>
+  <data name="Roles.Permissions" xml:space="preserve">
+    <value>الصلاحيات</value>
+  </data>
+  <data name="Roles.Screen" xml:space="preserve">
+    <value>الشاشة</value>
+  </data>
+  <data name="Roles.UserCount" xml:space="preserve">
+    <value>عدد المستخدمين</value>
+  </data>
+  <data name="Screen.exams" xml:space="preserve">
+    <value>الاختبارات</value>
+  </data>
+  <data name="Screen.grace" xml:space="preserve">
+    <value>سماح الوصول للماتريال</value>
+  </data>
+  <data name="Screen.groups" xml:space="preserve">
+    <value>المجموعات</value>
+  </data>
+  <data name="Screen.homework" xml:space="preserve">
+    <value>الواجبات</value>
+  </data>
+  <data name="Screen.invoices" xml:space="preserve">
+    <value>الفواتير والتحصيل</value>
+  </data>
+  <data name="Screen.lookups" xml:space="preserve">
+    <value>البيانات الأساسية</value>
+  </data>
+  <data name="Screen.materials" xml:space="preserve">
+    <value>الماتريال</value>
+  </data>
+  <data name="Screen.messages" xml:space="preserve">
+    <value>الرسائل</value>
+  </data>
+  <data name="Screen.reports" xml:space="preserve">
+    <value>التقارير</value>
+  </data>
+  <data name="Screen.roles" xml:space="preserve">
+    <value>الأدوار والصلاحيات</value>
+  </data>
+  <data name="Screen.sessions" xml:space="preserve">
+    <value>الحصص والحضور</value>
+  </data>
+  <data name="Screen.students" xml:space="preserve">
+    <value>الطلاب</value>
+  </data>
+  <data name="Screen.users" xml:space="preserve">
+    <value>المستخدمين</value>
+  </data>
+  <data name="Sessions.AllPresent" xml:space="preserve">
+    <value>الكل حاضر</value>
+  </data>
+  <data name="Sessions.AlreadyMarked" xml:space="preserve">
+    <value>{0} اتسجل حضوره قبل كده</value>
+  </data>
+  <data name="Sessions.AttendedOf" xml:space="preserve">
+    <value>حضر {0} من {1}</value>
+  </data>
+  <data name="Sessions.CameraError" xml:space="preserve">
+    <value>تعذر تشغيل الكاميرا. الكاميرا بتشتغل على HTTPS أو localhost بس.</value>
+  </data>
+  <data name="Sessions.CameraLibError" xml:space="preserve">
+    <value>تعذر تحميل مكتبة الكاميرا</value>
+  </data>
+  <data name="Sessions.CancelAsk" xml:space="preserve">
+    <value>إلغاء الحصة؟</value>
+  </data>
+  <data name="Sessions.Cancelled" xml:space="preserve">
+    <value>ملغية</value>
+  </data>
+  <data name="Sessions.Date" xml:space="preserve">
+    <value>التاريخ</value>
+  </data>
+  <data name="Sessions.Day" xml:space="preserve">
+    <value>اليوم</value>
+  </data>
+  <data name="Sessions.Done" xml:space="preserve">
+    <value>تم</value>
+  </data>
+  <data name="Sessions.Excused" xml:space="preserve">
+    <value>معذور</value>
+  </data>
+  <data name="Sessions.From" xml:space="preserve">
+    <value>من</value>
+  </data>
+  <data name="Sessions.GenerateMonth" xml:space="preserve">
+    <value>توليد حصص الشهر</value>
+  </data>
+  <data name="Sessions.LiveOrScheduled" xml:space="preserve">
+    <value>جارية / مجدولة</value>
+  </data>
+  <data name="Sessions.Marked" xml:space="preserve">
+    <value>تم تحضير: {0}</value>
+  </data>
+  <data name="Sessions.Month" xml:space="preserve">
+    <value>الشهر</value>
+  </data>
+  <data name="Sessions.NoStudentsDay" xml:space="preserve">
+    <value>مفيش طلاب مسجلين في المجموعة في اليوم ده.</value>
+  </data>
+  <data name="Sessions.NotYet" xml:space="preserve">
+    <value>لسه ما جاش معادها</value>
+  </data>
+  <data name="Sessions.OpensEarly" xml:space="preserve">
+    <value>التحضير بيفتح قبل الحصة بـ 15 دقيقة</value>
+  </data>
+  <data name="Sessions.PresentAbsent" xml:space="preserve">
+    <value>حضور / غياب</value>
+  </data>
+  <data name="Sessions.QrHint" xml:space="preserve">
+    <value>اللي اتسجل حضوره قبل كده بيفضل زي ما هو، واللي لسه ما اتسجلش بيبدأ "غائب" لحد ما يتمسح كوده.</value>
+  </data>
+  <data name="Sessions.QrMode" xml:space="preserve">
+    <value>تحضير بالـ QR</value>
+  </data>
+  <data name="Sessions.ReadyScan" xml:space="preserve">
+    <value>جاهز للمسح...</value>
+  </data>
+  <data name="Sessions.ResetAll" xml:space="preserve">
+    <value>تصفير الكل</value>
+  </data>
+  <data name="Sessions.ResetAsk" xml:space="preserve">
+    <value>تحويل كل الطلاب لغائب والبدء من الأول؟</value>
+  </data>
+  <data name="Sessions.ResetDone" xml:space="preserve">
+    <value>تم التصفير، ابدأ المسح...</value>
+  </data>
+  <data name="Sessions.ResetYes" xml:space="preserve">
+    <value>نعم، صفّر</value>
+  </data>
+  <data name="Sessions.Restore" xml:space="preserve">
+    <value>استرجاع</value>
+  </data>
+  <data name="Sessions.RestoreAsk" xml:space="preserve">
+    <value>استرجاع الحصة؟</value>
+  </data>
+  <data name="Sessions.SaveAttendance" xml:space="preserve">
+    <value>حفظ الحضور</value>
+  </data>
+  <data name="Sessions.ScanPh" xml:space="preserve">
+    <value>اعمل Scan بقارئ الباركود أو اكتب الكود واضغط Enter</value>
+  </data>
+  <data name="Sessions.Show" xml:space="preserve">
+    <value>عرض</value>
+  </data>
+  <data name="Sessions.StartCamera" xml:space="preserve">
+    <value>تشغيل الكاميرا</value>
+  </data>
+  <data name="Sessions.Stop" xml:space="preserve">
+    <value>إيقاف</value>
+  </data>
+  <data name="Sessions.TakeAttendance" xml:space="preserve">
+    <value>تحضير</value>
+  </data>
+  <data name="Sessions.TakeTitle" xml:space="preserve">
+    <value>تحضير الحصة</value>
+  </data>
+  <data name="Sessions.Title" xml:space="preserve">
+    <value>الحصص والحضور</value>
+  </data>
+  <data name="Sessions.To" xml:space="preserve">
+    <value>إلى</value>
+  </data>
+  <data name="Sessions.UnknownCode" xml:space="preserve">
+    <value>الكود {0} مش لطالب مسجل في المجموعة دي</value>
+  </data>
+  <data name="Students.AccountAsk" xml:space="preserve">
+    <value>إنشاء حساب دخول للطالب (أو إعادة ضبط كلمة المرور لو عنده حساب)؟</value>
+  </data>
+  <data name="Students.AllGrades" xml:space="preserve">
+    <value>كل المراحل</value>
+  </data>
+  <data name="Students.AttendanceOf" xml:space="preserve">
+    <value>حضور {0}</value>
+  </data>
+  <data name="Students.AttendanceRate" xml:space="preserve">
+    <value>نسبة الحضور</value>
+  </data>
+  <data name="Students.BirthDate" xml:space="preserve">
+    <value>تاريخ الميلاد</value>
+  </data>
+  <data name="Students.CardsTitle" xml:space="preserve">
+    <value>كروت الطلاب</value>
+  </data>
+  <data name="Students.ChooseGroup" xml:space="preserve">
+    <value>-- اختر المجموعة --</value>
+  </data>
+  <data name="Students.Close" xml:space="preserve">
+    <value>إغلاق</value>
+  </data>
+  <data name="Students.CodeFromGroup" xml:space="preserve">
+    <value>يتولّد حسب المجموعة</value>
+  </data>
+  <data name="Students.CodeStays" xml:space="preserve">
+    <value>كود الطالب هيفضل زي ما هو ({0}) لأنه مبني على مجموعة تانية.</value>
+  </data>
+  <data name="Students.CodeWillChange" xml:space="preserve">
+    <value>كود الطالب هيتغيّر من {0} إلى {1}. الـ QR القديم هيفضل شغال، وتقدر تطبع كارت جديد.</value>
+  </data>
+  <data name="Students.Credentials" xml:space="preserve">
+    <value>بيانات دخول الطالب</value>
+  </data>
+  <data name="Students.CredentialsHint" xml:space="preserve">
+    <value>سجّلها وسلّمها للطالب، مش هتظهر تاني</value>
+  </data>
+  <data name="Students.CurrentCode" xml:space="preserve">
+    <value>كود الطالب الحالي:</value>
+  </data>
+  <data name="Students.CurrentGroup" xml:space="preserve">
+    <value>المجموعة الحالية</value>
+  </data>
+  <data name="Students.DoTransfer" xml:space="preserve">
+    <value>تنفيذ النقل</value>
+  </data>
+  <data name="Students.Edit" xml:space="preserve">
+    <value>تعديل طالب</value>
+  </data>
+  <data name="Students.FromGroup" xml:space="preserve">
+    <value>من مجموعة</value>
+  </data>
+  <data name="Students.LoginAccount" xml:space="preserve">
+    <value>حساب الدخول</value>
+  </data>
+  <data name="Students.MoveToAnother" xml:space="preserve">
+    <value>نقل لمجموعة تانية</value>
+  </data>
+  <data name="Students.MustHaveGroup" xml:space="preserve">
+    <value>الطالب مينفعش يتسجّل من غير مجموعة، وكوده بيتحدد حسب كودها.</value>
+  </data>
+  <data name="Students.New" xml:space="preserve">
+    <value>طالب جديد</value>
+  </data>
+  <data name="Students.NoAttendanceYet" xml:space="preserve">
+    <value>لسه مفيش حضور متسجل</value>
+  </data>
+  <data name="Students.NoStudents" xml:space="preserve">
+    <value>مفيش طلاب.</value>
+  </data>
+  <data name="Students.Note" xml:space="preserve">
+    <value>ملاحظة</value>
+  </data>
+  <data name="Students.NotEnrolledNow" xml:space="preserve">
+    <value>الطالب مش مسجل في أي مجموعة حالياً. سجّله من المجموعات ← الطلاب.</value>
+  </data>
+  <data name="Students.NotInGroup" xml:space="preserve">
+    <value>مش مسجل في أي مجموعة</value>
+  </data>
+  <data name="Students.OneGroupHint" xml:space="preserve">
+    <value>الطالب يفضل في مجموعة واحدة. عشان تغيّرها استخدم نقل.</value>
+  </data>
+  <data name="Students.Parent" xml:space="preserve">
+    <value>ولي الأمر</value>
+  </data>
+  <data name="Students.ParentName" xml:space="preserve">
+    <value>اسم ولي الأمر</value>
+  </data>
+  <data name="Students.ParentPhone" xml:space="preserve">
+    <value>موبايل ولي الأمر</value>
+  </data>
+  <data name="Students.PickGroup" xml:space="preserve">
+    <value>اختار المجموعة، الطالب مينفعش يتسجّل من غير مجموعة</value>
+  </data>
+  <data name="Students.PickNewGroup" xml:space="preserve">
+    <value>اختار المجموعة الجديدة</value>
+  </data>
+  <data name="Students.Print" xml:space="preserve">
+    <value>طباعة</value>
+  </data>
+  <data name="Students.PrintCard" xml:space="preserve">
+    <value>طباعة الكارت</value>
+  </data>
+  <data name="Students.PrintStudentCard" xml:space="preserve">
+    <value>طباعة كارت الطالب</value>
+  </data>
+  <data name="Students.QrCard" xml:space="preserve">
+    <value>كارت QR</value>
+  </data>
+  <data name="Students.QrCards" xml:space="preserve">
+    <value>كروت QR</value>
+  </data>
+  <data name="Students.Search" xml:space="preserve">
+    <value>بحث بالاسم / الموبايل / الكود</value>
+  </data>
+  <data name="Students.StudentCode" xml:space="preserve">
+    <value>كود الطالب</value>
+  </data>
+  <data name="Students.StudentPhone" xml:space="preserve">
+    <value>موبايل الطالب</value>
+  </data>
+  <data name="Students.ToGroup" xml:space="preserve">
+    <value>إلى مجموعة</value>
+  </data>
+  <data name="Students.TransferAsk" xml:space="preserve">
+    <value>تأكيد نقل الطالب؟</value>
+  </data>
+  <data name="Students.TransferInvoiceHint" xml:space="preserve">
+    <value>الفواتير: لو شهر النقل اتحاسب (ولو جزئي) في المجموعة القديمة، الجديدة بتتحاسب من الشهر الجاي. ولو لسه ما اتحاسبش، فاتورة الشهر بتتنقل للجديدة بسعرها.</value>
+  </data>
+  <data name="Students.Transferred" xml:space="preserve">
+    <value>تم النقل</value>
+  </data>
+  <data name="Students.TransferTitle" xml:space="preserve">
+    <value>نقل طالب</value>
+  </data>
+  <data name="Students.TransferYes" xml:space="preserve">
+    <value>نعم، انقله</value>
+  </data>
+  <data name="Users.ActiveCanLogin" xml:space="preserve">
+    <value>نشط (يقدر يسجّل دخول)</value>
+  </data>
+  <data name="Users.ChangePassword" xml:space="preserve">
+    <value>تغيير كلمة المرور</value>
+  </data>
+  <data name="Users.DeleteAsk" xml:space="preserve">
+    <value>حذف المستخدم {0}؟</value>
+  </data>
+  <data name="Users.Edit" xml:space="preserve">
+    <value>تعديل مستخدم</value>
+  </data>
+  <data name="Users.EmailOptional" xml:space="preserve">
+    <value>الإيميل (اختياري)</value>
+  </data>
+  <data name="Users.EmailPhone" xml:space="preserve">
+    <value>الإيميل / الموبايل</value>
+  </data>
+  <data name="Users.FullName" xml:space="preserve">
+    <value>الاسم بالكامل</value>
+  </data>
+  <data name="Users.LinkedTeacher" xml:space="preserve">
+    <value>مدرس مرتبط (لو المستخدم ده مدرس)</value>
+  </data>
+  <data name="Users.New" xml:space="preserve">
+    <value>مستخدم جديد</value>
+  </data>
+  <data name="Users.NewPassword" xml:space="preserve">
+    <value>كلمة المرور الجديدة (6 حروف على الأقل)</value>
+  </data>
+  <data name="Users.PasswordHint" xml:space="preserve">
+    <value>كلمة المرور (6 حروف على الأقل)</value>
+  </data>
+  <data name="Users.Role" xml:space="preserve">
+    <value>الدور</value>
+  </data>
+  <data name="Users.Search" xml:space="preserve">
+    <value>بحث بالاسم / اسم المستخدم / الإيميل / الموبايل</value>
+  </data>
+  <data name="Users.UserLabel" xml:space="preserve">
+    <value>المستخدم</value>
+  </data>
+  <data name="Users.UserName" xml:space="preserve">
+    <value>اسم المستخدم</value>
+  </data>
+  <data name="Users.UserNameLatin" xml:space="preserve">
+    <value>اسم المستخدم (إنجليزي)</value>
+  </data>
+  <data name="Viewer.ExitFullscreen" xml:space="preserve">
+    <value>تصغير</value>
+  </data>
+  <data name="Viewer.Fullscreen" xml:space="preserve">
+    <value>ملء الشاشة</value>
+  </data>
+</root>

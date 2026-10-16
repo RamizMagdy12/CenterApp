@@ -40,7 +40,7 @@
         <div class="text-muted small">@Model.StudentName · @Model.StudentCode</div>
     </div>
     <div class="exam-timer" id="timer">--:--</div>
-    <button type="button" class="btn btn-success" id="btnFinish" disabled onclick="askFinish()">تسليم</button>
+    <button type="button" class="btn btn-success" id="btnFinish" disabled onclick="askFinish()">@L.Get("Portal.Submit")</button>
 </header>
 
 <div class="exam-sheet hidden-qs" id="sheet">
@@ -50,7 +50,7 @@
         <article class="q-card" data-qid="@q.Id">
             <div class="q-body">
                 <div class="q-main">
-                    <h4>@(i + 1). @q.Text <small class="text-muted">(@q.Points.ToString("0.##") درجة)</small></h4>
+                    <h4>@(i + 1). @q.Text <small class="text-muted">(@L.Get("Portal.Points", q.Points.ToString("0.##")))</small></h4>
                     @foreach (var c in q.Choices)
                     {
                         <label class="choice">
@@ -70,17 +70,17 @@
 
 <div class="gate" id="gate">
     <div class="gate-card">
-        <h3>قبل ما تبدأ</h3>
-        <p>الاختبار هيفتح ملء الشاشة. النسخ واللصق والتصوير ممنوعين، ولو خرجت من التاب الاختبار هيتسلّم. لو ضغطت Esc هتظهر رسالة الأول.</p>
-        <p class="text-muted">النتيجة هتظهر لكل الطلاب في @Model.ResultsAt.ToString("yyyy-MM-dd HH:mm")</p>
-        <button type="button" class="btn btn-primary" id="btnEnter">دخول الاختبار</button>
+        <h3>@L.Get("Portal.BeforeStart")</h3>
+        <p>@L.Get("Portal.GateRules")</p>
+        <p class="text-muted">@L.Get("Portal.ResultsAt", Model.ResultsAt.ToString("yyyy-MM-dd HH:mm"))</p>
+        <button type="button" class="btn btn-primary" id="btnEnter">@L.Get("Portal.EnterExam")</button>
     </div>
 </div>
 <div class="done" id="done" style="display:none">
     <div class="done-card">
-        <h3 id="doneTitle">تم التسليم</h3>
+        <h3 id="doneTitle">@L.Get("Portal.Submitted")</h3>
         <p id="doneText"></p>
-        <a id="doneBack" class="btn btn-primary mt-2" style="display:none" href="@Url.Action("Exam", "Portal", new { id = Model.ExamId })">رجوع لصفحة الاختبار</a>
+        <a id="doneBack" class="btn btn-primary mt-2" style="display:none" href="@Url.Action("Exam", "Portal", new { id = Model.ExamId })">@L.Get("Portal.BackToExam")</a>
     </div>
 </div>
 
@@ -90,6 +90,23 @@
         var endsAt = Date.now() + (@Model.RemainingSeconds * 1000);
         var resultsText = '@Model.ResultsAt.ToString("yyyy-MM-dd HH:mm")';
         var armed = false, finished = false, escAsking = false, shotLock = false, saveTimer = null;
+        var txtNoScreenshots = @Json.Serialize(L.Get("Portal.NoScreenshots").Value);
+        var txtScreenshotBlocked = @Json.Serialize(L.Get("Portal.ScreenshotBlocked").Value);
+        var txtReturn = @Json.Serialize(L.Get("Portal.ReturnToExam").Value);
+        var txtSubmitted = @Json.Serialize(L.Get("Portal.Submitted").Value);
+        var txtExamClosed = @Json.Serialize(L.Get("Portal.ExamClosed").Value);
+        var txtAnswersSaved = @Json.Serialize(L.Get("Portal.AnswersSaved").Value);
+        var txtTimeoutSaved = @Json.Serialize(L.Get("Portal.TimeoutSaved").Value);
+        var txtLeftSubmitted = @Json.Serialize(L.Get("Portal.LeftSubmitted").Value);
+        var txtSubmitAsk = @Json.Serialize(L.Get("Portal.SubmitAsk").Value);
+        var txtNoEditAfter = @Json.Serialize(L.Get("Portal.NoEditAfter").Value);
+        var txtSubmit = @Json.Serialize(L.Get("Portal.Submit").Value);
+        var txtBack = @Json.Serialize(L.Get("Portal.Back").Value);
+        var txtLeftFullscreen = @Json.Serialize(L.Get("Portal.LeftFullscreen").Value);
+        var txtEscHint = @Json.Serialize(L.Get("Portal.EscHint").Value);
+        var txtSubmitExam = @Json.Serialize(L.Get("Portal.SubmitExam").Value);
+        var txtFullscreenRequired = @Json.Serialize(L.Get("Portal.FullscreenRequired").Value);
+        var txtAllowFullscreen = @Json.Serialize(L.Get("Portal.AllowFullscreen").Value);
 
         function isShotKey(e) {
             var k = e.key || '';
@@ -136,13 +153,13 @@
                 document.getElementById('doneBack').style.display = 'none';
                 box.style.zIndex = '100';
                 box.style.display = 'grid';
-                document.getElementById('doneTitle').textContent = 'التصوير ممنوع';
+                document.getElementById('doneTitle').textContent = txtNoScreenshots;
                 document.getElementById('doneText').innerHTML = '';
                 var p = document.createElement('p');
-                p.textContent = 'تصوير الشاشة مش مسموح أثناء الاختبار.';
+                p.textContent = txtScreenshotBlocked;
                 var back = document.createElement('button');
                 back.className = 'btn btn-primary';
-                back.textContent = 'ارجع للاختبار';
+                back.textContent = txtReturn;
                 back.onclick = function () {
                     shotLock = false;
                     box.style.display = 'none';
@@ -229,12 +246,12 @@
         function endExam(reason) {
             if (finished) return;
             finished = true;
-            var title = reason === 'submit' ? 'تم التسليم' : 'الاختبار اتقفل';
+            var title = reason === 'submit' ? txtSubmitted : txtExamClosed;
             var text = reason === 'submit'
-                ? 'إجاباتك اتسجلت. النتيجة هتظهر لكل الطلاب في ' + resultsText
+                ? txtAnswersSaved.replace('{0}', resultsText)
                 : (reason === 'timeout'
-                    ? 'وقت الاختبار خلّص والإجابات اللي وصلت اتسجلت. النتيجة هتظهر في ' + resultsText
-                    : 'خرجت من صفحة الاختبار فاتسلّم. النتيجة هتظهر في ' + resultsText);
+                    ? txtTimeoutSaved.replace('{0}', resultsText)
+                    : txtLeftSubmitted.replace('{0}', resultsText));
             postExam('@Url.Action("SubmitExam", "Portal")', reason)
                 .then(function () { showDone(title, text); })
                 .catch(function () { beacon(reason); showDone(title, text); });
@@ -247,18 +264,18 @@
             document.getElementById('doneBack').style.display = 'none';
             box.style.zIndex = '100';
             box.style.display = 'grid';
-            document.getElementById('doneTitle').textContent = 'تسليم الاختبار؟';
+            document.getElementById('doneTitle').textContent = txtSubmitAsk;
             document.getElementById('doneText').innerHTML = '';
             var p = document.createElement('p');
-            p.textContent = 'بعد التسليم مش هتقدر تعدّل إجاباتك.';
+            p.textContent = txtNoEditAfter;
             var yes = document.createElement('button');
             yes.className = 'btn btn-success';
-            yes.textContent = 'تسليم';
+            yes.textContent = txtSubmit;
             yes.onclick = function () { endExam('submit'); };
             var no = document.createElement('button');
             no.className = 'btn btn-light';
             no.style.marginInlineStart = '8px';
-            no.textContent = 'رجوع';
+            no.textContent = txtBack;
             no.onclick = function () { box.style.display = 'none'; };
             document.getElementById('doneText').appendChild(p);
             document.getElementById('doneText').appendChild(yes);
@@ -272,13 +289,13 @@
             document.getElementById('doneBack').style.display = 'none';
             box.style.zIndex = '100';
             box.style.display = 'grid';
-            document.getElementById('doneTitle').textContent = 'خرجت من ملء الشاشة';
+            document.getElementById('doneTitle').textContent = txtLeftFullscreen;
             document.getElementById('doneText').innerHTML = '';
             var p = document.createElement('p');
-            p.textContent = 'لو دست Esc بالغلط ارجع للاختبار. لو هتسيبه دلوقتي هيتسلّم.';
+            p.textContent = txtEscHint;
             var back = document.createElement('button');
             back.className = 'btn btn-primary';
-            back.textContent = 'ارجع للاختبار';
+            back.textContent = txtReturn;
             back.onclick = function () {
                 escAsking = false;
                 box.style.display = 'none';
@@ -290,7 +307,7 @@
             var leave = document.createElement('button');
             leave.className = 'btn btn-outline-danger';
             leave.style.marginInlineStart = '8px';
-            leave.textContent = 'سلّم الاختبار';
+            leave.textContent = txtSubmitExam;
             leave.onclick = function () { escAsking = false; endExam('fullscreen'); };
             document.getElementById('doneText').appendChild(p);
             document.getElementById('doneText').appendChild(back);
@@ -320,7 +337,7 @@
             setInterval(function () {
                 if (!armed || finished) return;
                 postExam('@Url.Action("Sync", "Portal")', 'submit').then(function (r) {
-                    if (r && r.finished) showDone('الاختبار اتقفل', r.message || 'تم التسليم');
+                    if (r && r.finished) showDone(txtExamClosed, r.message || txtSubmitted);
                 }).catch(function () { });
             }, 10000);
         }
@@ -332,8 +349,8 @@
             Promise.resolve(req.call(el)).then(function () { lockKeys(); begin(); }).catch(function () {
                 document.getElementById('doneBack').style.display = '';
                 document.getElementById('done').style.display = 'grid';
-                document.getElementById('doneTitle').textContent = 'ملء الشاشة مطلوب';
-                document.getElementById('doneText').textContent = 'اسمح بملء الشاشة عشان الاختبار يفتح.';
+                document.getElementById('doneTitle').textContent = txtFullscreenRequired;
+                document.getElementById('doneText').textContent = txtAllowFullscreen;
             });
         };
 

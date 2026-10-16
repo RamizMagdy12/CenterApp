@@ -13,40 +13,40 @@
         <div class="alert alert-danger">@err</div>
     }
     <ul class="mb-3">
-        <li>يفتح: <b>@Model.OpensAt.ToString("yyyy-MM-dd HH:mm")</b></li>
-        <li>يقفل: <b>@Model.ClosesAt.ToString("yyyy-MM-dd HH:mm")</b></li>
-        <li>النتيجة تظهر لكل الطلاب: <b>@Model.ResultsAt.ToString("yyyy-MM-dd HH:mm")</b></li>
-        <li>عدد الأسئلة: <b>@Model.QuestionsCount</b> · الدرجة من <b>@Model.MaxScore.ToString("0.##")</b></li>
+        <li>@L.Get("Portal.Opens"): <b>@Model.OpensAt.ToString("yyyy-MM-dd HH:mm")</b></li>
+        <li>@L.Get("Portal.Closes"): <b>@Model.ClosesAt.ToString("yyyy-MM-dd HH:mm")</b></li>
+        <li>@L.Get("Portal.ResultsForAll"): <b>@Model.ResultsAt.ToString("yyyy-MM-dd HH:mm")</b></li>
+        <li>@L.Get("Portal.QuestionCount"): <b>@Model.QuestionsCount</b> · @L.Get("Portal.OutOf") <b>@Model.MaxScore.ToString("0.##")</b></li>
     </ul>
 
     @if (Model.Phase == "result" && Model.Score != null)
     {
-        <div class="alert alert-success">درجتك: <strong>@Model.Score.Value.ToString("0.##") / @Model.MaxScore.ToString("0.##")</strong></div>
+        <div class="alert alert-success">@L.Get("Portal.YourScoreLabel"): <strong>@Model.Score.Value.ToString("0.##") / @Model.MaxScore.ToString("0.##")</strong></div>
     }
     else if (Model.Phase == "submitted")
     {
-        <div class="alert alert-info">الاختبار اتسلّم. النتيجة هتظهر لك ولكل الطلاب في @Model.ResultsAt.ToString("yyyy-MM-dd HH:mm")</div>
+        <div class="alert alert-info">@L.Get("Portal.SubmittedWait", Model.ResultsAt.ToString("yyyy-MM-dd HH:mm"))</div>
     }
     else if (Model.Phase == "missed")
     {
-        <div class="alert alert-warning">مقدرتش تدخل الاختبار في وقته، والنتيجة اتقفلت على كده.</div>
+        <div class="alert alert-warning">@L.Get("Portal.Missed")</div>
     }
     else if (Model.Phase == "closed")
     {
-        <div class="alert alert-warning">وقت الاختبار خلّص. النتيجة هتظهر @Model.ResultsAt.ToString("yyyy-MM-dd HH:mm")</div>
+        <div class="alert alert-warning">@L.Get("Portal.ClosedWait", Model.ResultsAt.ToString("yyyy-MM-dd HH:mm"))</div>
     }
     else if (Model.Phase == "upcoming")
     {
-        <div class="alert alert-secondary">الاختبار لسه مافتحش. هيتفتح @Model.OpensAt.ToString("yyyy-MM-dd HH:mm")</div>
+        <div class="alert alert-secondary">@L.Get("Portal.Upcoming", Model.OpensAt.ToString("yyyy-MM-dd HH:mm"))</div>
     }
     else
     {
         <div class="alert alert-warning">
-            الاختبار بيفتح ملء الشاشة. النسخ واللصق ممنوع، ولو خرجت من التاب أو من الصفحة الاختبار هيتسلّم ومش هتقدر ترجعله.
+            @L.Get("Portal.ExamRules")
         </div>
         <form asp-action="StartExam" asp-route-id="@Model.Id" method="post">
-            <button class="btn btn-primary">@(Model.CanResume ? "كمّل الاختبار" : "ابدأ الاختبار")</button>
+            <button class="btn btn-primary">@(Model.CanResume ? L.Get("Portal.Resume") : L.Get("Portal.Start"))</button>
         </form>
     }
-    <a class="btn btn-light mt-3" asp-action="Exams">رجوع</a>
+    <a class="btn btn-light mt-3" asp-action="Exams">@L.Get("Portal.Back")</a>
 </div>

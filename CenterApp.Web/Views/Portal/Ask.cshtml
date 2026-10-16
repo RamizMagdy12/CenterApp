@@ -1,15 +1,15 @@
 @model PortalAskVm
 @{
     Layout = "_PortalLayout";
-    ViewData["Title"] = Model.Thread?.Title ?? "اسأل المدرس";
+    ViewData["Title"] = Model.Thread?.Title ?? L.Get("Menu.AskTeacher").Value;
 }
 
 @if (Model.Thread == null)
 {
-    <h3 class="mb-3">اسأل المدرس</h3>
+    <h3 class="mb-3">@L.Get("Menu.AskTeacher")</h3>
     @if (Model.Teachers.Count == 0)
     {
-        <div class="empty-box">لسه مش متسجل في مجموعة، فمفيش مدرس تسأله.</div>
+        <div class="empty-box">@L.Get("Portal.NoTeacher")</div>
     }
     <div class="tiles">
         @foreach (var t in Model.Teachers)
@@ -30,20 +30,20 @@ else
 {
     <div class="chat-wrap">
         <div class="chat-head">
-            <a class="btn btn-sm btn-outline-secondary" asp-action="Ask"><i class="bi bi-arrow-right"></i></a>
+            <a class="btn btn-sm btn-outline-secondary" asp-action="Ask"><i class="bi @(CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "ar" ? "bi-arrow-right" : "bi-arrow-left")"></i></a>
             <div>
                 <b>@Model.Thread.Title</b>
                 <div class="text-muted small">@Model.Thread.Subtitle</div>
                 @if (!Model.Thread.TeacherHasAccount)
                 {
-                    <div class="text-warning small">المدرس ده لسه ملوش حساب دخول، السؤال هيتسجل بس مش هيوصله إشعار.</div>
+                    <div class="text-warning small">@L.Get("Portal.TeacherNoAccount")</div>
                 }
             </div>
         </div>
         <div class="chat-log" id="chatLog">
             @if (Model.Thread.Messages.Count == 0)
             {
-                <div class="chat-empty">اكتب سؤالك وهيوصل للمدرس</div>
+                <div class="chat-empty">@L.Get("Portal.AskEmpty")</div>
             }
             @foreach (var m in Model.Thread.Messages)
             {
@@ -55,8 +55,8 @@ else
             }
         </div>
         <form id="chatForm" class="chat-form">
-            <textarea id="chatBody" rows="2" maxlength="2000" placeholder="اكتب سؤالك..."></textarea>
-            <button class="btn btn-primary" type="submit">إرسال</button>
+            <textarea id="chatBody" rows="2" maxlength="2000" placeholder="@L.Get("Portal.AskPh")"></textarea>
+            <button class="btn btn-primary" type="submit">@L.Get("Common.Send")</button>
         </form>
     </div>
     <script>

@@ -9,43 +9,51 @@
     var action = ((ViewContext.RouteData.Values["action"] as string) ?? "").ToLower();
     if (action == "edit") action = "index";
     var typeQ = Context.Request.Query["type"].ToString().ToLower();
-    var pageTitle = ViewData["Title"] as string ?? "لوحة التحكم";
+    var pageTitle = ViewData["Title"] as string ?? L.Get("Menu.Dashboard");
+    var isAr = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "ar";
     var userName = User.FindFirst("FullName")?.Value ?? User.Identity?.Name ?? "";
-    var userRole = User.FindFirst(ClaimTypes.Role)?.Value ?? "";
+    var userRoleRaw = User.FindFirst(ClaimTypes.Role)?.Value ?? "";
+    var userRole = userRoleRaw switch
+    {
+        RoleNames.Admin => L.Get("Role.Admin").Value,
+        RoleNames.Teacher => L.Get("Role.Teacher").Value,
+        RoleNames.Student => L.Get("Role.Student").Value,
+        _ => userRoleRaw
+    };
 
     var allMenu = new[]
     {
-        new MG("الطلاب", "bi-people-fill", new[] { new MI("قائمة الطلاب", "Students", "Index", Screens.Students) }),
-        new MG("الرسائل", "bi-chat-dots-fill", new[] { new MI("أسئلة الطلاب", "Messages", "Index", Screens.Messages) }),
-        new MG("المجموعات", "bi-collection-fill", new[] { new MI("المجموعات والمواعيد", "Groups", "Index", Screens.Groups) }),
-        new MG("الحضور", "bi-qr-code-scan", new[] { new MI("الحصص والتحضير", "Sessions", "Index", Screens.Sessions) }),
-        new MG("المحتوى", "bi-collection-play-fill", new[]
+        new MG(L.Get("Menu.Students"), "bi-people-fill", new[] { new MI(L.Get("Menu.StudentList"), "Students", "Index", Screens.Students) }),
+        new MG(L.Get("Menu.Messages"), "bi-chat-dots-fill", new[] { new MI(L.Get("Menu.StudentQuestions"), "Messages", "Index", Screens.Messages) }),
+        new MG(L.Get("Menu.Groups"), "bi-collection-fill", new[] { new MI(L.Get("Menu.GroupsSchedule"), "Groups", "Index", Screens.Groups) }),
+        new MG(L.Get("Menu.Attendance"), "bi-qr-code-scan", new[] { new MI(L.Get("Menu.Sessions"), "Sessions", "Index", Screens.Sessions) }),
+        new MG(L.Get("Menu.Content"), "bi-collection-play-fill", new[]
         {
-            new MI("الماتريال", "Materials", "Index", Screens.Materials),
-            new MI("الواجبات", "Homeworks", "Index", Screens.Homework)
+            new MI(L.Get("Menu.Materials"), "Materials", "Index", Screens.Materials),
+            new MI(L.Get("Menu.Homework"), "Homeworks", "Index", Screens.Homework)
         }),
-        new MG("الاختبارات", "bi-patch-question-fill", new[]
+        new MG(L.Get("Menu.Exams"), "bi-patch-question-fill", new[]
         {
-            new MI("الاختبارات الأونلاين", "Exams", "Index", Screens.Exams, null, "Index"),
-            new MI("درجات الأونلاين", "Exams", "Grades", Screens.Exams, null, "Grades"),
-            new MI("رصد الأوفلاين", "OfflineExams", "Index", Screens.Exams, null, "Index")
+            new MI(L.Get("Menu.OnlineExams"), "Exams", "Index", Screens.Exams, null, "Index"),
+            new MI(L.Get("Menu.OnlineGrades"), "Exams", "Grades", Screens.Exams, null, "Grades"),
+            new MI(L.Get("Menu.OfflineGrades"), "OfflineExams", "Index", Screens.Exams, null, "Index")
         }),
-        new MG("التقارير", "bi-file-earmark-text", new[] { new MI("تقارير الطلاب", "Reports", "Index", Screens.Reports) }),
-        new MG("الحسابات", "bi-cash-coin", new[]
+        new MG(L.Get("Menu.Reports"), "bi-file-earmark-text", new[] { new MI(L.Get("Menu.StudentReports"), "Reports", "Index", Screens.Reports) }),
+        new MG(L.Get("Menu.Accounts"), "bi-cash-coin", new[]
         {
-            new MI("الفواتير والتحصيل", "Invoices", "Index", Screens.Invoices),
-            new MI("سماح الوصول", "Grace", "Index", Screens.Grace)
+            new MI(L.Get("Menu.Invoices"), "Invoices", "Index", Screens.Invoices),
+            new MI(L.Get("Menu.Grace"), "Grace", "Index", Screens.Grace)
         }),
-        new MG("البيانات الأساسية", "bi-gear-fill", new[]
+        new MG(L.Get("Menu.Lookups"), "bi-gear-fill", new[]
         {
-            new MI("المدرسين", "Lookups", "Index", Screens.Lookups, "teachers"),
-            new MI("المواد", "Lookups", "Index", Screens.Lookups, "subjects"),
-            new MI("المراحل الدراسية", "Lookups", "Index", Screens.Lookups, "gradelevels")
+            new MI(L.Get("Lookups.Teachers"), "Lookups", "Index", Screens.Lookups, "teachers"),
+            new MI(L.Get("Lookups.Subjects"), "Lookups", "Index", Screens.Lookups, "subjects"),
+            new MI(L.Get("Lookups.Grades"), "Lookups", "Index", Screens.Lookups, "gradelevels")
         }),
-        new MG("الإدارة", "bi-shield-lock-fill", new[]
+        new MG(L.Get("Menu.Admin"), "bi-shield-lock-fill", new[]
         {
-            new MI("المستخدمين", "Users", "Index", Screens.Users),
-            new MI("الأدوار والصلاحيات", "Roles", "Index", Screens.Roles)
+            new MI(L.Get("Menu.Users"), "Users", "Index", Screens.Users),
+            new MI(L.Get("Menu.Roles"), "Roles", "Index", Screens.Roles)
         })
 
     };
@@ -57,11 +65,11 @@
         .ToArray();
 }
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="@(isAr ? "ar" : "en")" dir="@(isAr ? "rtl" : "ltr")">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@pageTitle - السنتر</title>
+    <title>@pageTitle - @L.Get("App.Name")</title>
     <partial name="_Favicon" />
     <link rel="stylesheet" href="~/lib/fontsource-cairo/400.css" />
     <link rel="stylesheet" href="~/lib/fontsource-cairo/600.css" />
@@ -76,17 +84,17 @@
     <aside class="sidebar" id="sidebar">
         <a class="brand" asp-controller="Home" asp-action="Index">
             <span class="brand-logo"><i class="bi bi-mortarboard-fill"></i></span>
-            <span class="brand-name">السنتر</span>
+            <span class="brand-name">@L.Get("App.Name")</span>
         </a>
 
         <div class="sb-tools">
-            <input id="sbSearch" type="text" placeholder="ابحث في كل الشاشات" autocomplete="off" />
-            <button type="button" id="sbCollapseAll">طي الكل</button>
+            <input id="sbSearch" type="text" placeholder="@L.Get("Menu.Search")" autocomplete="off" />
+            <button type="button" id="sbCollapseAll">@L.Get("Menu.CollapseAll")</button>
         </div>
 
         <nav>
             <a class="mi-home @(ctrl == "home" ? "active" : "")" asp-controller="Home" asp-action="Index">
-                <i class="bi bi-speedometer2"></i><span>لوحة التحكم</span>
+                <i class="bi bi-speedometer2"></i><span>@L.Get("Menu.Dashboard")</span>
             </a>
 
             @foreach (var g in menu)
@@ -115,16 +123,16 @@
 
     <div class="main">
         <header class="topbar">
-            <button type="button" class="tb-hamb" id="sbToggle" aria-label="القائمة"><i class="bi bi-list"></i></button>
+            <button type="button" class="tb-hamb" id="sbToggle" aria-label="@L.Get("Common.Menu")"><i class="bi bi-list"></i></button>
             <div class="tb-title">
                 <h1>@pageTitle</h1>
-                <div class="crumbs"><a asp-controller="Home" asp-action="Index">الرئيسية</a> / @pageTitle</div>
+                <div class="crumbs"><a asp-controller="Home" asp-action="Index">@L.Get("Common.Home")</a> / @pageTitle</div>
             </div>
 
             <div class="tb-right">
                 <partial name="_NotifyBell" />
 
-                <div class="tb-lang"><span class="lang-code">AR</span> العربية</div>
+                <partial name="_LangSwitch" />
 
                 <div class="tb-dd">
                     <button type="button" class="tb-user" data-pop="popUser">
@@ -132,11 +140,11 @@
                             <div class="tb-user-name">@userName</div>
                             <div class="tb-user-role">@userRole</div>
                         </div>
-                        <div class="avatar">@(userName.Length > 0 ? userName.Substring(0, 1) : "؟")</div>
+                        <div class="avatar">@(userName.Length > 0 ? userName.Substring(0, 1) : L.Get("Common.UnknownMark").Value)</div>
                     </button>
                     <div class="tb-pop" id="popUser" style="width:200px">
                         <form asp-controller="Account" asp-action="Logout" method="post">
-                            <button type="submit" class="btn btn-outline-danger w-100"><i class="bi bi-box-arrow-right"></i> تسجيل الخروج</button>
+                            <button type="submit" class="btn btn-outline-danger w-100"><i class="bi bi-box-arrow-right"></i> @L.Get("Auth.Logout")</button>
                         </form>
                     </div>
                 </div>
@@ -160,6 +168,7 @@
         </div>
     </div>
 
+    <partial name="_L10n" />
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/lib/sweetalert2/dist/sweetalert2.all.min.js"></script>

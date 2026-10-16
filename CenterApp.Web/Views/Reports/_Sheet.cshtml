@@ -2,14 +2,14 @@
 @{
     var r = Model.Report;
     var grades = Model.Kind == "grades";
-    var title = grades ? "تقرير الدرجات" : "تقرير الحضور";
+    var title = grades ? L.Get("Report.GradesReport") : L.Get("Report.AttendanceReport");
 
-    string AttLabel(AttendanceReportRow row) => !row.Recorded ? "لم يُسجل" : row.Status switch
+    string AttLabel(AttendanceReportRow row) => !row.Recorded ? L.Get("Report.Unrecorded").Value : row.Status switch
     {
-        AttendanceStatus.Present => "حاضر",
-        AttendanceStatus.Absent => "غائب",
-        AttendanceStatus.Excused => "بعذر",
-        AttendanceStatus.Late => "متأخر",
+        AttendanceStatus.Present => L.Get("Att.Present").Value,
+        AttendanceStatus.Absent => L.Get("Att.Absent").Value,
+        AttendanceStatus.Excused => L.Get("Att.Excused").Value,
+        AttendanceStatus.Late => L.Get("Att.Late").Value,
         _ => "—"
     };
 
@@ -35,28 +35,28 @@
     <header class="sheet-head">
         <div>
             <h2>@title</h2>
-            <div class="sheet-sub">من @r.From.ToString("yyyy-MM-dd") إلى @r.To.ToString("yyyy-MM-dd")</div>
+            <div class="sheet-sub">@L.Get("Report.FromTo", r.From.ToString("yyyy-MM-dd"), r.To.ToString("yyyy-MM-dd"))</div>
         </div>
-        <div class="sheet-brand">السنتر</div>
+        <div class="sheet-brand">@L.Get("App.Name")</div>
     </header>
 
     <table class="meta">
         <tr>
-            <th>الطالب</th>
+            <th>@L.Get("Common.Student")</th>
             <td>@r.StudentName</td>
-            <th>الكود</th>
+            <th>@L.Get("Common.Code")</th>
             <td dir="ltr">@r.StudentCode</td>
         </tr>
         <tr>
-            <th>ولي الأمر</th>
+            <th>@L.Get("Students.Parent")</th>
             <td>@(string.IsNullOrWhiteSpace(r.ParentName) ? "—" : r.ParentName)</td>
-            <th>المجموعة</th>
+            <th>@L.Get("Common.Group")</th>
             <td>@r.GroupName</td>
         </tr>
         <tr>
-            <th>المادة</th>
+            <th>@L.Get("Common.Subject")</th>
             <td>@r.SubjectName</td>
-            <th>المدرس</th>
+            <th>@L.Get("Common.Teacher")</th>
             <td>@r.TeacherName</td>
         </tr>
     </table>
@@ -64,28 +64,28 @@
     @if (!grades)
     {
         <div class="summary">
-            <span>حاضر <b>@r.Present</b></span>
-            <span>متأخر <b>@r.Late</b></span>
-            <span>غائب <b>@r.Absent</b></span>
-            <span>بعذر <b>@r.Excused</b></span>
-            <span>لم يُسجل <b>@r.Unrecorded</b></span>
-            <span>نسبة الحضور <b>@r.Rate%</b></span>
+            <span>@L.Get("Att.Present") <b>@r.Present</b></span>
+            <span>@L.Get("Att.Late") <b>@r.Late</b></span>
+            <span>@L.Get("Att.Absent") <b>@r.Absent</b></span>
+            <span>@L.Get("Att.Excused") <b>@r.Excused</b></span>
+            <span>@L.Get("Report.Unrecorded") <b>@r.Unrecorded</b></span>
+            <span>@L.Get("Report.AttendanceRate") <b>@r.Rate%</b></span>
         </div>
         @if (r.Attendance.Count == 0)
         {
-            <p class="empty">مفيش حصص في الفترة دي.</p>
+            <p class="empty">@L.Get("Report.NoSessions")</p>
         }
         else
         {
             <table class="grid">
                 <thead>
                     <tr>
-                        <th>التاريخ</th>
-                        <th>اليوم</th>
-                        <th>من</th>
-                        <th>إلى</th>
-                        <th>الحالة</th>
-                        <th>ملاحظة</th>
+                        <th>@L.Get("Report.Date")</th>
+                        <th>@L.Get("Report.Day")</th>
+                        <th>@L.Get("Report.From")</th>
+                        <th>@L.Get("Report.To")</th>
+                        <th>@L.Get("Common.Status")</th>
+                        <th>@L.Get("Report.Note")</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -106,24 +106,24 @@
     }
     else
     {
-        <h3>امتحانات أونلاين</h3>
+        <h3>@L.Get("Report.OnlineExams")</h3>
         <div class="summary">
-            <span>عدد الامتحانات <b>@r.Online.Count</b></span>
-            <span>المتوسط <b>@Average(r.Online)</b></span>
+            <span>@L.Get("Report.ExamCount") <b>@r.Online.Count</b></span>
+            <span>@L.Get("Report.Average") <b>@Average(r.Online)</b></span>
         </div>
         @if (r.Online.Count == 0)
         {
-            <p class="empty">مفيش امتحانات أونلاين في الفترة دي.</p>
+            <p class="empty">@L.Get("Report.NoOnline")</p>
         }
         else
         {
             <table class="grid">
                 <thead>
                     <tr>
-                        <th>الامتحان</th>
-                        <th>التاريخ</th>
-                        <th>الدرجة</th>
-                        <th>النسبة</th>
+                        <th>@L.Get("Report.Exam")</th>
+                        <th>@L.Get("Report.Date")</th>
+                        <th>@L.Get("Report.Score")</th>
+                        <th>@L.Get("Report.Percent")</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -140,24 +140,24 @@
             </table>
         }
 
-        <h3>امتحانات أوفلاين</h3>
+        <h3>@L.Get("Report.OfflineExams")</h3>
         <div class="summary">
-            <span>عدد الامتحانات <b>@r.Offline.Count</b></span>
-            <span>المتوسط <b>@Average(r.Offline)</b></span>
+            <span>@L.Get("Report.ExamCount") <b>@r.Offline.Count</b></span>
+            <span>@L.Get("Report.Average") <b>@Average(r.Offline)</b></span>
         </div>
         @if (r.Offline.Count == 0)
         {
-            <p class="empty">مفيش امتحانات أوفلاين في الفترة دي.</p>
+            <p class="empty">@L.Get("Report.NoOffline")</p>
         }
         else
         {
             <table class="grid">
                 <thead>
                     <tr>
-                        <th>الامتحان</th>
-                        <th>التاريخ</th>
-                        <th>الدرجة</th>
-                        <th>النسبة</th>
+                        <th>@L.Get("Report.Exam")</th>
+                        <th>@L.Get("Report.Date")</th>
+                        <th>@L.Get("Report.Score")</th>
+                        <th>@L.Get("Report.Percent")</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -176,18 +176,18 @@
     }
 
     <footer class="sign">
-        <div class="sign-title">توقيع ولي الأمر</div>
+        <div class="sign-title">@L.Get("Report.ParentSign")</div>
         <div class="sign-grid">
             <div>
-                <span>الاسم</span>
+                <span>@L.Get("Common.Name")</span>
                 <span class="line">@(string.IsNullOrWhiteSpace(r.ParentName) ? "" : r.ParentName)</span>
             </div>
             <div>
-                <span>التوقيع</span>
+                <span>@L.Get("Report.Signature")</span>
                 <span class="line"></span>
             </div>
             <div>
-                <span>التاريخ</span>
+                <span>@L.Get("Report.Date")</span>
                 <span class="line"></span>
             </div>
         </div>

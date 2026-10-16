@@ -6,12 +6,12 @@
             @if (Model.StudentId.HasValue)
             {
                 <input type="hidden" name="studentId" value="@Model.StudentId" />
-                <div>الطالب: <strong>@Model.StudentName</strong></div>
+                <div>@L.Get("Common.Student"): <strong>@Model.StudentName</strong></div>
             }
             else
             {
-                <label class="form-label">الطالب</label>
-                <input id="gStu" list="gStuList" class="form-control" placeholder="ابحث بالاسم أو الكود..." autocomplete="off" />
+                <label class="form-label">@L.Get("Common.Student")</label>
+                <input id="gStu" list="gStuList" class="form-control" placeholder="@L.Get("Grace.SearchStudent")" autocomplete="off" />
                 <datalist id="gStuList">@foreach (var s in Model.Students) {
                     <option value="@s.Text"></option>
                 }
@@ -20,9 +20,9 @@
         }
     </div>
     <div class="col-md-6">
-        <label class="form-label">المجموعة</label>
+        <label class="form-label">@L.Get("Common.Group")</label>
         <select name="groupId" class="form-select">
-            <option value="">كل المجموعات</option>
+            <option value="">@L.Get("Common.AllGroups")</option>
             @foreach (var g in Model.Groups)
             {
                 <option value="@g.Id" selected="@(g.Id == Model.GroupId)">@g.Text</option>
@@ -30,11 +30,11 @@
         </select>
     </div>
     <div class="col-md-6">
-        <label class="form-label">عدد الأيام (من النهارده)</label>
+        <label class="form-label">@L.Get("Grace.DayCount")</label>
         <input name="days" type="number" min="1" max="90" value="3" class="form-control" />
     </div>
-    <div class="col-12"><label class="form-label">السبب (اختياري)</label><input name="reason" class="form-control" /></div>
-    <div class="col-12"><button class="btn btn-success" onclick="saveGrace()">إعطاء السماح</button></div>
+    <div class="col-12"><label class="form-label">@L.Get("Common.ReasonOptional")</label><input name="reason" class="form-control" /></div>
+    <div class="col-12"><button class="btn btn-success" onclick="saveGrace()">@L.Get("Grace.Grant")</button></div>
 </div>
 </form>
 
@@ -43,7 +43,7 @@
     $('#gStu').on('input change', function () { $('#gStuId').val(stuMap[this.value] || ''); });
 
     function saveGrace() {
-        if (!$('#graceForm [name=studentId]').val()) { notify('warning', 'اختار الطالب من القائمة'); return; }
+        if (!$('#graceForm [name=studentId]').val()) { notify('warning', @Json.Serialize(L.Get("Grace.PickStudent").Value)); return; }
         submitForm('#graceForm', '@Url.Action("Save", "Grace")');
     }
 </script>

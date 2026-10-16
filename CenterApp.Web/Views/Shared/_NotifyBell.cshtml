@@ -5,22 +5,22 @@
     var canClear = User.IsInRole(RoleNames.Admin) || User.IsInRole(RoleNames.Teacher);
 }
 <div class="tb-dd">
-    <button type="button" class="tb-icon" data-pop="popBell" aria-label="الإشعارات">
+    <button type="button" class="tb-icon" data-pop="popBell" aria-label="@L.Get("Notify.Title")">
         <i class="bi bi-bell"></i>
         <span class="tb-badge" id="bellBadge" hidden></span>
     </button>
     <div class="tb-pop tb-pop-bell" id="popBell">
         <div class="tb-pop-head">
-            <div class="tb-pop-title">الإشعارات</div>
+            <div class="tb-pop-title">@L.Get("Notify.Title")</div>
             <div class="tb-pop-actions">
-                <button type="button" class="btn btn-link btn-sm p-0" id="bellReadAll">تعليم الكل كمقروء</button>
+                <button type="button" class="btn btn-link btn-sm p-0" id="bellReadAll">@L.Get("Notify.ReadAll")</button>
                 @if (canClear)
                 {
-                    <button type="button" class="btn btn-link btn-sm p-0 text-danger" id="bellClear">مسح</button>
+                    <button type="button" class="btn btn-link btn-sm p-0 text-danger" id="bellClear">@L.Get("Common.Clear")</button>
                 }
             </div>
         </div>
-        <div id="bellList"><div class="tb-pop-empty">مفيش إشعارات جديدة</div></div>
+        <div id="bellList"><div class="tb-pop-empty">@L.Get("Notify.Empty")</div></div>
     </div>
 </div>
 <script>window.chatMyName = @Json.Serialize(name);</script>
