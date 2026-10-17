@@ -1,4 +1,4 @@
-﻿var APP_COLOR = '#4b2fd0';
+﻿var APP_COLOR = '#146278';
 
 function t(key, fallback) {
     var v = window.L10n && window.L10n[key];

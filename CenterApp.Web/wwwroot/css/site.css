@@ -1,13 +1,13 @@
 :root {
-    --primary: #4b2fd0;
-    --primary-2: #8f73f1;
-    --primary-soft: #ece8fb;
-    --navy: #2b2663;
-    --bg: #f5f6fb;
+    --primary: #146278;
+    --primary-2: #2d8a99;
+    --primary-soft: #e7f4f6;
+    --navy: #163044;
+    --bg: #f3f6f7;
     --card: #fff;
-    --line: #e8e9f4;
-    --text: #1d2147;
-    --muted: #7b809e;
+    --line: #e3eaee;
+    --text: #1a2c3a;
+    --muted: #6a7d8a;
     --sb-w: 272px;
 }
 
@@ -144,7 +144,7 @@ body.sb-collapsed .sidebar {
 }
 
     .mg-head:hover {
-        background: #f8f7fe;
+        background: var(--primary-soft);
     }
 
 .mg-ico {
@@ -290,7 +290,7 @@ body.sb-collapsed .sidebar {
     border: 1px solid var(--line);
     border-radius: 12px;
     padding: 12px;
-    box-shadow: 0 12px 30px rgba(43, 38, 99, .12);
+    box-shadow: 0 12px 30px rgba(22, 48, 68, .12);
 }
 
     .tb-pop.show {
@@ -1059,4 +1059,88 @@ img {
     border-radius: 12px;
     padding: 8px 12px;
     font-family: inherit;
+}
+
+.btn-primary {
+    background-color: var(--primary);
+    border-color: var(--primary);
+}
+
+.btn-primary:hover,
+.btn-primary:active,
+.btn-primary.active,
+.show > .btn-primary.dropdown-toggle {
+    background-color: var(--navy);
+    border-color: var(--navy);
+    color: #fff;
+}
+
+.btn-check:focus + .btn-primary,
+.btn-primary:focus,
+.btn-primary:active:focus,
+.btn-primary.active:focus {
+    background-color: var(--navy);
+    border-color: var(--navy);
+    color: #fff;
+    box-shadow: 0 0 0 0.2rem rgba(20, 98, 120, .28);
+}
+
+.btn-primary:disabled,
+.btn-primary.disabled {
+    background-color: var(--primary);
+    border-color: var(--primary);
+}
+
+.btn-outline-primary {
+    color: var(--primary);
+    border-color: var(--primary);
+}
+
+.btn-outline-primary:hover,
+.btn-outline-primary:active,
+.btn-outline-primary.active,
+.btn-outline-primary.dropdown-toggle.show {
+    color: #fff;
+    background-color: var(--primary);
+    border-color: var(--primary);
+}
+
+.btn-check:focus + .btn-outline-primary,
+.btn-outline-primary:focus,
+.btn-outline-primary:active:focus,
+.btn-outline-primary.active:focus {
+    box-shadow: 0 0 0 0.2rem rgba(20, 98, 120, .28);
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 0.2rem rgba(20, 98, 120, .18);
+}
+
+.form-check-input:checked {
+    background-color: var(--primary);
+    border-color: var(--primary);
+}
+
+.form-check-input:focus {
+    border-color: var(--primary-2);
+    box-shadow: 0 0 0 0.2rem rgba(20, 98, 120, .18);
+}
+
+.page-link {
+    color: var(--primary);
+}
+
+.page-link:hover {
+    color: var(--navy);
+}
+
+.page-link:focus {
+    box-shadow: 0 0 0 0.2rem rgba(20, 98, 120, .18);
+}
+
+.page-item.active .page-link {
+    background-color: var(--primary);
+    border-color: var(--primary);
 }
