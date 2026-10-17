@@ -3,6 +3,14 @@
     var name = User.FindFirst("FullName")?.Value ?? User.Identity?.Name ?? "";
     var title = ViewData["Title"] as string ?? "";
     var isAr = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "ar";
+    var action = ((ViewContext.RouteData.Values["action"] as string) ?? "").ToLower();
+    var nav = action switch
+    {
+        "material" => "materials",
+        "homeworkitem" => "homework",
+        "exam" => "exams",
+        _ => action
+    };
 }
 <!DOCTYPE html>
 <html lang="@(isAr ? "ar" : "en")" dir="@(isAr ? "rtl" : "ltr")">
@@ -28,7 +36,8 @@
             .pnav {
                 background: #fff;
                 border-bottom: 1px solid var(--line);
-                padding: 10px 22px;
+                box-shadow: 0 8px 24px rgba(22, 48, 68, .06);
+                padding: 12px 28px;
                 display: flex;
                 align-items: center;
                 gap: 18px;
@@ -53,7 +62,7 @@
             .pnav-links {
                 display: flex;
                 align-items: center;
-                gap: 18px;
+                gap: 6px;
             }
 
                 .pnav .brand {
@@ -61,14 +70,30 @@
                     font-size: 22px;
                     color: var(--text);
                     display: flex;
-                    gap: 8px;
+                    gap: 10px;
                     align-items: center;
+                    padding: 0;
+                    flex-shrink: 0;
                 }
 
                 .pnav a.lnk {
                     color: var(--text);
                     font-weight: 600;
+                    padding: 7px 14px;
+                    border-radius: 999px;
+                    line-height: 1.2;
+                    white-space: nowrap;
                 }
+
+                    .pnav a.lnk:hover,
+                    .pnav a.lnk.active {
+                        background: var(--primary-soft);
+                        color: var(--primary);
+                    }
+
+                    .pnav a.lnk.active {
+                        font-weight: 700;
+                    }
 
                 .pnav .me {
                     margin-inline-start: auto;
@@ -124,7 +149,7 @@
 
             a.tile:hover {
                 border-color: var(--primary);
-                box-shadow: 0 6px 20px rgba(75,47,208,.12);
+                box-shadow: 0 6px 20px rgba(22, 48, 68, .10);
             }
 
             .mgrid {
@@ -202,12 +227,8 @@
                 }
 
                 .pnav a.lnk {
-                    padding: 10px 8px;
-                    border-radius: 8px;
-                }
-
-                .pnav.open a.lnk:hover {
-                    background: var(--primary-soft);
+                    padding: 10px 14px;
+                    border-radius: 999px;
                 }
 
                 main.container {
@@ -219,15 +240,15 @@
 </head>
 <body>
     <header class="pnav" id="pnav">
-        <a class="brand" asp-controller="Portal" asp-action="Index"><i class="bi bi-mortarboard-fill" style="color:var(--primary)"></i> @L.Get("App.Name")</a>
+        <a class="brand" asp-controller="Portal" asp-action="Index"><span class="brand-logo"><i class="bi bi-mortarboard-fill"></i></span> @L.Get("App.Name")</a>
         <button type="button" class="pnav-toggle" id="pnavToggle" aria-label="@L.Get("Common.Menu")"><i class="bi bi-list"></i></button>
         <nav class="pnav-links">
-            <a class="lnk" asp-controller="Portal" asp-action="Index">@L.Get("Common.Home")</a>
-            <a class="lnk" asp-controller="Portal" asp-action="Materials">@L.Get("Menu.Materials")</a>
-            <a class="lnk" asp-controller="Portal" asp-action="Attendance">@L.Get("Menu.Attendance")</a>
-            <a class="lnk" asp-controller="Portal" asp-action="Homework">@L.Get("Menu.Homework")</a>
-            <a class="lnk" asp-controller="Portal" asp-action="Exams">@L.Get("Menu.Exams")</a>
-            <a class="lnk" asp-controller="Portal" asp-action="Ask">@L.Get("Menu.AskTeacher")</a>
+            <a class="lnk @(nav == "index" ? "active" : "")" asp-controller="Portal" asp-action="Index">@L.Get("Common.Home")</a>
+            <a class="lnk @(nav == "materials" ? "active" : "")" asp-controller="Portal" asp-action="Materials">@L.Get("Menu.Materials")</a>
+            <a class="lnk @(nav == "attendance" ? "active" : "")" asp-controller="Portal" asp-action="Attendance">@L.Get("Menu.Attendance")</a>
+            <a class="lnk @(nav == "homework" ? "active" : "")" asp-controller="Portal" asp-action="Homework">@L.Get("Menu.Homework")</a>
+            <a class="lnk @(nav == "exams" ? "active" : "")" asp-controller="Portal" asp-action="Exams">@L.Get("Menu.Exams")</a>
+            <a class="lnk @(nav == "ask" ? "active" : "")" asp-controller="Portal" asp-action="Ask">@L.Get("Menu.AskTeacher")</a>
         </nav>
         <div class="me">
             <partial name="_LangSwitch" />

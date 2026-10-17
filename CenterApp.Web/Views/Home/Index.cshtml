@@ -8,7 +8,7 @@
 
     var ui = CultureInfo.CurrentUICulture;
     var gradesTotal = Model.Grades.Sum(g => g.Count);
-    var colors = new[] { "#4b2fd0", "#8f73f1", "#2b2663", "#b7a4f7", "#6b4ee0", "#d8cffb" };
+    var colors = new[] { "#163044", "#146278", "#2d8a99", "#5d7a8c", "#9fd0d6", "#d5e8eb" };
     var userName = User.FindFirst("FullName")?.Value ?? User.Identity?.Name ?? "";
     var hasAtt = Model.Last7.Any(d => d.Rate.HasValue);
     var collectedPct = Model.MonthDue > 0
@@ -287,7 +287,7 @@
 
     <script>
         Chart.defaults.font.family = "'Cairo', Tahoma, sans-serif";
-        Chart.defaults.color = '#7b809e';
+        Chart.defaults.color = '#6a7d8a';
 
         var last7 = @Html.Raw(JsonSerializer.Serialize(
                                     Model.Last7.Select(d => new { l = d.Label, r = d.Rate })
@@ -303,12 +303,12 @@
                     data: last7.map(function (d) {
                         return d.r;
                     }),
-                    borderColor: '#4b2fd0',
-                    backgroundColor: 'rgba(75,47,208,.08)',
+                    borderColor: '#146278',
+                    backgroundColor: 'rgba(20,98,120,.10)',
                     fill: true,
                     tension: .35,
                     pointBackgroundColor: '#fff',
-                    pointBorderColor: '#4b2fd0',
+                    pointBorderColor: '#146278',
                     pointBorderWidth: 2,
                     pointRadius: 5,
                     spanGaps: true
@@ -340,7 +340,7 @@
                             }
                         },
                         grid: {
-                            color: '#eef0f6'
+                            color: '#e8eef1'
                         }
                     },
                     x: {
@@ -370,12 +370,12 @@
                             return g.c;
                         }),
                         backgroundColor: [
-                            '#4b2fd0',
-                            '#8f73f1',
-                            '#2b2663',
-                            '#b7a4f7',
-                            '#6b4ee0',
-                            '#d8cffb'
+                            '#163044',
+                            '#146278',
+                            '#2d8a99',
+                            '#5d7a8c',
+                            '#9fd0d6',
+                            '#d5e8eb'
                         ],
                         borderWidth: 0
                     }]

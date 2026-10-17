@@ -28,8 +28,8 @@
                 place-items: center;
                 padding: 20px;
                 font-family: 'Cairo', Tahoma, Arial, sans-serif;
-                color: #1d2147;
-                background: #1d1a52;
+                color: #1a2c3a;
+                background: #102433;
                 overflow-x: hidden;
             }
 
@@ -44,7 +44,7 @@
             .bg-gradient {
                 position: absolute;
                 inset: 0;
-                background: linear-gradient(-45deg, #2b2663, #4b2fd0, #1d5a6b, #6b4fa5, #2b2663);
+                background: linear-gradient(-45deg, #102433, #163044, #146278, #1a7a86, #102433);
                 background-size: 400% 400%;
                 animation: gradientMove 18s ease infinite;
             }
@@ -73,7 +73,7 @@
                 .orb.o1 {
                     width: 420px;
                     height: 420px;
-                    background: #8f73f1;
+                    background: #146278;
                     top: -120px;
                     inset-inline-start: -100px;
                     animation: drift1 22s ease-in-out infinite;
@@ -82,7 +82,7 @@
                 .orb.o2 {
                     width: 480px;
                     height: 480px;
-                    background: #2aa7b8;
+                    background: #2d8a99;
                     bottom: -160px;
                     inset-inline-end: -120px;
                     animation: drift2 26s ease-in-out infinite;
@@ -91,7 +91,7 @@
                 .orb.o3 {
                     width: 300px;
                     height: 300px;
-                    background: #d96bd0;
+                    background: #163044;
                     top: 40%;
                     left: 45%;
                     animation: drift3 30s ease-in-out infinite;
@@ -178,7 +178,7 @@
             .bg-overlay {
                 position: absolute;
                 inset: 0;
-                background: rgba(15, 12, 40, .35);
+                background: rgba(16, 36, 51, .35);
             }
 
             @@media (prefers-reduced-motion: reduce) {
@@ -234,13 +234,13 @@
                 font-size: 26px;
                 display: grid;
                 place-items: center;
-                background: linear-gradient(135deg, #4b2fd0, #8f73f1);
+                background: linear-gradient(135deg, #146278, #2d8a99);
             }
 
             .brand-name {
                 font-size: 34px;
                 font-weight: 700;
-                color: #1d1a52;
+                color: #163044;
             }
 
             h1 {
@@ -288,7 +288,7 @@
             }
 
                 .field:focus {
-                    border-color: #4b2fd0;
+                    border-color: #146278;
                 }
 
             .pw {
@@ -321,7 +321,7 @@
                 font-weight: 600;
                 font-family: inherit;
                 cursor: pointer;
-                background: linear-gradient(90deg, #1d5a6b, #6b4fa5);
+                background: linear-gradient(90deg, #163044, #146278);
             }
 
                 .btn-login:hover {
@@ -359,7 +359,7 @@
 
             .login-lang .tb-lang-btn.on {
                 opacity: 1;
-                background: #efeaff;
+                background: #e7f4f6;
             }
 
             @@media (max-width: 575.98px) {
@@ -462,7 +462,7 @@
             });
 
             function forgot() {
-                Swal.fire({ icon: 'info', title: @Json.Serialize(L.Get("Auth.Forgot").Value), text: @Json.Serialize(L.Get("Auth.ForgotHint").Value), confirmButtonText: @Json.Serialize(L.Get("Common.Ok").Value), confirmButtonColor: '#4b2fd0' });
+                Swal.fire({ icon: 'info', title: @Json.Serialize(L.Get("Auth.Forgot").Value), text: @Json.Serialize(L.Get("Auth.ForgotHint").Value), confirmButtonText: @Json.Serialize(L.Get("Common.Ok").Value), confirmButtonColor: '#146278' });
             }
     </script>
 </body>
