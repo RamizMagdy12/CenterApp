@@ -996,7 +996,7 @@
     <value>الحضور</value>
   </data>
   <data name="Menu.CollapseAll" xml:space="preserve">
-    <value>طي الكل</value>
+    <value>قفل الكل</value>
   </data>
   <data name="Menu.Content" xml:space="preserve">
     <value>المحتوى</value>
