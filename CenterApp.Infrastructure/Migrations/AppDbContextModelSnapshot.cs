@@ -74,6 +74,10 @@ namespace CenterApp.Infrastructure.Migrations
                         .HasMaxLength(250)
                         .HasColumnType("nvarchar(250)");
 
+                    b.Property<string>("ReasonEn")
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
                     b.Property<DateTime>("StartsAt")
                         .HasColumnType("datetime2");
 
@@ -262,6 +266,10 @@ namespace CenterApp.Infrastructure.Migrations
                         .HasMaxLength(250)
                         .HasColumnType("nvarchar(250)");
 
+                    b.Property<string>("NameEn")
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
                     b.Property<int>("SortOrder")
                         .HasColumnType("int");
 
@@ -329,6 +337,10 @@ namespace CenterApp.Infrastructure.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<string>("NameEn")
                         .HasMaxLength(250)
                         .HasColumnType("nvarchar(250)");
 
@@ -466,6 +478,10 @@ namespace CenterApp.Infrastructure.Migrations
                         .HasMaxLength(250)
                         .HasColumnType("nvarchar(250)");
 
+                    b.Property<string>("RoomEn")
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
                     b.Property<TimeSpan>("StartTime")
                         .HasColumnType("time");
 
@@ -502,6 +518,10 @@ namespace CenterApp.Infrastructure.Migrations
                         .HasMaxLength(2000)
                         .HasColumnType("nvarchar(2000)");
 
+                    b.Property<string>("DescriptionEn")
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
@@ -527,6 +547,10 @@ namespace CenterApp.Infrastructure.Migrations
 
                     b.Property<string>("Title")
                         .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<string>("TitleEn")
                         .HasMaxLength(250)
                         .HasColumnType("nvarchar(250)");
 
@@ -683,6 +707,10 @@ namespace CenterApp.Infrastructure.Migrations
                         .HasMaxLength(2000)
                         .HasColumnType("nvarchar(2000)");
 
+                    b.Property<string>("DescriptionEn")
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
@@ -708,6 +736,10 @@ namespace CenterApp.Infrastructure.Migrations
 
                     b.Property<string>("Title")
                         .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<string>("TitleEn")
                         .HasMaxLength(250)
                         .HasColumnType("nvarchar(250)");
 
@@ -962,6 +994,10 @@ namespace CenterApp.Infrastructure.Migrations
                         .HasMaxLength(250)
                         .HasColumnType("nvarchar(250)");
 
+                    b.Property<string>("TitleEn")
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("TeacherId");
@@ -1056,6 +1092,10 @@ namespace CenterApp.Infrastructure.Migrations
                         .HasMaxLength(2000)
                         .HasColumnType("nvarchar(2000)");
 
+                    b.Property<string>("DescriptionEn")
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
@@ -1087,6 +1127,10 @@ namespace CenterApp.Infrastructure.Migrations
 
                     b.Property<string>("Title")
                         .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<string>("TitleEn")
                         .HasMaxLength(250)
                         .HasColumnType("nvarchar(250)");
 
@@ -1281,6 +1325,10 @@ namespace CenterApp.Infrastructure.Migrations
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
 
+                    b.Property<string>("TextEn")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("QuestionId");
@@ -1394,6 +1442,10 @@ namespace CenterApp.Infrastructure.Migrations
                         .HasMaxLength(2000)
                         .HasColumnType("nvarchar(2000)");
 
+                    b.Property<string>("TextEn")
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ExamId", "SortOrder");
@@ -1448,6 +1500,10 @@ namespace CenterApp.Infrastructure.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Note")
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<string>("NoteEn")
                         .HasMaxLength(250)
                         .HasColumnType("nvarchar(250)");
 
@@ -1510,6 +1566,10 @@ namespace CenterApp.Infrastructure.Migrations
                         .HasMaxLength(250)
                         .HasColumnType("nvarchar(250)");
 
+                    b.Property<string>("NotesEn")
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
                     b.Property<TimeSpan>("StartTime")
                         .HasColumnType("time");
 
@@ -1560,6 +1620,10 @@ namespace CenterApp.Infrastructure.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Note")
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<string>("NoteEn")
                         .HasMaxLength(250)
                         .HasColumnType("nvarchar(250)");
 
@@ -1646,11 +1710,23 @@ namespace CenterApp.Infrastructure.Migrations
                         .HasMaxLength(250)
                         .HasColumnType("nvarchar(250)");
 
+                    b.Property<string>("NameEn")
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
                     b.Property<string>("Notes")
                         .HasMaxLength(250)
                         .HasColumnType("nvarchar(250)");
 
+                    b.Property<string>("NotesEn")
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
                     b.Property<string>("ParentName")
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<string>("ParentNameEn")
                         .HasMaxLength(250)
                         .HasColumnType("nvarchar(250)");
 
@@ -1793,6 +1869,10 @@ namespace CenterApp.Infrastructure.Migrations
                         .HasMaxLength(250)
                         .HasColumnType("nvarchar(250)");
 
+                    b.Property<string>("NameEn")
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
                     b.HasKey("Id");
 
                     b.ToTable("Subjects");
@@ -1839,6 +1919,10 @@ namespace CenterApp.Infrastructure.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<string>("NameEn")
                         .HasMaxLength(250)
                         .HasColumnType("nvarchar(250)");
 
@@ -1951,6 +2035,10 @@ namespace CenterApp.Infrastructure.Migrations
 
                     b.Property<string>("FullName")
                         .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<string>("FullNameEn")
                         .HasMaxLength(250)
                         .HasColumnType("nvarchar(250)");
 

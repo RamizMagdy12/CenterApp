@@ -8,7 +8,11 @@ public enum ExamAttemptStatus { InProgress = 1, Submitted = 2, AutoSubmitted = 3
 public class OnlineExam : BaseEntity
 {
     public string Title { get; set; } = null!;
+    public string? TitleEn { get; set; }
     public string? Description { get; set; }
+    public string? DescriptionEn { get; set; }
+    public string LocalTitle => Bilingual.Show(Title, TitleEn);
+    public string LocalDescription => Bilingual.Show(Description, DescriptionEn);
     public long? TeacherId { get; set; }
     public ExamStatus Status { get; set; } = ExamStatus.Draft;
     public DateTime OpensAt { get; set; }
@@ -34,6 +38,7 @@ public class OnlineExamQuestion : BaseEntity
 {
     public long ExamId { get; set; }
     public string Text { get; set; } = null!;
+    public string? TextEn { get; set; }
     public int SortOrder { get; set; }
     public decimal Points { get; set; }
     public string? ImageStoredName { get; set; }
@@ -45,6 +50,7 @@ public class OnlineExamChoice : BaseEntity
 {
     public long QuestionId { get; set; }
     public string Text { get; set; } = null!;
+    public string? TextEn { get; set; }
     public bool IsCorrect { get; set; }
     public int SortOrder { get; set; }
     public virtual OnlineExamQuestion Question { get; set; } = null!;
@@ -81,6 +87,8 @@ public class OnlineExamAnswer : BaseEntity
 public class OfflineExam : BaseEntity
 {
     public string Title { get; set; } = null!;
+    public string? TitleEn { get; set; }
+    public string LocalTitle => Bilingual.Show(Title, TitleEn);
     public decimal MaxScore { get; set; }
     public long GroupId { get; set; }
     public long? TeacherId { get; set; }

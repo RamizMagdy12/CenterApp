@@ -27,11 +27,11 @@ public class HomeworkService : IHomeworkService
         return list.Select(m => new HomeworkRow
         {
             Id = m.Id,
-            Title = m.Title,
-            Teacher = m.Teacher?.Name ?? "",
+            Title = Bilingual.Show(m.Title, m.TitleEn),
+            Teacher = Bilingual.Show(m.Teacher?.Name, m.Teacher?.NameEn),
             Status = m.Status,
             PublishedAt = m.PublishedAt,
-            Groups = string.Join("، ", m.Groups.Select(g => g.Group.Name)),
+            Groups = string.Join("، ", m.Groups.Select(g => Bilingual.Show(g.Group.Name, g.Group.NameEn))),
             FilesCount = m.Files.Count
         }).ToList();
     }
@@ -47,15 +47,17 @@ public class HomeworkService : IHomeworkService
 
         var selected = m?.Groups.Select(g => g.GroupId).ToHashSet() ?? new HashSet<long>();
         var groups = await _u.Group.GetAll(g => g.IsActive && (teacherId == null || g.TeacherId == teacherId))
-            .OrderBy(g => g.Name).Select(g => new { g.Id, g.Name }).ToListAsync();
+            .OrderBy(g => g.Name).Select(g => new { g.Id, g.Name, g.NameEn }).ToListAsync();
 
         return new HomeworkEditVm
         {
             Id = m?.Id ?? 0,
             Title = m?.Title ?? "",
+            TitleEn = m?.TitleEn,
             Description = m?.Description,
+            DescriptionEn = m?.DescriptionEn,
             Status = m?.Status ?? HomeworkStatus.Draft,
-            Groups = groups.Select(g => new GroupOption { Id = g.Id, Name = g.Name, Selected = selected.Contains(g.Id) }).ToList(),
+            Groups = groups.Select(g => new GroupOption { Id = g.Id, Name = Bilingual.Show(g.Name, g.NameEn), Selected = selected.Contains(g.Id) }).ToList(),
             Files = m?.Files.OrderBy(f => f.Id).Select(f => new HomeworkFileVm
             {
                 Id = f.Id,
@@ -90,7 +92,9 @@ public class HomeworkService : IHomeworkService
         }
 
         m.Title = dto.Title.Trim();
-        m.Description = dto.Description?.Trim();
+        m.TitleEn = Bilingual.Clean(dto.TitleEn);
+        m.Description = string.IsNullOrWhiteSpace(dto.Description) ? null : dto.Description.Trim();
+        m.DescriptionEn = Bilingual.Clean(dto.DescriptionEn);
 
         foreach (var g in m.Groups.Where(g => !ids.Contains(g.GroupId)).ToList()) _u.HomeworkGroup.Remove(g);
         foreach (var gid in ids.Where(i => !m.Groups.Any(g => g.GroupId == i))) m.Groups.Add(new HomeworkGroup { GroupId = gid });

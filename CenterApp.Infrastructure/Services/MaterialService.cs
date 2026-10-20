@@ -32,11 +32,11 @@ namespace CenterApp.Infrastructure.Services
             return list.Select(m => new MaterialRow
             {
                 Id = m.Id,
-                Title = m.Title,
-                Teacher = m.Teacher?.Name ?? "",
+                Title = Bilingual.Show(m.Title, m.TitleEn),
+                Teacher = Bilingual.Show(m.Teacher?.Name, m.Teacher?.NameEn),
                 Status = m.Status,
                 PublishedAt = m.PublishedAt,
-                Groups = string.Join("، ", m.Groups.Select(g => g.Group.Name)),
+                Groups = string.Join("، ", m.Groups.Select(g => Bilingual.Show(g.Group.Name, g.Group.NameEn))),
                 FilesCount = m.Files.Count
             }).ToList();
         }
@@ -52,15 +52,17 @@ namespace CenterApp.Infrastructure.Services
 
             var selected = m?.Groups.Select(g => g.GroupId).ToHashSet() ?? new HashSet<long>();
             var groups = await _u.Group.GetAll(g => g.IsActive && (teacherId == null || g.TeacherId == teacherId))
-                .OrderBy(g => g.Name).Select(g => new { g.Id, g.Name }).ToListAsync();
+                .OrderBy(g => g.Name).Select(g => new { g.Id, g.Name, g.NameEn }).ToListAsync();
 
             return new MaterialEditVm
             {
                 Id = m?.Id ?? 0,
                 Title = m?.Title ?? "",
+                TitleEn = m?.TitleEn,
                 Description = m?.Description,
+                DescriptionEn = m?.DescriptionEn,
                 Status = m?.Status ?? MaterialStatus.Draft,
-                Groups = groups.Select(g => new GroupOption { Id = g.Id, Name = g.Name, Selected = selected.Contains(g.Id) }).ToList(),
+                Groups = groups.Select(g => new GroupOption { Id = g.Id, Name = Bilingual.Show(g.Name, g.NameEn), Selected = selected.Contains(g.Id) }).ToList(),
                 Files = m?.Files.OrderBy(f => f.Id).Select(f => new MaterialFileVm
                 {
                     Id = f.Id,
@@ -96,7 +98,9 @@ namespace CenterApp.Infrastructure.Services
             }
 
             m.Title = dto.Title.Trim();
-            m.Description = dto.Description?.Trim();
+            m.TitleEn = Bilingual.Clean(dto.TitleEn);
+            m.Description = string.IsNullOrWhiteSpace(dto.Description) ? null : dto.Description.Trim();
+            m.DescriptionEn = Bilingual.Clean(dto.DescriptionEn);
 
             foreach (var g in m.Groups.Where(g => !ids.Contains(g.GroupId)).ToList()) _u.MaterialGroup.Remove(g);
             foreach (var gid in ids.Where(i => !m.Groups.Any(g => g.GroupId == i))) m.Groups.Add(new MaterialGroup { GroupId = gid });

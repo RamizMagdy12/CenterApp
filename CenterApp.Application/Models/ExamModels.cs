@@ -20,12 +20,14 @@ public class OnlineExamRow
 public class ExamChoiceInput
 {
     public string Text { get; set; } = "";
+    public string? TextEn { get; set; }
     public bool IsCorrect { get; set; }
 }
 
 public class ExamQuestionInput
 {
     public string Text { get; set; } = "";
+    public string? TextEn { get; set; }
     public decimal Points { get; set; }
     public string? ImageStoredName { get; set; }
     public List<ExamChoiceInput> Choices { get; set; } = new();
@@ -34,12 +36,14 @@ public class ExamQuestionInput
 public class ExamChoiceVm
 {
     public string Text { get; set; } = "";
+    public string? TextEn { get; set; }
     public bool IsCorrect { get; set; }
 }
 
 public class ExamQuestionVm
 {
     public string Text { get; set; } = "";
+    public string? TextEn { get; set; }
     public decimal Points { get; set; }
     public string? ImageStoredName { get; set; }
     public List<ExamChoiceVm> Choices { get; set; } = new();
@@ -49,7 +53,9 @@ public class OnlineExamEditVm
 {
     public long Id { get; set; }
     public string Title { get; set; } = "";
+    public string? TitleEn { get; set; }
     public string? Description { get; set; }
+    public string? DescriptionEn { get; set; }
     public ExamStatus Status { get; set; }
     public DateTime? OpensAt { get; set; }
     public DateTime? ClosesAt { get; set; }
@@ -63,7 +69,9 @@ public class OnlineExamSaveDto
 {
     public long Id { get; set; }
     public string Title { get; set; } = "";
+    public string? TitleEn { get; set; }
     public string? Description { get; set; }
+    public string? DescriptionEn { get; set; }
     public DateTime OpensAt { get; set; }
     public DateTime ClosesAt { get; set; }
     public DateTime ResultsAt { get; set; }
@@ -127,6 +135,7 @@ public class OfflineExamEditVm
 {
     public long Id { get; set; }
     public string Title { get; set; } = "";
+    public string? TitleEn { get; set; }
     public decimal MaxScore { get; set; }
     public long GroupId { get; set; }
     public DateTime? ExamDate { get; set; }
@@ -139,6 +148,7 @@ public class OfflineExamSaveDto
 {
     public long Id { get; set; }
     public string Title { get; set; } = "";
+    public string? TitleEn { get; set; }
     public decimal MaxScore { get; set; }
     public long GroupId { get; set; }
     public DateTime ExamDate { get; set; }

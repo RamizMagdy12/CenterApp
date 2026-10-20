@@ -27,13 +27,13 @@ public class StudentsController : AppController
     {
         ViewBag.Q = q;
         ViewBag.GradeId = gradeId;
-        ViewBag.Grades = new SelectList(await _c.SelectAsync("gradelevels"), "Value", "Text");
+        ViewBag.Grades = SelectItems.From(await _c.SelectAsync("gradelevels"));
         return View(await _s.SearchAsync(q, gradeId, page));
     }
 
     public async Task<IActionResult> Form(long id = 0)
     {
-        ViewBag.Grades = new SelectList(await _c.SelectAsync("gradelevels"), "Value", "Text");
+        ViewBag.Grades = SelectItems.From(await _c.SelectAsync("gradelevels"));
         ViewBag.Picks = id == 0 ? await _t.PicksAsync(null) : new List<GroupPick>();
         return PartialView(await _s.GetAsync(id));
     }

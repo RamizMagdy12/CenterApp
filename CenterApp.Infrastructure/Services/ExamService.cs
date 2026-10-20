@@ -52,27 +52,31 @@ public class ExamService : IExamService
 
         var selected = exam?.Groups.Select(g => g.GroupId).ToHashSet() ?? new HashSet<long>();
         var groups = await _u.Group.GetAll(g => g.IsActive && (teacherId == null || g.TeacherId == teacherId))
-            .OrderBy(g => g.Name).Select(g => new { g.Id, g.Name }).ToListAsync();
+            .OrderBy(g => g.Name).Select(g => new { g.Id, g.Name, g.NameEn }).ToListAsync();
 
         return new OnlineExamEditVm
         {
             Id = exam?.Id ?? 0,
             Title = exam?.Title ?? "",
+            TitleEn = exam?.TitleEn,
             Description = exam?.Description,
+            DescriptionEn = exam?.DescriptionEn,
             Status = exam?.Status ?? ExamStatus.Draft,
             OpensAt = exam?.OpensAt,
             ClosesAt = exam?.ClosesAt,
             ResultsAt = exam?.ResultsAt,
             Locked = exam != null && IsLocked(exam),
-            Groups = groups.Select(g => new GroupOption { Id = g.Id, Name = g.Name, Selected = selected.Contains(g.Id) }).ToList(),
+            Groups = groups.Select(g => new GroupOption { Id = g.Id, Name = Bilingual.Show(g.Name, g.NameEn), Selected = selected.Contains(g.Id) }).ToList(),
             Questions = exam?.Questions.OrderBy(q => q.SortOrder).ThenBy(q => q.Id).Select(q => new ExamQuestionVm
             {
                 Text = q.Text,
+                TextEn = q.TextEn,
                 Points = q.Points,
                 ImageStoredName = q.ImageStoredName,
                 Choices = q.Choices.OrderBy(c => c.SortOrder).ThenBy(c => c.Id).Select(c => new ExamChoiceVm
                 {
                     Text = c.Text,
+                    TextEn = c.TextEn,
                     IsCorrect = c.IsCorrect
                 }).ToList()
             }).ToList() ?? new()
@@ -118,7 +122,9 @@ public class ExamService : IExamService
         if (questionError != null) return OpResult.Fail(questionError);
 
         exam.Title = dto.Title.Trim();
+        exam.TitleEn = Bilingual.Clean(dto.TitleEn);
         exam.Description = string.IsNullOrWhiteSpace(dto.Description) ? null : dto.Description.Trim();
+        exam.DescriptionEn = Bilingual.Clean(dto.DescriptionEn);
         exam.OpensAt = dto.OpensAt;
         exam.ClosesAt = dto.ClosesAt;
         exam.ResultsAt = dto.ResultsAt;
@@ -196,7 +202,7 @@ public class ExamService : IExamService
         var groupIds = exam.Groups.Select(g => g.GroupId).ToList();
         var enrolled = await _u.GroupEnrollment
             .GetAll(e => groupIds.Contains(e.GroupId) && e.IsActive && e.LeftAt == null && e.Student.IsActive, "Student")
-            .Select(e => new { e.StudentId, Code = e.Student.Code, e.Student.Name })
+            .Select(e => new { e.StudentId, Code = e.Student.Code, e.Student.Name, e.Student.NameEn })
             .ToListAsync();
 
         var attempts = await _u.OnlineExamAttempt
@@ -204,8 +210,8 @@ public class ExamService : IExamService
             .ToListAsync();
 
         var students = enrolled
-            .Select(e => (e.StudentId, Code: e.Code ?? "", e.Name))
-            .Concat(attempts.Select(a => (a.StudentId, Code: a.Student.Code ?? "", a.Student.Name)))
+            .Select(e => (e.StudentId, Code: e.Code ?? "", e.Name, e.NameEn))
+            .Concat(attempts.Select(a => (a.StudentId, Code: a.Student.Code ?? "", a.Student.Name, a.Student.NameEn)))
             .GroupBy(s => s.StudentId)
             .Select(g => g.First())
             .OrderBy(s => s.Name)
@@ -217,8 +223,8 @@ public class ExamService : IExamService
         return new OnlineGradesVm
         {
             ExamId = exam.Id,
-            Title = exam.Title,
-            Groups = string.Join("، ", exam.Groups.Select(g => g.Group.Name)),
+            Title = Bilingual.Show(exam.Title, exam.TitleEn),
+            Groups = string.Join("، ", exam.Groups.Select(g => Bilingual.Show(g.Group.Name, g.Group.NameEn))),
             MaxScore = exam.Questions.Sum(q => q.Points),
             OpensAt = exam.OpensAt,
             ClosesAt = exam.ClosesAt,
@@ -235,7 +241,7 @@ public class ExamService : IExamService
                 {
                     StudentId = s.StudentId,
                     StudentCode = s.Code,
-                    StudentName = s.Name,
+                    StudentName = Bilingual.Show(s.Name, s.NameEn),
                     StatusText = AttemptText(a, now, exam),
                     SubmittedAt = a?.SubmittedAt,
                     Score = a?.Status == ExamAttemptStatus.InProgress ? null : a?.Score,
@@ -259,8 +265,8 @@ public class ExamService : IExamService
             return list.Select(x => new OfflineExamRow
             {
                 Id = x.Id,
-                Title = x.Title,
-                GroupName = x.Group.Name,
+                Title = Bilingual.Show(x.Title, x.TitleEn),
+                GroupName = Bilingual.Show(x.Group.Name, x.Group.NameEn),
                 ExamDate = x.ExamDate,
                 MaxScore = x.MaxScore
             }).ToList();
@@ -275,8 +281,8 @@ public class ExamService : IExamService
         return list.Select(x => new OfflineExamRow
         {
             Id = x.Id,
-            Title = x.Title,
-            GroupName = x.Group.Name,
+            Title = Bilingual.Show(x.Title, x.TitleEn),
+            GroupName = Bilingual.Show(x.Group.Name, x.Group.NameEn),
             ExamDate = x.ExamDate,
             MaxScore = x.MaxScore,
             GradedCount = x.Grades.Count(g => g.Score != null),
@@ -295,13 +301,15 @@ public class ExamService : IExamService
             if (exam == null) return null;
         }
 
-        var groups = await _u.Group.GetAll(g => g.IsActive && (teacherId == null || g.TeacherId == teacherId))
-            .OrderBy(g => g.Name).Select(g => new SimpleItem(g.Id, g.Name)).ToListAsync();
+        var groupRows = await _u.Group.GetAll(g => g.IsActive && (teacherId == null || g.TeacherId == teacherId))
+            .OrderBy(g => g.Name).Select(g => new { g.Id, g.Name, g.NameEn }).ToListAsync();
+        var groups = groupRows.Select(g => new SimpleItem(g.Id, Bilingual.Show(g.Name, g.NameEn))).ToList();
 
         var vm = new OfflineExamEditVm
         {
             Id = exam?.Id ?? 0,
             Title = exam?.Title ?? "",
+            TitleEn = exam?.TitleEn,
             MaxScore = exam?.MaxScore ?? 0,
             GroupId = exam?.GroupId ?? 0,
             ExamDate = exam?.ExamDate,
@@ -347,6 +355,7 @@ public class ExamService : IExamService
         }
 
         exam.Title = dto.Title.Trim();
+        exam.TitleEn = Bilingual.Clean(dto.TitleEn);
         exam.MaxScore = dto.MaxScore;
         exam.ExamDate = dto.ExamDate.Date;
 
@@ -426,9 +435,9 @@ public class ExamService : IExamService
             return new StudentExamCard
             {
                 Id = x.Id,
-                Title = x.Title,
-                Description = x.Description,
-                Groups = string.Join("، ", x.Groups.Select(g => g.Group.Name)),
+                Title = Bilingual.Show(x.Title, x.TitleEn),
+                Description = Bilingual.Show(x.Description, x.DescriptionEn),
+                Groups = string.Join("، ", x.Groups.Select(g => Bilingual.Show(g.Group.Name, g.Group.NameEn))),
                 OpensAt = x.OpensAt,
                 ClosesAt = x.ClosesAt,
                 ResultsAt = x.ResultsAt,
@@ -458,8 +467,8 @@ public class ExamService : IExamService
             Offline = offline.Select(x => new StudentOfflineGradeCard
             {
                 Id = x.Id,
-                Title = x.Title,
-                GroupName = x.Group.Name,
+                Title = Bilingual.Show(x.Title, x.TitleEn),
+                GroupName = Bilingual.Show(x.Group.Name, x.Group.NameEn),
                 ExamDate = x.ExamDate,
                 MaxScore = x.MaxScore,
                 Score = gradeMap.GetValueOrDefault(x.Id)
@@ -484,8 +493,8 @@ public class ExamService : IExamService
         return new ExamIntroVm
         {
             Id = exam.Id,
-            Title = exam.Title,
-            Description = exam.Description,
+            Title = Bilingual.Show(exam.Title, exam.TitleEn),
+            Description = Bilingual.Show(exam.Description, exam.DescriptionEn),
             OpensAt = exam.OpensAt,
             ClosesAt = EffectiveClose(exam, attempt),
             ResultsAt = exam.ResultsAt,
@@ -599,14 +608,14 @@ public class ExamService : IExamService
             return null;
         }
 
-        var student = await _u.Student.GetAll(s => s.Id == studentId).Select(s => new { s.Name, s.Code }).FirstAsync();
+        var student = await _u.Student.GetAll(s => s.Id == studentId).Select(s => new { s.Name, s.NameEn, s.Code }).FirstAsync();
         var picked = attempt.Answers.ToDictionary(a => a.QuestionId, a => a.ChoiceId);
 
         return new ExamTakeVm
         {
             ExamId = exam.Id,
-            Title = exam.Title,
-            StudentName = student.Name,
+            Title = Bilingual.Show(exam.Title, exam.TitleEn),
+            StudentName = Bilingual.Show(student.Name, student.NameEn),
             StudentCode = student.Code ?? "",
             ClosesAt = close,
             ResultsAt = exam.ResultsAt,
@@ -614,14 +623,14 @@ public class ExamService : IExamService
             Questions = exam.Questions.OrderBy(q => q.SortOrder).ThenBy(q => q.Id).Select(q => new ExamTakeQuestionVm
             {
                 Id = q.Id,
-                Text = q.Text,
+                Text = Bilingual.Show(q.Text, q.TextEn),
                 Points = q.Points,
                 HasImage = !string.IsNullOrEmpty(q.ImageStoredName),
                 SelectedChoiceId = picked.GetValueOrDefault(q.Id),
                 Choices = q.Choices.OrderBy(c => c.SortOrder).ThenBy(c => c.Id).Select(c => new ExamTakeChoiceVm
                 {
                     Id = c.Id,
-                    Text = c.Text
+                    Text = Bilingual.Show(c.Text, c.TextEn)
                 }).ToList()
             }).ToList()
         };
@@ -673,14 +682,14 @@ public class ExamService : IExamService
         var students = await _u.GroupEnrollment
             .GetAll(e => e.GroupId == groupId && e.IsActive && e.LeftAt == null && e.Student.IsActive, "Student")
             .OrderBy(e => e.Student.Name)
-            .Select(e => new { e.StudentId, Code = e.Student.Code, e.Student.Name })
+            .Select(e => new { e.StudentId, Code = e.Student.Code, e.Student.Name, e.Student.NameEn })
             .ToListAsync();
 
         return students.Select(s => new OfflineGradeRow
         {
             StudentId = s.StudentId,
             StudentCode = s.Code ?? "",
-            StudentName = s.Name,
+            StudentName = Bilingual.Show(s.Name, s.NameEn),
             Score = scores.GetValueOrDefault(s.StudentId)
         }).ToList();
     }
@@ -785,6 +794,7 @@ public class ExamService : IExamService
             var entity = new OnlineExamQuestion
             {
                 Text = q.Text.Trim(),
+                TextEn = Bilingual.Clean(q.TextEn),
                 Points = q.Points,
                 SortOrder = order++,
                 ImageStoredName = image
@@ -795,6 +805,7 @@ public class ExamService : IExamService
                 entity.Choices.Add(new OnlineExamChoice
                 {
                     Text = c.Text.Trim(),
+                    TextEn = Bilingual.Clean(c.TextEn),
                     IsCorrect = c.IsCorrect,
                     SortOrder = cOrder++
                 });
@@ -841,9 +852,9 @@ public class ExamService : IExamService
     private static OnlineExamRow MapRow(OnlineExam x) => new()
     {
         Id = x.Id,
-        Title = x.Title,
-        Teacher = x.Teacher?.Name ?? "",
-        Groups = string.Join("، ", x.Groups.Select(g => g.Group.Name)),
+        Title = Bilingual.Show(x.Title, x.TitleEn),
+        Teacher = Bilingual.Show(x.Teacher?.Name, x.Teacher?.NameEn),
+        Groups = string.Join("، ", x.Groups.Select(g => Bilingual.Show(g.Group.Name, g.Group.NameEn))),
         QuestionsCount = x.Questions.Count,
         MaxScore = x.Questions.Sum(q => q.Points),
         Status = x.Status,

@@ -1,3 +1,4 @@
+using System.Globalization;
 using CenterApp.Domain.Center;
 using CenterApp.Application.Abstractions;
 using CenterApp.Application.Models;
@@ -23,15 +24,18 @@ public class ReportService : IReportService
         var endExclusive = end.AddDays(1);
         var reportKind = kind == "grades" ? "grades" : "attendance";
 
-        var groups = await _u.Group
+        var groupRows = await _u.Group
             .GetAll(g => teacherId == null || g.TeacherId == teacherId)
             .OrderByDescending(g => g.IsActive).ThenBy(g => g.Name)
-            .Select(g => new ReportGroupOption
-            {
-                Id = g.Id,
-                Name = g.IsActive ? g.Name : g.Name + " (متوقفة)"
-            })
+            .Select(g => new { g.Id, g.Name, g.NameEn, g.IsActive })
             .ToListAsync();
+        var stopped = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName.StartsWith("en", StringComparison.OrdinalIgnoreCase)
+            ? " (inactive)" : " (متوقفة)";
+        var groups = groupRows.Select(g => new ReportGroupOption
+        {
+            Id = g.Id,
+            Name = Bilingual.Show(g.Name, g.NameEn) + (g.IsActive ? "" : stopped)
+        }).ToList();
 
         var vm = new ReportPageVm
         {
@@ -50,9 +54,9 @@ public class ReportService : IReportService
         if (group == null) return vm;
 
         vm.GroupId = group.Id;
-        vm.GroupName = group.Name;
-        vm.SubjectName = group.Subject?.Name ?? "";
-        vm.TeacherName = group.Teacher?.Name ?? "";
+        vm.GroupName = Bilingual.Show(group.Name, group.NameEn);
+        vm.SubjectName = Bilingual.Show(group.Subject?.Name, group.Subject?.NameEn);
+        vm.TeacherName = Bilingual.Show(group.Teacher?.Name, group.Teacher?.NameEn);
 
         var enrollments = await _u.GroupEnrollment
             .GetAll(e => e.GroupId == groupId
@@ -79,7 +83,7 @@ public class ReportService : IReportService
         vm.Students = students.Select(s => new ReportStudentOption
         {
             Id = s.Student.Id,
-            Name = s.Student.Name,
+            Name = Bilingual.Show(s.Student.Name, s.Student.NameEn),
             Code = s.Student.Code ?? ""
         }).ToList();
 
@@ -164,16 +168,16 @@ public class ReportService : IReportService
                     End = ses.EndTime,
                     Status = row?.Status,
                     Recorded = row != null,
-                    Note = row?.Note
+                    Note = Bilingual.Show(row?.Note, row?.NoteEn)
                 };
             }).ToList();
 
             var report = new StudentReportVm
             {
                 StudentId = st.Id,
-                StudentName = st.Name,
+                StudentName = Bilingual.Show(st.Name, st.NameEn),
                 StudentCode = string.IsNullOrWhiteSpace(st.Code) ? st.Id.ToString() : st.Code,
-                ParentName = st.ParentName,
+                ParentName = Bilingual.Show(st.ParentName, st.ParentNameEn),
                 GroupName = vm.GroupName,
                 SubjectName = vm.SubjectName,
                 TeacherName = vm.TeacherName,
@@ -190,7 +194,7 @@ public class ReportService : IReportService
                     var grade = offlineGrades.FirstOrDefault(g => g.OfflineExamId == exam.Id && g.StudentId == st.Id);
                     return new GradeReportRow
                     {
-                        Title = exam.Title,
+                        Title = Bilingual.Show(exam.Title, exam.TitleEn),
                         Date = exam.ExamDate,
                         Score = grade?.Score,
                         MaxScore = exam.MaxScore,
@@ -206,7 +210,7 @@ public class ReportService : IReportService
                         && attempt.Score != null;
                     return new GradeReportRow
                     {
-                        Title = exam.Title,
+                        Title = Bilingual.Show(exam.Title, exam.TitleEn),
                         Date = attempt?.SubmittedAt ?? exam.OpensAt,
                         Score = submitted ? attempt!.Score : null,
                         MaxScore = maxByExam.GetValueOrDefault(exam.Id),

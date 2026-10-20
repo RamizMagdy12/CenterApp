@@ -11,7 +11,7 @@ namespace CenterApp.Application.Abstractions
     {
         Task<List<GraceRow>> ListAsync();
         Task<GraceFormVm> FormAsync(long? studentId, long? groupId);
-        Task<OpResult> GrantAsync(long studentId, long? groupId, int days, string? reason);
+        Task<OpResult> GrantAsync(long studentId, long? groupId, int days, string? reason, string? reasonEn = null);
         Task<OpResult> RevokeAsync(long id);
     }
 }

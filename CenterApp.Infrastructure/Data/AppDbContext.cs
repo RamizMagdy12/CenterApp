@@ -80,10 +80,12 @@ public class AppDbContext : IdentityDbContext<AppUser>
         mb.Entity<Student>().HasIndex(x => x.UserId);
         mb.Entity<Teacher>().HasIndex(x => x.UserId);
         mb.Entity<Material>().Property(x => x.Description).HasMaxLength(2000);
+        mb.Entity<Material>().Property(x => x.DescriptionEn).HasMaxLength(2000);
         mb.Entity<Material>().HasIndex(x => new { x.Status, x.PublishedAt });
         mb.Entity<MaterialGroup>().HasIndex(x => new { x.MaterialId, x.GroupId });
         mb.Entity<MaterialFile>().Property(x => x.StoredName).HasMaxLength(100);
         mb.Entity<Homework>().Property(x => x.Description).HasMaxLength(2000);
+        mb.Entity<Homework>().Property(x => x.DescriptionEn).HasMaxLength(2000);
         mb.Entity<Homework>().HasIndex(x => new { x.Status, x.PublishedAt });
         mb.Entity<HomeworkGroup>().HasIndex(x => new { x.HomeworkId, x.GroupId });
         mb.Entity<HomeworkFile>().Property(x => x.StoredName).HasMaxLength(100);
@@ -95,12 +97,15 @@ public class AppDbContext : IdentityDbContext<AppUser>
         mb.Entity<StudentTransfer>().HasIndex(x => x.StudentId);
 
         mb.Entity<OnlineExam>().Property(x => x.Description).HasMaxLength(2000);
+        mb.Entity<OnlineExam>().Property(x => x.DescriptionEn).HasMaxLength(2000);
         mb.Entity<OnlineExam>().HasIndex(x => new { x.Status, x.OpensAt });
         mb.Entity<OnlineExamGroup>().HasIndex(x => new { x.ExamId, x.GroupId });
         mb.Entity<OnlineExamQuestion>().Property(x => x.Text).HasMaxLength(2000);
+        mb.Entity<OnlineExamQuestion>().Property(x => x.TextEn).HasMaxLength(2000);
         mb.Entity<OnlineExamQuestion>().Property(x => x.ImageStoredName).HasMaxLength(40);
         mb.Entity<OnlineExamQuestion>().HasIndex(x => new { x.ExamId, x.SortOrder });
         mb.Entity<OnlineExamChoice>().Property(x => x.Text).HasMaxLength(1000);
+        mb.Entity<OnlineExamChoice>().Property(x => x.TextEn).HasMaxLength(1000);
         mb.Entity<OnlineExamAttempt>().Property(x => x.EndReason).HasMaxLength(250);
         mb.Entity<OnlineExamAttempt>().HasIndex(x => new { x.ExamId, x.StudentId }).IsUnique();
         mb.Entity<OnlineExamAnswer>().HasIndex(x => new { x.AttemptId, x.QuestionId }).IsUnique();

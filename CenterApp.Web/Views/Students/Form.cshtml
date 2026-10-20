@@ -19,8 +19,12 @@
     <input type="hidden" asp-for="Id" />
     <div class="row g-3">
         <div class="col-md-6">
-            <label class="form-label">@L.Get("Common.Name")</label>
+            <label class="form-label">@L.Get("Common.Name") (@L.Get("Common.InArabic"))</label>
             <input asp-for="Name" class="form-control" />
+        </div>
+        <div class="col-md-6">
+            <label class="form-label">@L.Get("Common.Name") (@L.Get("Common.InEnglish"))</label>
+            <input asp-for="NameEn" class="form-control" dir="ltr" />
         </div>
         <div class="col-md-3">
             <label class="form-label">@L.Get("Students.StudentCode")</label>
@@ -71,10 +75,12 @@
         }
 
         <div class="col-md-4"><label class="form-label">@L.Get("Students.StudentPhone")</label><input asp-for="Phone" class="form-control" /></div>
-        <div class="col-md-4"><label class="form-label">@L.Get("Students.ParentName")</label><input asp-for="ParentName" class="form-control" /></div>
+        <div class="col-md-4"><label class="form-label">@L.Get("Students.ParentName") (@L.Get("Common.InArabic"))</label><input asp-for="ParentName" class="form-control" /></div>
+        <div class="col-md-4"><label class="form-label">@L.Get("Students.ParentName") (@L.Get("Common.InEnglish"))</label><input asp-for="ParentNameEn" class="form-control" dir="ltr" /></div>
         <div class="col-md-4"><label class="form-label">@L.Get("Students.ParentPhone")</label><input asp-for="ParentPhone" class="form-control" /></div>
         <div class="col-md-4"><label class="form-label">@L.Get("Students.BirthDate")</label><input asp-for="BirthDate" type="date" class="form-control" /></div>
-        <div class="col-md-8"><label class="form-label">@L.Get("Common.Notes")</label><input asp-for="Notes" class="form-control" /></div>
+        <div class="col-md-6"><label class="form-label">@L.Get("Common.Notes") (@L.Get("Common.InArabic"))</label><input asp-for="Notes" class="form-control" /></div>
+        <div class="col-md-6"><label class="form-label">@L.Get("Common.Notes") (@L.Get("Common.InEnglish"))</label><input asp-for="NotesEn" class="form-control" dir="ltr" /></div>
 
         <div class="col-12 form-check ms-3">
             <input asp-for="IsActive" class="form-check-input" /><label class="form-check-label">@L.Get("Common.Active")</label>

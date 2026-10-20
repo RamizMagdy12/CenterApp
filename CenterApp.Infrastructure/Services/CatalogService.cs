@@ -14,13 +14,13 @@ public class CatalogService : ICatalogService
     public async Task<List<LookupVm>> ListAsync(string type) => type switch
     {
         "teachers" => await _u.Teacher.GetAll().OrderBy(x => x.Name)
-            .Select(x => new LookupVm { Type = "teachers", Id = x.Id, Name = x.Name, Phone = x.Phone, IsActive = x.IsActive })
+            .Select(x => new LookupVm { Type = "teachers", Id = x.Id, Name = x.Name, NameEn = x.NameEn, Phone = x.Phone, IsActive = x.IsActive })
             .ToListAsync(),
         "gradelevels" => await _u.GradeLevel.GetAll().OrderBy(x => x.SortOrder).ThenBy(x => x.Name)
-            .Select(x => new LookupVm { Type = "gradelevels", Id = x.Id, Name = x.Name, SortOrder = x.SortOrder })
+            .Select(x => new LookupVm { Type = "gradelevels", Id = x.Id, Name = x.Name, NameEn = x.NameEn, SortOrder = x.SortOrder })
             .ToListAsync(),
         _ => await _u.Subject.GetAll().OrderBy(x => x.Name)
-            .Select(x => new LookupVm { Type = "subjects", Id = x.Id, Name = x.Name })
+            .Select(x => new LookupVm { Type = "subjects", Id = x.Id, Name = x.Name, NameEn = x.NameEn })
             .ToListAsync()
     };
 
@@ -41,7 +41,7 @@ public class CatalogService : ICatalogService
                 {
                     var t = vm.Id == 0 ? new Teacher() : _u.Teacher.GetFirstOrDefault(x => x.Id == vm.Id);
                     if (t == null) return OpResult.Fail("غير موجود");
-                    t.Name = name; t.Phone = vm.Phone; t.IsActive = vm.IsActive;
+                    t.Name = name; t.NameEn = Bilingual.Clean(vm.NameEn); t.Phone = vm.Phone; t.IsActive = vm.IsActive;
                     if (vm.Id == 0) _u.Teacher.Add(t);
                     break;
                 }
@@ -49,7 +49,7 @@ public class CatalogService : ICatalogService
                 {
                     var g = vm.Id == 0 ? new GradeLevel() : _u.GradeLevel.GetFirstOrDefault(x => x.Id == vm.Id);
                     if (g == null) return OpResult.Fail("غير موجود");
-                    g.Name = name; g.SortOrder = vm.SortOrder;
+                    g.Name = name; g.NameEn = Bilingual.Clean(vm.NameEn); g.SortOrder = vm.SortOrder;
                     if (vm.Id == 0) _u.GradeLevel.Add(g);
                     break;
                 }
@@ -57,7 +57,7 @@ public class CatalogService : ICatalogService
                 {
                     var s = vm.Id == 0 ? new Subject() : _u.Subject.GetFirstOrDefault(x => x.Id == vm.Id);
                     if (s == null) return OpResult.Fail("غير موجود");
-                    s.Name = name;
+                    s.Name = name; s.NameEn = Bilingual.Clean(vm.NameEn);
                     if (vm.Id == 0) _u.Subject.Add(s);
                     break;
                 }
@@ -98,13 +98,17 @@ public class CatalogService : ICatalogService
         return OpResult.Success("تم الحذف");
     }
 
-    public async Task<List<LookupItem>> SelectAsync(string type) => type switch
+    public async Task<List<LookupItem>> SelectAsync(string type)
     {
-        "teachers" => await _u.Teacher.GetAll(t => t.IsActive).OrderBy(t => t.Name)
-            .Select(t => new LookupItem(t.Name, t.Id.ToString())).ToListAsync(),
-        "gradelevels" => await _u.GradeLevel.GetAll().OrderBy(t => t.SortOrder)
-            .Select(t => new LookupItem(t.Name, t.Id.ToString())).ToListAsync(),
-        _ => await _u.Subject.GetAll().OrderBy(t => t.Name)
-            .Select(t => new LookupItem(t.Name, t.Id.ToString())).ToListAsync()
-    };
+        var rows = type switch
+        {
+            "teachers" => await _u.Teacher.GetAll(t => t.IsActive).OrderBy(t => t.Name)
+                .Select(t => new { t.Name, t.NameEn, t.Id }).ToListAsync(),
+            "gradelevels" => await _u.GradeLevel.GetAll().OrderBy(t => t.SortOrder)
+                .Select(t => new { t.Name, t.NameEn, t.Id }).ToListAsync(),
+            _ => await _u.Subject.GetAll().OrderBy(t => t.Name)
+                .Select(t => new { t.Name, t.NameEn, t.Id }).ToListAsync()
+        };
+        return rows.Select(t => new LookupItem(Bilingual.Show(t.Name, t.NameEn), t.Id.ToString())).ToList();
+    }
 }

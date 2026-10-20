@@ -1,3 +1,4 @@
+using CenterApp.Domain.Center;
 using CenterApp.Application.Abstractions;
 using CenterApp.Domain.Identity;
 using CenterApp.Domain.Security;
@@ -39,6 +40,7 @@ public class UserAdminService : IUserAdminService
         {
             q = q.Trim();
             users = users.Where(u => u.UserName!.Contains(q) || u.FullName.Contains(q)
+                || (u.FullNameEn != null && u.FullNameEn.Contains(q))
                 || (u.Email != null && u.Email.Contains(q)) || (u.PhoneNumber != null && u.PhoneNumber.Contains(q)));
         }
 
@@ -54,7 +56,7 @@ public class UserAdminService : IUserAdminService
             {
                 Id = u.Id,
                 UserName = u.UserName ?? "",
-                FullName = u.FullName,
+                FullName = Bilingual.Show(u.FullName, u.FullNameEn),
                 Email = u.Email,
                 Phone = u.PhoneNumber,
                 Role = role,
@@ -64,7 +66,10 @@ public class UserAdminService : IUserAdminService
         }).ToList();
     }
     public async Task<List<SimpleItem>> TeacherOptionsAsync()
-    => await _db.Teachers.OrderBy(t => t.Name).Select(t => new SimpleItem(t.Id, t.Name)).ToListAsync();
+    {
+        var rows = await _db.Teachers.OrderBy(t => t.Name).Select(t => new { t.Id, t.Name, t.NameEn }).ToListAsync();
+        return rows.Select(t => new SimpleItem(t.Id, Bilingual.Show(t.Name, t.NameEn))).ToList();
+    }
 
     private async Task LinkTeacherAsync(string userId, long? teacherId)
     {
@@ -92,6 +97,7 @@ public class UserAdminService : IUserAdminService
              .FirstOrDefaultAsync() ?? 0,
             UserName = u.UserName ?? "",
             FullName = u.FullName,
+            FullNameEn = u.FullNameEn,
             Email = u.Email,
             PhoneNumber = u.PhoneNumber,
             RoleName = role,
@@ -135,6 +141,7 @@ public class UserAdminService : IUserAdminService
             {
                 UserName = userName,
                 FullName = vm.FullName?.Trim() ?? "",
+                FullNameEn = Bilingual.Clean(vm.FullNameEn),
                 Email = email,
                 PhoneNumber = vm.PhoneNumber,
                 IsActive = vm.IsActive,
@@ -168,6 +175,7 @@ public class UserAdminService : IUserAdminService
 
         user.UserName = userName;
         user.FullName = vm.FullName?.Trim() ?? "";
+        user.FullNameEn = Bilingual.Clean(vm.FullNameEn);
         user.Email = email;
         user.PhoneNumber = vm.PhoneNumber;
         user.IsActive = vm.IsActive;

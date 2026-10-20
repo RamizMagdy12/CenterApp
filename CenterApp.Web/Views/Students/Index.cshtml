@@ -32,10 +32,10 @@
         {
             <tr>
                 <td>@s.Code</td>
-                <td>@s.Name</td>
+                <td>@s.LocalName</td>
                 <td>@s.Phone</td>
-                <td>@s.ParentName <small class="text-muted">@s.ParentPhone</small></td>
-                <td>@s.GradeLevel?.Name</td>
+                <td>@s.LocalParentName <small class="text-muted">@s.ParentPhone</small></td>
+                <td>@s.GradeLevel?.LocalName</td>
                 <td>@if (s.IsActive) {
                     <span class="badge bg-success">@L.Get("Common.Active")</span>
                 } else

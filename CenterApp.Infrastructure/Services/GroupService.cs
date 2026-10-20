@@ -16,17 +16,17 @@ public class GroupService : IGroupService
     public async Task<List<GroupRow>> ListAsync(string? q)
     {
         var groups = await _u.Group
-            .GetAll(g => string.IsNullOrEmpty(q) || g.Name.Contains(q!), "Teacher,Subject,GradeLevel,Schedules,Enrollments")
+            .GetAll(g => string.IsNullOrEmpty(q) || g.Name.Contains(q!) || (g.NameEn != null && g.NameEn.Contains(q!)), "Teacher,Subject,GradeLevel,Schedules,Enrollments")
             .OrderBy(g => g.Name).ToListAsync();
 
         return groups.Select(g => new GroupRow
         {
             Id = g.Id,
             Code = g.Code ?? "",
-            Name = g.Name,
-            Teacher = g.Teacher?.Name ?? "",
-            Subject = g.Subject?.Name ?? "",
-            Grade = g.GradeLevel?.Name ?? "",
+            Name = Bilingual.Show(g.Name, g.NameEn),
+            Teacher = Bilingual.Show(g.Teacher?.Name, g.Teacher?.NameEn),
+            Subject = Bilingual.Show(g.Subject?.Name, g.Subject?.NameEn),
+            Grade = Bilingual.Show(g.GradeLevel?.Name, g.GradeLevel?.NameEn),
             Fee = g.MonthlyFee,
             Capacity = g.Capacity,
             IsActive = g.IsActive,
@@ -47,6 +47,7 @@ public class GroupService : IGroupService
             Code = g.Code ?? "",
             CodeLocked = g.LastStudentNumber > 0,
             Name = g.Name,
+            NameEn = g.NameEn,
             TeacherId = g.TeacherId,
             SubjectId = g.SubjectId,
             GradeLevelId = g.GradeLevelId,
@@ -58,7 +59,8 @@ public class GroupService : IGroupService
                 DayOfWeek = s.DayOfWeek,
                 StartTime = s.StartTime.ToString(@"hh\:mm"),
                 EndTime = s.EndTime.ToString(@"hh\:mm"),
-                Room = s.Room
+                Room = s.Room,
+                RoomEn = s.RoomEn
             }).ToList()
         };
     }
@@ -80,7 +82,7 @@ public class GroupService : IGroupService
         {
             if (!TimeSpan.TryParse(s.StartTime, out var st) || !TimeSpan.TryParse(s.EndTime, out var et) || et <= st)
                 return OpResult.Fail("ميعاد غير صحيح (وقت النهاية لازم يكون بعد البداية)");
-            schedules.Add(new GroupSchedule { DayOfWeek = s.DayOfWeek, StartTime = st, EndTime = et, Room = s.Room });
+            schedules.Add(new GroupSchedule { DayOfWeek = s.DayOfWeek, StartTime = st, EndTime = et, Room = s.Room, RoomEn = Bilingual.Clean(s.RoomEn) });
         }
 
         Group? g;
@@ -100,6 +102,7 @@ public class GroupService : IGroupService
 
         g.Code = code;
         g.Name = dto.Name.Trim();
+        g.NameEn = Bilingual.Clean(dto.NameEn);
         g.TeacherId = dto.TeacherId;
         g.SubjectId = dto.SubjectId;
         g.GradeLevelId = dto.GradeLevelId;
@@ -123,6 +126,9 @@ public class GroupService : IGroupService
     }
 
     public async Task<List<LookupItem>> SelectAsync()
-        => await _u.Group.GetAll(g => g.IsActive).OrderBy(g => g.Name)
-            .Select(g => new LookupItem(g.Name, g.Id.ToString())).ToListAsync();
+    {
+        var rows = await _u.Group.GetAll(g => g.IsActive).OrderBy(g => g.Name)
+            .Select(g => new { g.Name, g.NameEn, g.Id }).ToListAsync();
+        return rows.Select(g => new LookupItem(Bilingual.Show(g.Name, g.NameEn), g.Id.ToString())).ToList();
+    }
 }

@@ -32,7 +32,7 @@ public class InvoicesController : AppController
         ViewBag.Status = status;
         ViewBag.Search = q ?? "";
         ViewBag.Sort = sort ?? "";
-        ViewBag.Groups = new SelectList(await _g.SelectAsync(), "Value", "Text");
+        ViewBag.Groups = SelectItems.From(await _g.SelectAsync());
         return View(await _s.ListAsync(y, m, groupId, status, q, sort));
     }
 
@@ -52,8 +52,8 @@ public class InvoicesController : AppController
     }
 
     [HttpPost, RequirePermission(Screens.Invoices, PermissionAction.Edit)]
-    public async Task<IActionResult> Pay(long invoiceId, decimal amount, PaymentMethod method, string? note)
-        => Json(await _s.PayAsync(invoiceId, amount, method, note));
+    public async Task<IActionResult> Pay(long invoiceId, decimal amount, PaymentMethod method, string? note, string? noteEn)
+        => Json(await _s.PayAsync(invoiceId, amount, method, note, noteEn));
 
     [RequirePermission(Screens.Invoices, PermissionAction.Edit)]
     public async Task<IActionResult> Discount(long studentId)
@@ -74,8 +74,8 @@ public class InvoicesController : AppController
         var (y, m) = ParseMonth(month);
         return Json(await _s.RecalculateDiscountsAsync(y, m, groupId));
     }
-    public async Task<IActionResult> UpdatePayment(long id, decimal amount, DateTime? paidAt, PaymentMethod method, string? note)
-    => Json(await _s.UpdatePaymentAsync(id, amount, paidAt, method, note));
+    public async Task<IActionResult> UpdatePayment(long id, decimal amount, DateTime? paidAt, PaymentMethod method, string? note, string? noteEn)
+    => Json(await _s.UpdatePaymentAsync(id, amount, paidAt, method, note, noteEn));
 
     [HttpPost, RequirePermission(Screens.Invoices, PermissionAction.Delete)]
     public async Task<IActionResult> DeletePayment(long id)

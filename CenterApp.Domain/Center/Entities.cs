@@ -6,38 +6,50 @@ namespace CenterApp.Domain.Center;
 public class GradeLevel : BaseEntity
 {
     public string Name { get; set; } = null!;
+    public string? NameEn { get; set; }
     public int SortOrder { get; set; }
+    public string LocalName => Bilingual.Show(Name, NameEn);
 }
 
 public class Subject : BaseEntity
 {
     public string Name { get; set; } = null!;
+    public string? NameEn { get; set; }
+    public string LocalName => Bilingual.Show(Name, NameEn);
 }
 
 public class Teacher : BaseEntity
 {
     public string Name { get; set; } = null!;
+    public string? NameEn { get; set; }
     public string? Phone { get; set; }
     public bool IsActive { get; set; } = true;
     public string? UserId { get; set; }
+    public string LocalName => Bilingual.Show(Name, NameEn);
 }
 
 public class Student : BaseEntity
 {
     public string? Code { get; set; }
     public string Name { get; set; } = null!;
+    public string? NameEn { get; set; }
     public string? Phone { get; set; }
     public string? ParentName { get; set; }
+    public string? ParentNameEn { get; set; }
     public string? ParentPhone { get; set; }
     public long? GradeLevelId { get; set; }
     public DateTime? BirthDate { get; set; }
     public string? Notes { get; set; }
+    public string? NotesEn { get; set; }
     public bool IsActive { get; set; } = true;
     public string? QrToken { get; set; }           // ثابت مدى الحياة، ده اللي جوه الـ QR
     public long? CodeGroupId { get; set; }         // المجموعة اللي كود الطالب مبني عليها
     public DiscountKind DiscountKind { get; set; }
     public decimal DiscountValue { get; set; }
     public string? UserId { get; set; }
+    public string LocalName => Bilingual.Show(Name, NameEn);
+    public string LocalParentName => Bilingual.Show(ParentName, ParentNameEn);
+    public string LocalNotes => Bilingual.Show(Notes, NotesEn);
 
     public virtual GradeLevel? GradeLevel { get; set; }
     public virtual ICollection<GroupEnrollment> Enrollments { get; set; } = new List<GroupEnrollment>();
@@ -49,12 +61,15 @@ public class Group : BaseEntity
     public int LastStudentNumber { get; set; } 
     // عدّاد أرقام الطلاب (مبيرجعش للخلف)
     public string Name { get; set; } = null!;
+    public string? NameEn { get; set; }
     public long TeacherId { get; set; }
     public long SubjectId { get; set; }
     public long? GradeLevelId { get; set; }
     public decimal MonthlyFee { get; set; }
     public int Capacity { get; set; }
     public bool IsActive { get; set; } = true;
+
+    public string LocalName => Bilingual.Show(Name, NameEn);
 
     public virtual Teacher Teacher { get; set; } = null!;
     public virtual Subject Subject { get; set; } = null!;
@@ -71,6 +86,8 @@ public class GroupSchedule : BaseEntity
     public TimeSpan StartTime { get; set; }
     public TimeSpan EndTime { get; set; }
     public string? Room { get; set; }
+    public string? RoomEn { get; set; }
+    public string LocalRoom => Bilingual.Show(Room, RoomEn);
 
     public virtual Group Group { get; set; } = null!;
 }
@@ -97,6 +114,8 @@ public class Session : BaseEntity
     public TimeSpan EndTime { get; set; }
     public SessionStatus Status { get; set; }
     public string? Notes { get; set; }
+    public string? NotesEn { get; set; }
+    public string LocalNotes => Bilingual.Show(Notes, NotesEn);
 
     public virtual Group Group { get; set; } = null!;
     public virtual ICollection<SessionAttendance> Attendances { get; set; } = new List<SessionAttendance>();
@@ -108,6 +127,8 @@ public class SessionAttendance : BaseEntity
     public long StudentId { get; set; }
     public AttendanceStatus Status { get; set; }
     public string? Note { get; set; }
+    public string? NoteEn { get; set; }
+    public string LocalNote => Bilingual.Show(Note, NoteEn);
 
     public virtual Session Session { get; set; } = null!;
     public virtual Student Student { get; set; } = null!;
@@ -134,6 +155,8 @@ public class Payment : BaseEntity
     public DateTime PaidAt { get; set; }
     public PaymentMethod Method { get; set; }
     public string? Note { get; set; }
+    public string? NoteEn { get; set; }
+    public string LocalNote => Bilingual.Show(Note, NoteEn);
 
     public virtual MonthlyInvoice Invoice { get; set; } = null!;
 }

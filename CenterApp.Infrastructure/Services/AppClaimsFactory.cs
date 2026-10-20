@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using CenterApp.Domain.Center;
 using CenterApp.Domain.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
@@ -13,7 +14,8 @@ public class AppClaimsFactory : UserClaimsPrincipalFactory<AppUser, IdentityRole
     protected override async Task<ClaimsIdentity> GenerateClaimsAsync(AppUser user)
     {
         var id = await base.GenerateClaimsAsync(user);
-        id.AddClaim(new Claim("FullName", string.IsNullOrWhiteSpace(user.FullName) ? user.UserName ?? "" : user.FullName));
+        var name = Bilingual.Show(user.FullName, user.FullNameEn);
+        id.AddClaim(new Claim("FullName", string.IsNullOrWhiteSpace(name) ? user.UserName ?? "" : name));
         return id;
     }
 }

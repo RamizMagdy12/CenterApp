@@ -27,24 +27,24 @@ public class EnrollmentService : IEnrollmentService
         var busy = _u.GroupEnrollment.GetAll(e => e.IsActive).Select(e => e.StudentId);
         var free = await _u.Student.GetAll(s => s.IsActive && !busy.Contains(s.Id))
             .OrderBy(s => s.Name)
-            .Select(s => new { s.Id, s.Name, s.Code }).ToListAsync();
+            .Select(s => new { s.Id, s.Name, s.NameEn, s.Code }).ToListAsync();
 
         return new ManageEnrollmentsVm
         {
             GroupId = g.Id,
-            GroupName = g.Name,
+            GroupName = Bilingual.Show(g.Name, g.NameEn),
             Capacity = g.Capacity,
             MonthlyFee = g.MonthlyFee,
             Enrolled = enrolled.Select(e => new EnrolledRow
             {
                 EnrollmentId = e.Id,
                 StudentId = e.StudentId,
-                StudentName = e.Student.Name,
+                StudentName = Bilingual.Show(e.Student.Name, e.Student.NameEn),
                 Phone = e.Student.Phone,
                 JoinedAt = e.JoinedAt,
                 CustomFee = e.CustomMonthlyFee
             }).ToList(),
-            Available = free.Select(s => new SimpleItem(s.Id, $"{s.Name} [{s.Code ?? s.Id.ToString()}]")).ToList()
+            Available = free.Select(s => new SimpleItem(s.Id, $"{Bilingual.Show(s.Name, s.NameEn)} [{s.Code ?? s.Id.ToString()}]")).ToList()
         };
     }
 
@@ -55,11 +55,11 @@ public class EnrollmentService : IEnrollmentService
 
         var current = await _u.GroupEnrollment
             .GetAll(e => e.StudentId == studentId && e.IsActive, "Group")
-            .Select(e => new { e.GroupId, e.Group.Name }).FirstOrDefaultAsync();
+            .Select(e => new { e.GroupId, e.Group.Name, e.Group.NameEn }).FirstOrDefaultAsync();
         if (current != null)
             return current.GroupId == groupId
                 ? OpResult.Fail("الطالب مسجل بالفعل")
-                : OpResult.Fail($"الطالب مسجل في مجموعة {current.Name}، ومينفعش يكون في أكتر من مجموعة. انقله منها.");
+                : OpResult.Fail($"الطالب مسجل في مجموعة {Bilingual.Show(current.Name, current.NameEn)}، ومينفعش يكون في أكتر من مجموعة. انقله منها.");
 
         var count = await _u.GroupEnrollment.GetAll(e => e.GroupId == groupId && e.IsActive).CountAsync();
         if (g.Capacity > 0 && count >= g.Capacity) return OpResult.Fail("المجموعة مكتملة العدد");

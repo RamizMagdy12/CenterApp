@@ -38,7 +38,7 @@ public class SessionService : ISessionService
         return list.Select(s => new SessionRow
         {
             Id = s.Id,
-            GroupName = s.Group.Name,
+            GroupName = Bilingual.Show(s.Group.Name, s.Group.NameEn),
             Date = s.Date,
             Start = s.StartTime,
             End = s.EndTime,
@@ -109,13 +109,13 @@ public class SessionService : ISessionService
         return new AttendanceVm
         {
             SessionId = s.Id,
-            GroupName = s.Group.Name,
+            GroupName = Bilingual.Show(s.Group.Name, s.Group.NameEn),
             Date = s.Date,
             Rows = enrollments.Select(e => new AttendanceRowVm
             {
                 StudentId = e.StudentId,
                 StudentCode = e.Student.Code ?? "",
-                StudentName = e.Student.Name,
+                StudentName = Bilingual.Show(e.Student.Name, e.Student.NameEn),
                 IsRecorded = recorded.ContainsKey(e.StudentId),
                 QrToken = e.Student.QrToken ?? e.Student.Code ?? "",
                 Status = recorded.TryGetValue(e.StudentId, out var st) ? st : AttendanceStatus.Present
@@ -160,7 +160,7 @@ public class SessionService : ISessionService
     public async Task<StudentAttendanceVm?> StudentHistoryAsync(long studentId)
     {
         var st = await _u.Student.GetAll(s => s.Id == studentId)
-            .Select(s => new { s.Id, s.Name, s.Code }).FirstOrDefaultAsync();
+            .Select(s => new { s.Id, s.Name, s.NameEn, s.Code }).FirstOrDefaultAsync();
         if (st == null) return null;
 
         var rows = await _u.SessionAttendance
@@ -171,7 +171,7 @@ public class SessionService : ISessionService
         return new StudentAttendanceVm
         {
             StudentId = st.Id,
-            StudentName = st.Name,
+            StudentName = Bilingual.Show(st.Name, st.NameEn),
             StudentCode = st.Code ?? st.Id.ToString(),
             Present = rows.Count(a => a.Status == AttendanceStatus.Present),
             Absent = rows.Count(a => a.Status == AttendanceStatus.Absent),
@@ -183,9 +183,9 @@ public class SessionService : ISessionService
                 Date = a.Session.Date,
                 Start = a.Session.StartTime,
                 End = a.Session.EndTime,
-                GroupName = a.Session.Group?.Name ?? "",
+                GroupName = Bilingual.Show(a.Session.Group?.Name, a.Session.Group?.NameEn),
                 Status = a.Status,
-                Note = a.Note
+                Note = Bilingual.Show(a.Note, a.NoteEn)
             }).ToList()
         };
     }

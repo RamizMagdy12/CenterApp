@@ -34,7 +34,7 @@ public class DashboardService : IDashboardService
         vm.TodaySessionsCount = sessions.Count;
         vm.TodaySessions = sessions.Select(s => new TodaySessionRow
         {
-            GroupName = s.Group.Name,
+            GroupName = Bilingual.Show(s.Group.Name, s.Group.NameEn),
             Start = s.StartTime,
             End = s.EndTime,
             Status = s.Status,
@@ -62,7 +62,8 @@ public class DashboardService : IDashboardService
         // ── الطلاب حسب المرحلة
         var byGrade = await _u.Student.GetAll(s => s.IsActive)
             .GroupBy(s => s.GradeLevelId).Select(g => new { Id = g.Key, C = g.Count() }).ToListAsync();
-        var names = await _u.GradeLevel.GetAll().ToDictionaryAsync(g => g.Id, g => g.Name);
+        var gradeRows = await _u.GradeLevel.GetAll().Select(g => new { g.Id, g.Name, g.NameEn }).ToListAsync();
+        var names = gradeRows.ToDictionary(g => g.Id, g => Bilingual.Show(g.Name, g.NameEn));
 
         vm.Grades = byGrade.OrderByDescending(x => x.C)
             .Select(x => new GradeSlice(x.Id.HasValue && names.TryGetValue(x.Id.Value, out var n) ? n : _loc.Get("Dash.NoGrade"), x.C))
@@ -80,7 +81,7 @@ public class DashboardService : IDashboardService
             .OrderByDescending(p => p.PaidAt).Take(6).ToListAsync();
         vm.RecentPayments = pays.Select(p => new RecentPaymentRow
         {
-            StudentName = p.Invoice.Enrollment.Student.Name,
+            StudentName = Bilingual.Show(p.Invoice.Enrollment.Student.Name, p.Invoice.Enrollment.Student.NameEn),
             Amount = p.Amount,
             PaidAt = p.PaidAt
         }).ToList();

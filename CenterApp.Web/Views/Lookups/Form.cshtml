@@ -3,8 +3,12 @@
     <input type="hidden" asp-for="Id" />
     <input type="hidden" asp-for="Type" />
     <div class="mb-3">
-        <label class="form-label">@L.Get("Common.Name")</label>
+        <label class="form-label">@L.Get("Common.Name") (@L.Get("Common.InArabic"))</label>
         <input asp-for="Name" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">@L.Get("Common.Name") (@L.Get("Common.InEnglish"))</label>
+        <input asp-for="NameEn" class="form-control" dir="ltr" />
     </div>
     @if (Model.Type == "teachers")
     {

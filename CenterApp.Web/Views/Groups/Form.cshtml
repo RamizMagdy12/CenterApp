@@ -8,7 +8,8 @@
 <form id="groupForm" onsubmit="return false;">
     <input type="hidden" id="gId" value="@Model.Id" />
     <div class="row g-3">
-        <div class="col-md-4"><label class="form-label">@L.Get("Groups.GroupName")</label><input id="gName" class="form-control" value="@Model.Name" /></div>
+        <div class="col-md-4"><label class="form-label">@L.Get("Groups.GroupName") (@L.Get("Common.InArabic"))</label><input id="gName" class="form-control" value="@Model.Name" /></div>
+        <div class="col-md-4"><label class="form-label">@L.Get("Groups.GroupName") (@L.Get("Common.InEnglish"))</label><input id="gNameEn" class="form-control" dir="ltr" value="@Model.NameEn" /></div>
         <div class="col-md-2">
             <label class="form-label">@L.Get("Common.Code") <span class="text-danger">*</span></label>
             <input id="gCode" class="form-control text-uppercase" dir="ltr" maxlength="3" value="@Model.Code" @(Model.CodeLocked ? "readonly" : "") placeholder="A" />
@@ -50,9 +51,10 @@
         { v: 4, t: @Json.Serialize(ArabicDays.Name(System.DayOfWeek.Thursday)) },
         { v: 5, t: @Json.Serialize(ArabicDays.Name(System.DayOfWeek.Friday)) }
     ];
-    var roomPh = @Json.Serialize(L.Get("Groups.Room").Value);
+    var roomPh = @Json.Serialize(L.Get("Groups.Room").Value + " (" + L.Get("Common.InArabic").Value + ")");
+    var roomEnPh = @Json.Serialize(L.Get("Groups.Room").Value + " (" + L.Get("Common.InEnglish").Value + ")");
 
-    function addScheduleRow(day, start, end, room) {
+    function addScheduleRow(day, start, end, room, roomEn) {
         var opts = DAYS.map(function (d) {
             return "<option value='" + d.v + "'" + (d.v === day ? " selected" : "") + ">" + d.t + "</option>";
         }).join('');
@@ -61,14 +63,15 @@
             "<div class='col-6 col-md-3'><select class='form-select sch-day'>" + opts + "</select></div>" +
             "<div class='col-6 col-md-3'><input type='time' class='form-control sch-start' value='" + (start || '16:00') + "'></div>" +
             "<div class='col-6 col-md-3'><input type='time' class='form-control sch-end' value='" + (end || '17:30') + "'></div>" +
-            "<div class='col-4 col-md-2'><input class='form-control sch-room' placeholder=" + JSON.stringify(roomPh) + " value='" + (room || '') + "'></div>" +
+            "<div class='col-6 col-md-2'><input class='form-control sch-room' placeholder=" + JSON.stringify(roomPh) + " value='" + (room || '') + "'></div>" +
+            "<div class='col-6 col-md-2'><input class='form-control sch-room-en' dir='ltr' placeholder=" + JSON.stringify(roomEnPh) + " value='" + (roomEn || '') + "'></div>" +
             "<div class='col-2 col-md-1'><button type='button' class='btn btn-outline-danger w-100' onclick=\"$(this).closest('.sch-row').remove()\">×</button></div>" +
             "</div>";
         $('#scheduleRows').append(html);
     }
 
     var existing = @Html.Raw(JsonSerializer.Serialize(Model.Schedules));
-    if (existing.length) existing.forEach(function (s) { addScheduleRow(s.DayOfWeek, s.StartTime, s.EndTime, s.Room); });
+    if (existing.length) existing.forEach(function (s) { addScheduleRow(s.DayOfWeek, s.StartTime, s.EndTime, s.Room, s.RoomEn); });
     else { addScheduleRow(6); addScheduleRow(2); }
 
     function saveGroup() {
@@ -77,7 +80,8 @@
                 DayOfWeek: parseInt($(this).find('.sch-day').val()),
                 StartTime: $(this).find('.sch-start').val(),
                 EndTime: $(this).find('.sch-end').val(),
-                Room: $(this).find('.sch-room').val()
+                Room: $(this).find('.sch-room').val(),
+                RoomEn: $(this).find('.sch-room-en').val()
             };
         }).get();
 
@@ -85,6 +89,7 @@
             Id: parseInt($('#gId').val()) || 0,
             Code: $('#gCode').val(),
             Name: $('#gName').val(),
+            NameEn: $('#gNameEn').val(),
             TeacherId: parseInt($('#gTeacher').val()) || 0,
             SubjectId: parseInt($('#gSubject').val()) || 0,
             GradeLevelId: parseInt($('#gGrade').val()) || null,

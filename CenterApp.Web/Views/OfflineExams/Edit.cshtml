@@ -5,8 +5,12 @@
 <div class="panel">
     <div class="row g-3">
         <div class="col-md-6">
-            <label class="form-label">@L.Get("Offline.ExamName")</label>
+            <label class="form-label">@L.Get("Offline.ExamName") (@L.Get("Common.InArabic"))</label>
             <input id="mTitle" class="form-control" value="@Model.Title" placeholder="@L.Get("Offline.NamePh")" />
+        </div>
+        <div class="col-md-6">
+            <label class="form-label">@L.Get("Offline.ExamName") (@L.Get("Common.InEnglish"))</label>
+            <input id="mTitleEn" class="form-control" dir="ltr" value="@Model.TitleEn" />
         </div>
         <div class="col-md-3">
             <label class="form-label">@L.Get("Offline.MaxScore")</label>
@@ -96,6 +100,7 @@
 
         function saveGrades() {
             var title = $.trim($('#mTitle').val());
+            var titleEn = $.trim($('#mTitleEn').val());
             var max = parseFloat($('#mMax').val());
             var groupId = parseInt($('#mGroup').val(), 10) || 0;
             if (!title) return notify('warning', nameRequired);
@@ -112,7 +117,7 @@
             $.ajax({
                 url: '@Url.Action("Save", "OfflineExams")', type: 'POST', contentType: 'application/json',
                 headers: { 'X-Requested-With': 'XMLHttpRequest' },
-                data: JSON.stringify({ Id: examId, Title: title, MaxScore: max, GroupId: groupId, ExamDate: $('#mDate').val(), Grades: grades })
+                data: JSON.stringify({ Id: examId, Title: title, TitleEn: titleEn, MaxScore: max, GroupId: groupId, ExamDate: $('#mDate').val(), Grades: grades })
             }).done(function (r) {
                 if (!r.ok) { $('#btnSave').prop('disabled', false); return notify('error', r.message); }
                 Swal.fire({ icon: 'success', title: gradesSaved, timer: 1200, showConfirmButton: false, heightAuto: false })

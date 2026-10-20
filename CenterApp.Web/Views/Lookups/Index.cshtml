@@ -30,7 +30,7 @@
         {
             <tr>
                 <td>@r.Id</td>
-                <td>@r.Name</td>
+                <td>@Bilingual.Show(r.Name, r.NameEn)</td>
                 @if (type == "teachers")
                 {
                     <td>@r.Phone</td>

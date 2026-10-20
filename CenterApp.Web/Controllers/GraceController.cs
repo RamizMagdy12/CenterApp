@@ -17,8 +17,8 @@ public class GraceController : AppController
     public async Task<IActionResult> Form(long? studentId, long? groupId) => PartialView(await _s.FormAsync(studentId, groupId));
 
     [HttpPost, RequirePermission(Screens.Grace, PermissionAction.Add)]
-    public async Task<IActionResult> Save(long studentId, long? groupId, int days, string? reason)
-        => Json(await _s.GrantAsync(studentId, groupId, days, reason));
+    public async Task<IActionResult> Save(long studentId, long? groupId, int days, string? reason, string? reasonEn)
+        => Json(await _s.GrantAsync(studentId, groupId, days, reason, reasonEn));
 
     [HttpPost, RequirePermission(Screens.Grace, PermissionAction.Edit)]
     public async Task<IActionResult> Revoke(long id) => Json(await _s.RevokeAsync(id));

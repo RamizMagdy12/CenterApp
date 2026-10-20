@@ -23,9 +23,9 @@ public class GroupsController : AppController
 
     public async Task<IActionResult> Form(long id = 0)
     {
-        ViewBag.Teachers = new SelectList(await _c.SelectAsync("teachers"), "Value", "Text");
-        ViewBag.Subjects = new SelectList(await _c.SelectAsync("subjects"), "Value", "Text");
-        ViewBag.Grades = new SelectList(await _c.SelectAsync("gradelevels"), "Value", "Text");
+        ViewBag.Teachers = SelectItems.From(await _c.SelectAsync("teachers"));
+        ViewBag.Subjects = SelectItems.From(await _c.SelectAsync("subjects"));
+        ViewBag.Grades = SelectItems.From(await _c.SelectAsync("gradelevels"));
         return PartialView(await _s.GetAsync(id));
     }
 

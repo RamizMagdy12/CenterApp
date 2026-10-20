@@ -1,4 +1,5 @@
 using System.Security.Cryptography;
+using CenterApp.Domain.Center;
 using CenterApp.Domain.Identity;
 using CenterApp.Domain.Security;
 using CenterApp.Application.Abstractions;
@@ -30,7 +31,7 @@ public class StudentAccountService : IStudentAccountService
         {
             if (!await _rm.RoleExistsAsync(RoleNames.Student)) await _rm.CreateAsync(new IdentityRole(RoleNames.Student));
 
-            user = new AppUser { UserName = s.Code, FullName = s.Name, PhoneNumber = s.Phone, IsActive = true, EmailConfirmed = true };
+            user = new AppUser { UserName = s.Code, FullName = s.Name, FullNameEn = s.NameEn, PhoneNumber = s.Phone, IsActive = true, EmailConfirmed = true };
             var cr = await _um.CreateAsync(user, pwd);
             if (!cr.Succeeded) return OpResult.Fail(string.Join("، ", cr.Errors.Select(e => e.Description)));
 
@@ -40,6 +41,9 @@ public class StudentAccountService : IStudentAccountService
         }
         else
         {
+            user.FullName = s.Name;
+            user.FullNameEn = s.NameEn;
+            await _um.UpdateAsync(user);
             var token = await _um.GeneratePasswordResetTokenAsync(user);
             var rr = await _um.ResetPasswordAsync(user, token, pwd);
             if (!rr.Succeeded) return OpResult.Fail(string.Join("، ", rr.Errors.Select(e => e.Description)));

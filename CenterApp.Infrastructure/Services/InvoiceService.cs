@@ -17,8 +17,8 @@ public class InvoiceService : IInvoiceService
         {
             Id = i.Id,
             StudentId = i.Enrollment.StudentId,
-            StudentName = i.Enrollment.Student.Name,
-            GroupName = i.Enrollment.Group.Name,
+            StudentName = Bilingual.Show(i.Enrollment.Student.Name, i.Enrollment.Student.NameEn),
+            GroupName = Bilingual.Show(i.Enrollment.Group.Name, i.Enrollment.Group.NameEn),
             Year = i.Year,
             Month = i.Month,
             Amount = i.Amount,
@@ -31,7 +31,7 @@ public class InvoiceService : IInvoiceService
             LastPaymentDate = payments.Count == 0 ? null : payments.Max(p => p.PaidAt),
             GroupId = i.Enrollment.GroupId,
             Payments = i.Payments.OrderBy(p => p.PaidAt)
-            .Select(p => new PaymentRow { Id = p.Id, PaidAt = p.PaidAt, Amount = p.Amount, Method = p.Method, Note = p.Note }).ToList()
+            .Select(p => new PaymentRow { Id = p.Id, PaidAt = p.PaidAt, Amount = p.Amount, Method = p.Method, Note = p.Note, NoteEn = p.NoteEn }).ToList()
         };
     }
 
@@ -46,7 +46,8 @@ public class InvoiceService : IInvoiceService
         if (!string.IsNullOrWhiteSpace(search))
         {
             var term = search.Trim().ToLower();
-            q = q.Where(i => i.Enrollment.Student.Name.ToLower().Contains(term));
+            q = q.Where(i => i.Enrollment.Student.Name.ToLower().Contains(term)
+                || (i.Enrollment.Student.NameEn != null && i.Enrollment.Student.NameEn.ToLower().Contains(term)));
         }
 
         var rows = (await q.ToListAsync()).Select(Map).ToList();
@@ -121,7 +122,7 @@ public class InvoiceService : IInvoiceService
         }
     }
 
-    public async Task<OpResult> PayAsync(long invoiceId, decimal amount, PaymentMethod method, string? note)
+    public async Task<OpResult> PayAsync(long invoiceId, decimal amount, PaymentMethod method, string? note, string? noteEn = null)
     {
         if (!Enum.IsDefined(method)) return OpResult.Fail("طريقة الدفع غير صحيحة");
 
@@ -144,7 +145,8 @@ public class InvoiceService : IInvoiceService
             Amount = money,
             PaidAt = now,
             Method = method,
-            Note = string.IsNullOrWhiteSpace(note) ? null : note.Trim()
+            Note = string.IsNullOrWhiteSpace(note) ? null : note.Trim(),
+            NoteEn = Bilingual.Clean(noteEn)
         });
         inv.Status = BillingMath.Status(BillingMath.NetDue(inv.Amount, inv.Discount), paid + money);
 
@@ -160,7 +162,7 @@ public class InvoiceService : IInvoiceService
         return new DiscountFormVm
         {
             StudentId = student.Id,
-            StudentName = student.Name,
+            StudentName = Bilingual.Show(student.Name, student.NameEn),
             Kind = student.DiscountKind,
             Value = student.DiscountValue,
             BasePrices = await ActiveBasePricesAsync(studentId)
@@ -269,7 +271,7 @@ public class InvoiceService : IInvoiceService
         inv.Status = paid >= due ? InvoiceStatus.Paid : paid > 0 ? InvoiceStatus.PartiallyPaid : InvoiceStatus.Unpaid;
     }
 
-    public async Task<OpResult> UpdatePaymentAsync(long paymentId, decimal amount, DateTime? paidAt, PaymentMethod method, string? note)
+    public async Task<OpResult> UpdatePaymentAsync(long paymentId, decimal amount, DateTime? paidAt, PaymentMethod method, string? note, string? noteEn = null)
     {
         if (amount <= 0) return OpResult.Fail("المبلغ لازم يكون أكبر من صفر");
         if (paidAt.HasValue && paidAt.Value.Date > DateTime.Today) return OpResult.Fail("تاريخ التحصيل مينفعش يكون في المستقبل");
@@ -286,7 +288,8 @@ public class InvoiceService : IInvoiceService
 
         pay.Amount = amount;
         pay.Method = method;
-        pay.Note = note?.Trim();
+        pay.Note = string.IsNullOrWhiteSpace(note) ? null : note.Trim();
+        pay.NoteEn = Bilingual.Clean(noteEn);
         if (paidAt.HasValue) pay.PaidAt = paidAt.Value.Date.Add(pay.PaidAt.TimeOfDay);
 
         Recalc(inv, others + amount);

@@ -24,11 +24,11 @@
             @foreach (var p in Model.Payments)
             {
                 <tr class="pay-row" data-id="@p.Id" data-date="@p.PaidAt.ToString("yyyy-MM-dd")"
-                    data-amount="@p.Amount.ToString("0.##", inv)" data-method="@((int)p.Method)" data-note="@p.Note">
+                    data-amount="@p.Amount.ToString("0.##", inv)" data-method="@((int)p.Method)" data-note="@p.Note" data-note-en="@p.NoteEn">
                     <td class="c-date">@p.PaidAt.ToString("yyyy-MM-dd HH:mm")</td>
                     <td class="c-amount">@p.Amount.ToString("N2")</td>
                     <td class="c-method">@MethodName(p.Method)</td>
-                    <td class="c-note">@p.Note</td>
+                    <td class="c-note">@Bilingual.Show(p.Note, p.NoteEn)</td>
                     <td class="c-act text-nowrap">
                         <button type="button" class="btn btn-sm btn-outline-primary" onclick="editPay(this)">@L.Get("Common.Edit")</button>
                         @if (canDelete)
@@ -63,7 +63,8 @@
                 <option value="2">@L.Get("Pay.Transfer")</option>
             </select>
         </div>
-        <div class="col-12"><label class="form-label">@L.Get("Common.Notes")</label><input name="note" class="form-control" /></div>
+        <div class="col-md-6"><label class="form-label">@L.Get("Common.Notes") (@L.Get("Common.InArabic"))</label><input name="note" class="form-control" /></div>
+        <div class="col-md-6"><label class="form-label">@L.Get("Common.Notes") (@L.Get("Common.InEnglish"))</label><input name="noteEn" class="form-control" dir="ltr" /></div>
         <div class="col-12"><button class="btn btn-success" onclick="submitForm('#payForm', '@Url.Action("Pay", "Invoices")')">@L.Get("Invoices.SaveCollection")</button></div>
     </div>
 </form>
@@ -83,13 +84,14 @@
         $r.find('.c-date').html('<input type="date" class="form-control form-control-sm e-date" max="@DateTime.Today.ToString("yyyy-MM-dd")">');
         $r.find('.c-amount').html('<input type="number" min="0.01" step="0.01" class="form-control form-control-sm e-amount">');
         $r.find('.c-method').html('<select class="form-select form-select-sm e-method"><option value="0">' + @Json.Serialize(L.Get("Pay.Cash").Value) + '</option><option value="1">' + @Json.Serialize(L.Get("Pay.Wallet").Value) + '</option><option value="2">' + @Json.Serialize(L.Get("Pay.Transfer").Value) + '</option></select>');
-        $r.find('.c-note').html('<input class="form-control form-control-sm e-note">');
+        $r.find('.c-note').html('<input class="form-control form-control-sm e-note mb-1" placeholder="' + @Json.Serialize(L.Get("Common.InArabic").Value) + '"><input class="form-control form-control-sm e-note-en" dir="ltr" placeholder="' + @Json.Serialize(L.Get("Common.InEnglish").Value) + '">');
         $r.find('.c-act').html('<button type="button" class="btn btn-sm btn-success" onclick="savePay(this)">' + @Json.Serialize(L.Get("Common.Save").Value) + '</button> <button type="button" class="btn btn-sm btn-light" onclick="reopenPay()">' + @Json.Serialize(L.Get("Common.Cancel").Value) + '</button>');
 
         $r.find('.e-date').val($r.attr('data-date'));
         $r.find('.e-amount').val($r.attr('data-amount'));
         $r.find('.e-method').val($r.attr('data-method'));
         $r.find('.e-note').val($r.attr('data-note') || '');
+        $r.find('.e-note-en').val($r.attr('data-note-en') || '');
     }
 
     function savePay(btn) {
@@ -99,7 +101,8 @@
             amount: $r.find('.e-amount').val(),
             paidAt: $r.find('.e-date').val(),
             method: $r.find('.e-method').val(),
-            note: $r.find('.e-note').val()
+            note: $r.find('.e-note').val(),
+            noteEn: $r.find('.e-note-en').val()
         }, function (r) { notify('success', r.message, reopenPay); });
     }
 

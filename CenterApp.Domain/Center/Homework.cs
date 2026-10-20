@@ -8,7 +8,11 @@ public enum HomeworkFileKind { Pdf = 1, Word = 2 }
 public class Homework : BaseEntity
 {
     public string Title { get; set; } = null!;
+    public string? TitleEn { get; set; }
     public string? Description { get; set; }
+    public string? DescriptionEn { get; set; }
+    public string LocalTitle => Bilingual.Show(Title, TitleEn);
+    public string LocalDescription => Bilingual.Show(Description, DescriptionEn);
     public long? TeacherId { get; set; }
     public HomeworkStatus Status { get; set; } = HomeworkStatus.Draft;
     public DateTime? PublishedAt { get; set; }

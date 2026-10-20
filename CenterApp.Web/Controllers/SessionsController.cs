@@ -29,7 +29,7 @@ public class SessionsController : AppController
         var (y, m) = ParseMonth(month);
         ViewBag.GroupId = groupId;
         ViewBag.Month = $"{y:D4}-{m:D2}";
-        ViewBag.Groups = new SelectList(await _g.SelectAsync(), "Value", "Text");
+        ViewBag.Groups = SelectItems.From(await _g.SelectAsync());
         return View(await _s.ListAsync(groupId, y, m));
     }
 

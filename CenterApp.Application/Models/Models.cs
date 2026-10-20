@@ -42,6 +42,7 @@ public class LookupVm
     public string Type { get; set; } = "subjects";
     public long Id { get; set; }
     public string Name { get; set; } = "";
+    public string? NameEn { get; set; }
     public string? Phone { get; set; }
     public int SortOrder { get; set; }
     public bool IsActive { get; set; } = true;
@@ -54,12 +55,15 @@ public class StudentVm
     public long Id { get; set; }
     public string? Code { get; set; }
     public string Name { get; set; } = "";
+    public string? NameEn { get; set; }
     public string? Phone { get; set; }
     public string? ParentName { get; set; }
+    public string? ParentNameEn { get; set; }
     public string? ParentPhone { get; set; }
     public long? GradeLevelId { get; set; }
     public DateTime? BirthDate { get; set; }
     public string? Notes { get; set; }
+    public string? NotesEn { get; set; }
     public bool IsActive { get; set; } = true;
 
     public long? GroupId { get; set; }                          // مطلوب لما الطالب يتسجّل لأول مرة
@@ -81,12 +85,14 @@ public class GroupScheduleDto
     public string StartTime { get; set; } = "16:00";
     public string EndTime { get; set; } = "17:30";
     public string? Room { get; set; }
+    public string? RoomEn { get; set; }
 }
 
 public class GroupSaveDto
 {
     public long Id { get; set; }
     public string Name { get; set; } = "";
+    public string? NameEn { get; set; }
     public long TeacherId { get; set; }
     public long SubjectId { get; set; }
     public long? GradeLevelId { get; set; }
@@ -190,6 +196,7 @@ public class PaymentRow
     public decimal Amount { get; set; }
     public PaymentMethod Method { get; set; }
     public string? Note { get; set; }
+    public string? NoteEn { get; set; }
 }
 public class InvoiceRow
 {

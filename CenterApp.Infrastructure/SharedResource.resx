@@ -1904,4 +1904,10 @@
   <data name="Viewer.Fullscreen" xml:space="preserve">
     <value>ملء الشاشة</value>
   </data>
+  <data name="Common.InArabic" xml:space="preserve">
+    <value>بالعربي</value>
+  </data>
+  <data name="Common.InEnglish" xml:space="preserve">
+    <value>بالإنجليزي</value>
+  </data>
 </root>

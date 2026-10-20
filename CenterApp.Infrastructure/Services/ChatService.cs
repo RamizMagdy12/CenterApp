@@ -27,9 +27,9 @@ public class ChatService : IChatService
         return list.Select(c => new ConversationRow
         {
             Id = c.Id,
-            StudentName = c.Student.Name,
+            StudentName = Bilingual.Show(c.Student.Name, c.Student.NameEn),
             StudentCode = c.Student.Code ?? "",
-            TeacherName = c.Teacher.Name,
+            TeacherName = Bilingual.Show(c.Teacher.Name, c.Teacher.NameEn),
             LastMessage = c.LastMessage ?? "",
             When = When(c.LastMessageAt),
             Unread = c.TeacherUnread
@@ -47,8 +47,8 @@ public class ChatService : IChatService
         {
             Id = c.Id,
             TeacherId = c.TeacherId,
-            Title = c.Student.Name,
-            Subtitle = string.IsNullOrEmpty(c.Student.Code) ? c.Teacher.Name : $"{c.Student.Code} · {c.Teacher.Name}",
+            Title = Bilingual.Show(c.Student.Name, c.Student.NameEn),
+            Subtitle = string.IsNullOrEmpty(c.Student.Code) ? Bilingual.Show(c.Teacher.Name, c.Teacher.NameEn) : $"{c.Student.Code} · {Bilingual.Show(c.Teacher.Name, c.Teacher.NameEn)}",
             Messages = await LinesAsync(c.Id, userId)
         };
     }
@@ -277,7 +277,9 @@ public class ChatService : IChatService
             {
                 e.Group.TeacherId,
                 Name = e.Group.Teacher.Name,
+                NameEn = e.Group.Teacher.NameEn,
                 Subject = e.Group.Subject.Name,
+                SubjectEn = e.Group.Subject.NameEn,
                 HasAccount = e.Group.Teacher.UserId != null && e.Group.Teacher.UserId != ""
             }).ToListAsync();
 
@@ -287,8 +289,8 @@ public class ChatService : IChatService
         return rows.GroupBy(r => r.TeacherId).Select(g => new TeacherChatPick
         {
             Id = g.Key,
-            Name = g.First().Name,
-            Subjects = string.Join("، ", g.Select(x => x.Subject).Distinct()),
+            Name = Bilingual.Show(g.First().Name, g.First().NameEn),
+            Subjects = string.Join("، ", g.Select(x => Bilingual.Show(x.Subject, x.SubjectEn)).Distinct()),
             HasAccount = g.First().HasAccount,
             Unread = unread.FirstOrDefault(u => u.TeacherId == g.Key)?.StudentUnread ?? 0
         }).OrderBy(t => t.Name).ToList();

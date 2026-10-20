@@ -6,12 +6,20 @@
 <div class="panel">
     <div class="row g-3">
         <div class="col-md-6">
-            <label class="form-label">@L.Get("Homework.Title")</label>
+            <label class="form-label">@L.Get("Homework.Title") (@L.Get("Common.InArabic"))</label>
             <input id="mTitle" class="form-control" value="@Model.Title" />
         </div>
-        <div class="col-12">
-            <label class="form-label">@L.Get("Homework.DescriptionOptional")</label>
+        <div class="col-md-6">
+            <label class="form-label">@L.Get("Homework.Title") (@L.Get("Common.InEnglish"))</label>
+            <input id="mTitleEn" class="form-control" dir="ltr" value="@Model.TitleEn" />
+        </div>
+        <div class="col-md-6">
+            <label class="form-label">@L.Get("Homework.DescriptionOptional") (@L.Get("Common.InArabic"))</label>
             <textarea id="mDesc" class="form-control" rows="3">@Model.Description</textarea>
+        </div>
+        <div class="col-md-6">
+            <label class="form-label">@L.Get("Homework.DescriptionOptional") (@L.Get("Common.InEnglish"))</label>
+            <textarea id="mDescEn" class="form-control" dir="ltr" rows="3">@Model.DescriptionEn</textarea>
         </div>
 
         <div class="col-12">
@@ -123,7 +131,7 @@
             try {
                 var res = await $.ajax({
                     url: '@Url.Action("Save", "Homeworks")', type: 'POST', contentType: 'application/json',
-                    data: JSON.stringify({ Id: hwId, Title: title, Description: $('#mDesc').val(), GroupIds: groups })
+                    data: JSON.stringify({ Id: hwId, Title: title, TitleEn: $('#mTitleEn').val(), Description: $('#mDesc').val(), DescriptionEn: $('#mDescEn').val(), GroupIds: groups })
                 });
                 if (!res.ok) throw res.message;
                 hwId = res.id;

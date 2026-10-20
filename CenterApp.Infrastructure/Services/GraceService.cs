@@ -1,3 +1,4 @@
+using System.Globalization;
 using CenterApp.Application.Models;
 using CenterApp.Application.Abstractions;
 using CenterApp.Domain.Center;
@@ -16,12 +17,12 @@ public class GraceService : IGraceService
         return list.Select(g => new GraceRow
         {
             Id = g.Id,
-            StudentName = g.Student.Name,
+            StudentName = Bilingual.Show(g.Student.Name, g.Student.NameEn),
             StudentCode = g.Student.Code ?? "",
-            GroupName = g.Group?.Name ?? "كل المجموعات",
+            GroupName = g.Group == null ? AllGroups() : Bilingual.Show(g.Group.Name, g.Group.NameEn),
             Days = g.Days,
             ExpiresAt = g.ExpiresAt,
-            Reason = g.Reason,
+            Reason = Bilingual.Show(g.Reason, g.ReasonEn),
             IsRevoked = g.IsRevoked
         }).ToList();
     }
@@ -31,18 +32,26 @@ public class GraceService : IGraceService
         var vm = new GraceFormVm { StudentId = studentId, GroupId = groupId };
 
         if (studentId.HasValue)
-            vm.StudentName = await _u.Student.GetAll(s => s.Id == studentId).Select(s => s.Name).FirstOrDefaultAsync();
+        {
+            var student = await _u.Student.GetAll(s => s.Id == studentId).Select(s => new { s.Name, s.NameEn }).FirstOrDefaultAsync();
+            vm.StudentName = student == null ? null : Bilingual.Show(student.Name, student.NameEn);
+        }
         else
             vm.Students = (await _u.Student.GetAll(s => s.IsActive).OrderBy(s => s.Name)
-                .Select(s => new { s.Id, s.Name, s.Code }).ToListAsync())
-                .Select(s => new SimpleItem(s.Id, $"{s.Name} [{s.Code}]")).ToList();
+                .Select(s => new { s.Id, s.Name, s.NameEn, s.Code }).ToListAsync())
+                .Select(s => new SimpleItem(s.Id, $"{Bilingual.Show(s.Name, s.NameEn)} [{s.Code}]")).ToList();
 
-        vm.Groups = await _u.Group.GetAll(g => g.IsActive).OrderBy(g => g.Name)
-            .Select(g => new SimpleItem(g.Id, g.Name)).ToListAsync();
+        var groups = await _u.Group.GetAll(g => g.IsActive).OrderBy(g => g.Name)
+            .Select(g => new { g.Id, g.Name, g.NameEn }).ToListAsync();
+        vm.Groups = groups.Select(g => new SimpleItem(g.Id, Bilingual.Show(g.Name, g.NameEn))).ToList();
         return vm;
     }
 
-    public async Task<OpResult> GrantAsync(long studentId, long? groupId, int days, string? reason)
+    private static string AllGroups()
+        => CultureInfo.CurrentUICulture.TwoLetterISOLanguageName.StartsWith("en", StringComparison.OrdinalIgnoreCase)
+            ? "All groups" : "كل المجموعات";
+
+    public async Task<OpResult> GrantAsync(long studentId, long? groupId, int days, string? reason, string? reasonEn = null)
     {
         if (days < 1 || days > 90) return OpResult.Fail("عدد الأيام لازم يكون من 1 لـ 90");
         if (!await _u.Student.GetAll(s => s.Id == studentId).AnyAsync()) return OpResult.Fail("اختار الطالب");
@@ -54,7 +63,8 @@ public class GraceService : IGraceService
             StudentId = studentId,
             GroupId = groupId,
             Days = days,
-            Reason = reason?.Trim(),
+            Reason = string.IsNullOrWhiteSpace(reason) ? null : reason.Trim(),
+            ReasonEn = Bilingual.Clean(reasonEn),
             StartsAt = now,
             ExpiresAt = now.Date.AddDays(days)     // اليوم الأول = النهارده
         };

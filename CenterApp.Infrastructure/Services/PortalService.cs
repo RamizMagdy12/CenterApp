@@ -1,3 +1,4 @@
+using System.Globalization;
 using CenterApp.Domain.Center;
 using CenterApp.Application.Abstractions;
 using CenterApp.Application.Models;
@@ -21,12 +22,12 @@ public class PortalService : IPortalService
 
     public async Task<StudentInfo?> StudentOfUserAsync(string userId)
     {
-        var key = $"stu:{userId}";
+        var key = $"stu:{userId}:{CultureInfo.CurrentUICulture.TwoLetterISOLanguageName}";
         if (_cache.TryGetValue(key, out StudentInfo? hit)) return hit;
 
         var s = await _u.Student.GetAll(x => x.UserId == userId && x.IsActive)
-            .Select(x => new { x.Id, x.Code, x.Name }).FirstOrDefaultAsync();
-        var info = s == null ? null : new StudentInfo(s.Id, s.Code ?? s.Id.ToString(), s.Name);
+            .Select(x => new { x.Id, x.Code, x.Name, x.NameEn }).FirstOrDefaultAsync();
+        var info = s == null ? null : new StudentInfo(s.Id, s.Code ?? s.Id.ToString(), Bilingual.Show(s.Name, s.NameEn));
         if (info != null) _cache.Set(key, info, TimeSpan.FromMinutes(10));
         return info;
     }
@@ -49,11 +50,11 @@ public class PortalService : IPortalService
 
     private static Verdict Evaluate(Material m, Ctx c)
         => EvaluateAccess(m.Status == MaterialStatus.Published, m.PublishedAt,
-            m.Groups.Select(g => (g.GroupId, g.Group?.Name ?? "")), c);
+            m.Groups.Select(g => (g.GroupId, Bilingual.Show(g.Group?.Name, g.Group?.NameEn))), c);
 
     private static Verdict Evaluate(Homework h, Ctx c)
         => EvaluateAccess(h.Status == HomeworkStatus.Published, h.PublishedAt,
-            h.Groups.Select(g => (g.GroupId, g.Group?.Name ?? "")), c);
+            h.Groups.Select(g => (g.GroupId, Bilingual.Show(g.Group?.Name, g.Group?.NameEn))), c);
 
     private static Verdict EvaluateAccess(bool published, DateTime? publishedAt, IEnumerable<(long GroupId, string Name)> groups, Ctx c)
     {
@@ -77,14 +78,17 @@ public class PortalService : IPortalService
             .Select(g => (DateTime?)g.ExpiresAt).Max();
         if (until != null) return new(true, false, null, until, names);
 
-        return new(true, true, $"حساب شهر {at.Month}/{at.Year} لسه ما اتدفعش", null, names);
+        var unpaid = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName.StartsWith("en", StringComparison.OrdinalIgnoreCase)
+            ? $"Invoice {at.Month}/{at.Year} is not paid yet"
+            : $"حساب شهر {at.Month}/{at.Year} لسه ما اتدفعش";
+        return new(true, true, unpaid, null, names);
     }
 
     private static PortalMaterialRow ToRow(Material m, Verdict v) => new()
     {
         Id = m.Id,
-        Title = m.Title,
-        Description = m.Description,
+        Title = Bilingual.Show(m.Title, m.TitleEn),
+        Description = Bilingual.Show(m.Description, m.DescriptionEn),
         Groups = v.Groups,
         PublishedAt = m.PublishedAt!.Value,
         FilesCount = m.Files.Count,
@@ -143,8 +147,8 @@ public class PortalService : IPortalService
     private static PortalHomeworkRow ToHomework(Homework h, Verdict v) => new()
     {
         Id = h.Id,
-        Title = h.Title,
-        Description = h.Description,
+        Title = Bilingual.Show(h.Title, h.TitleEn),
+        Description = Bilingual.Show(h.Description, h.DescriptionEn),
         Groups = v.Groups,
         PublishedAt = h.PublishedAt!.Value,
         FilesCount = h.Files.Count,

@@ -8,7 +8,11 @@ public enum MaterialFileKind { Video = 1, Pdf = 2, Image = 3 }
 public class Material : BaseEntity
 {
     public string Title { get; set; } = null!;
+    public string? TitleEn { get; set; }
     public string? Description { get; set; }
+    public string? DescriptionEn { get; set; }
+    public string LocalTitle => Bilingual.Show(Title, TitleEn);
+    public string LocalDescription => Bilingual.Show(Description, DescriptionEn);
     public long? TeacherId { get; set; }
     public MaterialStatus Status { get; set; } = MaterialStatus.Draft;
     public DateTime? PublishedAt { get; set; }
@@ -46,6 +50,8 @@ public class AccessGrace : BaseEntity
     public DateTime StartsAt { get; set; }
     public DateTime ExpiresAt { get; set; }
     public string? Reason { get; set; }
+    public string? ReasonEn { get; set; }
+    public string LocalReason => Bilingual.Show(Reason, ReasonEn);
     public bool IsRevoked { get; set; }
 
     public virtual Student Student { get; set; } = null!;

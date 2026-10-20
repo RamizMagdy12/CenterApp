@@ -28,7 +28,9 @@ public class MaterialEditVm
 {
     public long Id { get; set; }
     public string Title { get; set; } = "";
+    public string? TitleEn { get; set; }
     public string? Description { get; set; }
+    public string? DescriptionEn { get; set; }
     public MaterialStatus Status { get; set; }
     public List<GroupOption> Groups { get; set; } = new();
     public List<MaterialFileVm> Files { get; set; } = new();
@@ -38,7 +40,9 @@ public class MaterialSaveDto
 {
     public long Id { get; set; }
     public string Title { get; set; } = "";
+    public string? TitleEn { get; set; }
     public string? Description { get; set; }
+    public string? DescriptionEn { get; set; }
     public List<long> GroupIds { get; set; } = new();
 }
 

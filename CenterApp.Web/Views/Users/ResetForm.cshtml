@@ -1,7 +1,7 @@
 ﻿@model UserVm
 <form id="resetForm" onsubmit="return false;" autocomplete="off">
     <input type="hidden" name="id" value="@Model.Id" />
-    <p>@L.Get("Users.UserLabel"): <strong>@Model.UserName</strong> @Model.FullName</p>
+    <p>@L.Get("Users.UserLabel"): <strong>@Model.UserName</strong> @Bilingual.Show(Model.FullName, Model.FullNameEn)</p>
     <div class="mb-3">
         <label class="form-label">@L.Get("Users.NewPassword")</label>
         <input name="password" type="password" class="form-control" autocomplete="new-password" />

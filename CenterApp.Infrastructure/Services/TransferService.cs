@@ -43,7 +43,7 @@ public class TransferService : ITransferService
             return new GroupPick
             {
                 Id = g.Id,
-                Name = g.Name,
+                Name = Bilingual.Show(g.Name, g.NameEn),
                 Code = g.Code ?? "",
                 Free = free,
                 NextCode = hasCode ? $"{g.LastStudentNumber + 1:D3}{g.Code}" : "",
@@ -59,17 +59,20 @@ public class TransferService : ITransferService
         if (s == null) return null;
 
         var current = await _u.GroupEnrollment.GetAll(e => e.StudentId == studentId && e.IsActive, "Group")
-            .Select(e => new { e.GroupId, e.Group.Name, e.Group.Code }).ToListAsync();
+            .Select(e => new { e.GroupId, e.Group.Name, e.Group.NameEn, e.Group.Code }).ToListAsync();
 
         return new TransferFormVm
         {
             StudentId = s.Id,
-            StudentName = s.Name,
+            StudentName = Bilingual.Show(s.Name, s.NameEn),
             Code = s.Code ?? "",
             CodeGroupId = s.CodeGroupId ?? 0,
             FromGroupId = from ?? (current.Count == 1 ? current[0].GroupId : null),
-            Current = current.Select(c => new SimpleItem(c.GroupId,
-                string.IsNullOrEmpty(c.Code) ? c.Name : $"{c.Name} ({c.Code})")).ToList(),
+            Current = current.Select(c =>
+            {
+                var name = Bilingual.Show(c.Name, c.NameEn);
+                return new SimpleItem(c.GroupId, string.IsNullOrEmpty(c.Code) ? name : $"{name} ({c.Code})");
+            }).ToList(),
             Targets = await PicksAsync(studentId)
         };
     }
@@ -186,7 +189,7 @@ public class TransferService : ITransferService
             }
         }
 
-        var msg = $"تم نقل {student.Name} من \"{oldEnr.Group.Name}\" إلى \"{target.Name}\". ";
+        var msg = $"تم نقل {Bilingual.Show(student.Name, student.NameEn)} من \"{Bilingual.Show(oldEnr.Group.Name, oldEnr.Group.NameEn)}\" إلى \"{Bilingual.Show(target.Name, target.NameEn)}\". ";
         msg += recode
             ? $"كود الطالب الجديد: {student.Code} (كان {oldCode}). الـ QR القديم لسه شغال. "
             : $"كود الطالب زي ما هو ({student.Code}). ";

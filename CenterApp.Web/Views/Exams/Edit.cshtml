@@ -7,8 +7,12 @@
 <div class="panel">
     <div class="row g-3">
         <div class="col-md-8">
-            <label class="form-label">@L.Get("Exam.ExamTitle")</label>
+            <label class="form-label">@L.Get("Exam.ExamTitle") (@L.Get("Common.InArabic"))</label>
             <input id="mTitle" class="form-control" value="@Model.Title" @(Model.Locked ? "disabled" : "") />
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">@L.Get("Exam.ExamTitle") (@L.Get("Common.InEnglish"))</label>
+            <input id="mTitleEn" class="form-control" dir="ltr" value="@Model.TitleEn" @(Model.Locked ? "disabled" : "") />
         </div>
         <div class="col-md-4 d-flex align-items-end">
             @if (Model.Status == ExamStatus.Published)
@@ -20,9 +24,13 @@
                 <span class="badge bg-secondary">@L.Get("Exam.Draft")</span>
             }
         </div>
-        <div class="col-12">
-            <label class="form-label">@L.Get("Exam.StudentDescription")</label>
+        <div class="col-md-6">
+            <label class="form-label">@L.Get("Exam.StudentDescription") (@L.Get("Common.InArabic"))</label>
             <textarea id="mDesc" class="form-control" rows="2" @(Model.Locked ? "disabled" : "")>@Model.Description</textarea>
+        </div>
+        <div class="col-md-6">
+            <label class="form-label">@L.Get("Exam.StudentDescription") (@L.Get("Common.InEnglish"))</label>
+            <textarea id="mDescEn" class="form-control" dir="ltr" rows="2" @(Model.Locked ? "disabled" : "")>@Model.DescriptionEn</textarea>
         </div>
         <div class="col-md-4">
             <label class="form-label">@L.Get("Exam.OpensFrom")</label>
@@ -108,6 +116,8 @@
         var lblQuestionN = @Json.Serialize(L.Get("Exam.QuestionN").Value);
         var lblDeleteQuestion = @Json.Serialize(L.Get("Exam.DeleteQuestion").Value);
         var lblQuestionText = @Json.Serialize(L.Get("Exam.QuestionTextPh").Value);
+        var lblInAr = @Json.Serialize(L.Get("Common.InArabic").Value);
+        var lblInEn = @Json.Serialize(L.Get("Common.InEnglish").Value);
         var lblQuestionPoints = @Json.Serialize(L.Get("Exam.QuestionPoints").Value);
         var lblMarkCorrect = @Json.Serialize(L.Get("Exam.MarkCorrect").Value);
         var lblAddChoice = @Json.Serialize(L.Get("Exam.Choice").Value);
@@ -155,7 +165,7 @@
         }
 
         function addQuestion() {
-            questions.push({ text: '', points: 1, choices: [{ text: '', isCorrect: true }, { text: '', isCorrect: false }] });
+            questions.push({ text: '', textEn: '', points: 1, choices: [{ text: '', textEn: '', isCorrect: true }, { text: '', textEn: '', isCorrect: false }] });
             render();
         }
 
@@ -164,9 +174,10 @@
             $('#totalPts').text(questions.length ? lblTotal.replace('{0}', total) : '');
             $('#qList').html(questions.map(function (q, qi) {
                 var choices = (q.choices || []).map(function (c, ci) {
-                    return '<div class="d-flex gap-2 align-items-center mb-2">' +
+                    return '<div class="d-flex gap-2 align-items-center mb-2 flex-wrap">' +
                         '<input type="radio" name="ok_' + qi + '" ' + (c.isCorrect ? 'checked' : '') + (locked ? ' disabled' : '') + ' onchange="markCorrect(' + qi + ',' + ci + ')" />' +
-                        '<input class="form-control" placeholder="' + esc(lblChoice) + '" value="' + esc(c.text) + '" ' + (locked ? 'disabled' : '') + ' oninput="questions[' + qi + '].choices[' + ci + '].text=this.value" />' +
+                        '<input class="form-control c-ar" placeholder="' + esc(lblChoice + ' (' + lblInAr + ')') + '" value="' + esc(c.text) + '" ' + (locked ? 'disabled' : '') + ' oninput="questions[' + qi + '].choices[' + ci + '].text=this.value" />' +
+                        '<input class="form-control c-en" dir="ltr" placeholder="' + esc(lblChoice + ' (' + lblInEn + ')') + '" value="' + esc(c.textEn) + '" ' + (locked ? 'disabled' : '') + ' oninput="questions[' + qi + '].choices[' + ci + '].textEn=this.value" />' +
                         (locked ? '' : '<button type="button" class="btn btn-sm btn-outline-danger" onclick="removeChoice(' + qi + ',' + ci + ')">' + esc(lblDelete) + '</button>') +
                         '</div>';
                 }).join('');
@@ -174,7 +185,8 @@
                     '<div class="d-flex justify-content-between mb-2"><strong>' + esc(lblQuestionN.replace('{0}', qi + 1)) + '</strong>' +
                     (locked ? '' : '<button type="button" class="btn btn-sm btn-outline-danger" onclick="questions.splice(' + qi + ',1);render()">' + esc(lblDeleteQuestion) + '</button>') +
                     '</div>' +
-                    '<textarea class="form-control mb-2" rows="2" placeholder="' + esc(lblQuestionText) + '" ' + (locked ? 'disabled' : '') + ' oninput="questions[' + qi + '].text=this.value">' + esc(q.text) + '</textarea>' +
+                    '<textarea class="form-control mb-2 q-ar" rows="2" placeholder="' + esc(lblQuestionText + ' (' + lblInAr + ')') + '" ' + (locked ? 'disabled' : '') + ' oninput="questions[' + qi + '].text=this.value">' + esc(q.text) + '</textarea>' +
+                    '<textarea class="form-control mb-2 q-en" dir="ltr" rows="2" placeholder="' + esc(lblQuestionText + ' (' + lblInEn + ')') + '" ' + (locked ? 'disabled' : '') + ' oninput="questions[' + qi + '].textEn=this.value">' + esc(q.textEn) + '</textarea>' +
                     imageBox(q, qi) +
                     '<div class="row g-2 mb-2"><div class="col-md-3"><label class="form-label">' + esc(lblQuestionPoints) + '</label>' +
                     '<input type="number" min="0.5" step="0.5" class="form-control" value="' + (q.points || 1) + '" ' + (locked ? 'disabled' : '') + ' oninput="questions[' + qi + '].points=parseFloat(this.value)||0;renderTotal()" /></div></div>' +
@@ -193,7 +205,7 @@
             questions[qi].choices.forEach(function (c, i) { c.isCorrect = i === ci; });
         }
         function addChoice(qi) {
-            questions[qi].choices.push({ text: '', isCorrect: false });
+            questions[qi].choices.push({ text: '', textEn: '', isCorrect: false });
             render();
         }
         function removeChoice(qi, ci) {
@@ -211,13 +223,15 @@
                 var choices = [];
                 $(this).find('.d-flex.gap-2').each(function () {
                     choices.push({
-                        Text: $(this).find('input.form-control').val(),
+                        Text: $(this).find('input.c-ar').val(),
+                        TextEn: $(this).find('input.c-en').val(),
                         IsCorrect: $(this).find('input[type=radio]').prop('checked')
                     });
                 });
                 var q = questions[i] || {};
                 list.push({
-                    Text: $(this).find('textarea').val(),
+                    Text: $(this).find('textarea.q-ar').val(),
+                    TextEn: $(this).find('textarea.q-en').val(),
                     Points: parseFloat($(this).find('input[type=number]').val()) || 0,
                     ImageStoredName: q.file ? '' : (q.imageStoredName || ''),
                     Choices: choices
@@ -244,7 +258,9 @@
                     data: JSON.stringify({
                         Id: examId,
                         Title: title,
+                        TitleEn: $('#mTitleEn').val(),
                         Description: $('#mDesc').val(),
+                        DescriptionEn: $('#mDescEn').val(),
                         OpensAt: $('#mOpen').val(),
                         ClosesAt: $('#mClose').val(),
                         ResultsAt: $('#mResult').val(),

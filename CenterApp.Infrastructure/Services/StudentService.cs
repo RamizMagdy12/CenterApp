@@ -29,6 +29,9 @@ public class StudentService : IStudentService
         {
             q = q.Trim();
             query = query.Where(x => x.Name.Contains(q)
+                || (x.NameEn != null && x.NameEn.Contains(q))
+                || (x.ParentName != null && x.ParentName.Contains(q))
+                || (x.ParentNameEn != null && x.ParentNameEn.Contains(q))
                 || (x.Phone != null && x.Phone.Contains(q))
                 || (x.ParentPhone != null && x.ParentPhone.Contains(q))
                 || (x.Code != null && x.Code.Contains(q)));
@@ -47,22 +50,29 @@ public class StudentService : IStudentService
         if (s == null) return new StudentVm();
 
         var groups = await _u.GroupEnrollment.GetAll(e => e.StudentId == id && e.IsActive, "Group")
-            .Select(e => new { e.GroupId, e.Group.Name, e.Group.Code }).ToListAsync();
+            .Select(e => new { e.GroupId, e.Group.Name, e.Group.NameEn, e.Group.Code }).ToListAsync();
 
         return new StudentVm
         {
             Id = s.Id,
             Code = s.Code,
             Name = s.Name,
+            NameEn = s.NameEn,
             Phone = s.Phone,
             ParentName = s.ParentName,
+            ParentNameEn = s.ParentNameEn,
             ParentPhone = s.ParentPhone,
             GradeLevelId = s.GradeLevelId,
             BirthDate = s.BirthDate,
             Notes = s.Notes,
+            NotesEn = s.NotesEn,
             IsActive = s.IsActive,
             EnrolledGroupIds = groups.Select(g => g.GroupId).ToList(),
-            GroupNames = groups.Select(g => string.IsNullOrEmpty(g.Code) ? g.Name : $"{g.Name} ({g.Code})").ToList()
+            GroupNames = groups.Select(g =>
+            {
+                var name = Bilingual.Show(g.Name, g.NameEn);
+                return string.IsNullOrEmpty(g.Code) ? name : $"{name} ({g.Code})";
+            }).ToList()
         };
     }
 
@@ -103,17 +113,31 @@ public class StudentService : IStudentService
         }
 
         s.Name = vm.Name.Trim();
+        s.NameEn = Bilingual.Clean(vm.NameEn);
         s.Phone = vm.Phone;
         s.ParentName = vm.ParentName;
+        s.ParentNameEn = Bilingual.Clean(vm.ParentNameEn);
         s.ParentPhone = vm.ParentPhone;
         s.GradeLevelId = vm.GradeLevelId;
         s.BirthDate = vm.BirthDate;
         s.Notes = vm.Notes;
+        s.NotesEn = Bilingual.Clean(vm.NotesEn);
         s.IsActive = vm.IsActive;
 
         try { await _u.SaveAsync(); }
         catch (DbUpdateConcurrencyException) { return OpResult.Fail("فيه طالب اتسجّل في نفس اللحظة، اضغط حفظ تاني"); }
         catch (DbUpdateException) { return OpResult.Fail("حصل تعارض في الكود، اضغط حفظ تاني"); }
+
+        if (!string.IsNullOrEmpty(s.UserId))
+        {
+            var linked = await _um.FindByIdAsync(s.UserId);
+            if (linked != null)
+            {
+                linked.FullName = s.Name;
+                linked.FullNameEn = s.NameEn;
+                await _um.UpdateAsync(linked);
+            }
+        }
 
         // لو عندك هنا في نسختك نداء لـ EnsureCurrentMonthForStudentAsync أو أي منطق بعد الحفظ، سيبه
 
@@ -156,9 +180,8 @@ public class StudentService : IStudentService
         }
         else return new List<StudentCardVm>();
 
-        return await q.OrderBy(x => x.Name)
-                      .Select(x => new StudentCardVm { Id = x.Id, Name = x.Name, Code = x.Code ?? "", QrToken = x.QrToken ?? x.Code ?? "" })
-                      .ToListAsync();
+        var rows = await q.OrderBy(x => x.Name).ToListAsync();
+        return rows.Select(x => new StudentCardVm { Id = x.Id, Name = Bilingual.Show(x.Name, x.NameEn), Code = x.Code ?? "", QrToken = x.QrToken ?? x.Code ?? "" }).ToList();
     }
     private async Task<string> NewTokenAsync()
     {
