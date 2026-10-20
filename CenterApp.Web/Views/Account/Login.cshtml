@@ -347,19 +347,61 @@
                 padding: 4px;
             }
 
-            .login-lang .tb-lang-btn {
-                border: 0;
-                background: transparent;
-                font-family: inherit;
+            .login-lang .lang-current {
+                list-style: none;
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
                 cursor: pointer;
-                padding: 4px 8px;
-                border-radius: 8px;
-                opacity: .55;
+                font-weight: 700;
+                font-size: 13px;
             }
 
-            .login-lang .tb-lang-btn.on {
-                opacity: 1;
+            .login-lang .lang-current::-webkit-details-marker {
+                display: none;
+            }
+
+            .login-lang .lang-menu {
+                position: absolute;
+                top: calc(100% + 8px);
+                inset-inline-end: 0;
+                min-width: 168px;
+                background: #fff;
+                border-radius: 12px;
+                padding: 6px;
+                box-shadow: 0 12px 30px rgba(22, 48, 68, .12);
+            }
+
+            .login-lang .lang-opt {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                width: 100%;
+                border: 0;
+                background: transparent;
+                font: inherit;
+                font-weight: 700;
+                padding: 8px 10px;
+                border-radius: 8px;
+                cursor: pointer;
+            }
+
+            .login-lang .lang-opt.on {
                 background: #e7f4f6;
+            }
+
+            .login-lang .lang-code {
+                background: #e7f4f6;
+                color: #146278;
+                border-radius: 6px;
+                font-size: 10px;
+                font-weight: 700;
+                padding: 2px 6px;
+            }
+
+            .login-lang .lang-opt .bi-check2 {
+                margin-inline-start: auto;
+                color: #146278;
             }
 
             @@media (max-width: 575.98px) {

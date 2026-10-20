@@ -4,43 +4,49 @@
     ViewData["Title"] = Model.Id == 0 ? L.Get("Exam.NewOnline").Value : L.Get("Exam.EditTitle").Value;
     var qjson = JsonSerializer.Serialize(Model.Questions, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
 }
+<style>
+    .exam-field .form-label { min-height: 2.75rem; margin-bottom: .35rem; }
+</style>
 <div class="panel">
-    <div class="row g-3">
-        <div class="col-md-8">
+    <div class="row g-3 align-items-start">
+        @if (Model.Status == ExamStatus.Published || Model.Id != 0)
+        {
+            <div class="col-12">
+                @if (Model.Status == ExamStatus.Published)
+                {
+                    <span class="badge bg-success">@L.Get("Exam.Published")</span>
+                }
+                else
+                {
+                    <span class="badge bg-secondary">@L.Get("Exam.Draft")</span>
+                }
+            </div>
+        }
+        <div class="col-md-6 exam-field">
             <label class="form-label">@L.Get("Exam.ExamTitle") (@L.Get("Common.InArabic"))</label>
             <input id="mTitle" class="form-control" value="@Model.Title" @(Model.Locked ? "disabled" : "") />
         </div>
-        <div class="col-md-4">
+        <div class="col-md-6 exam-field">
             <label class="form-label">@L.Get("Exam.ExamTitle") (@L.Get("Common.InEnglish"))</label>
             <input id="mTitleEn" class="form-control" dir="ltr" value="@Model.TitleEn" @(Model.Locked ? "disabled" : "") />
         </div>
-        <div class="col-md-4 d-flex align-items-end">
-            @if (Model.Status == ExamStatus.Published)
-            {
-                <span class="badge bg-success">@L.Get("Exam.Published")</span>
-            }
-            else if (Model.Id != 0)
-            {
-                <span class="badge bg-secondary">@L.Get("Exam.Draft")</span>
-            }
-        </div>
-        <div class="col-md-6">
+        <div class="col-md-6 exam-field">
             <label class="form-label">@L.Get("Exam.StudentDescription") (@L.Get("Common.InArabic"))</label>
-            <textarea id="mDesc" class="form-control" rows="2" @(Model.Locked ? "disabled" : "")>@Model.Description</textarea>
+            <textarea id="mDesc" class="form-control" rows="3" @(Model.Locked ? "disabled" : "")>@Model.Description</textarea>
         </div>
-        <div class="col-md-6">
+        <div class="col-md-6 exam-field">
             <label class="form-label">@L.Get("Exam.StudentDescription") (@L.Get("Common.InEnglish"))</label>
-            <textarea id="mDescEn" class="form-control" dir="ltr" rows="2" @(Model.Locked ? "disabled" : "")>@Model.DescriptionEn</textarea>
+            <textarea id="mDescEn" class="form-control" dir="ltr" rows="3" @(Model.Locked ? "disabled" : "")>@Model.DescriptionEn</textarea>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-4 exam-field">
             <label class="form-label">@L.Get("Exam.OpensFrom")</label>
             <input id="mOpen" type="datetime-local" class="form-control" value="@Model.OpensAt?.ToString("yyyy-MM-ddTHH:mm")" @(Model.Locked ? "disabled" : "") />
         </div>
-        <div class="col-md-4">
+        <div class="col-md-4 exam-field">
             <label class="form-label">@L.Get("Exam.ClosesAt")</label>
             <input id="mClose" type="datetime-local" class="form-control" value="@Model.ClosesAt?.ToString("yyyy-MM-ddTHH:mm")" @(Model.Locked ? "disabled" : "") />
         </div>
-        <div class="col-md-4">
+        <div class="col-md-4 exam-field">
             <label class="form-label">@L.Get("Exam.ResultsAtLabel")</label>
             <input id="mResult" type="datetime-local" class="form-control" value="@Model.ResultsAt?.ToString("yyyy-MM-ddTHH:mm")" />
         </div>

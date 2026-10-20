@@ -378,7 +378,19 @@
     <value>Closes at</value>
   </data>
   <data name="Exam.DeleteAsk" xml:space="preserve">
-    <value>Delete this exam?</value>
+    <value>Delete this exam? It will disappear for students too.</value>
+  </data>
+  <data name="Exam.Live" xml:space="preserve">
+    <value>Live</value>
+  </data>
+  <data name="Exam.Closed" xml:space="preserve">
+    <value>Closed</value>
+  </data>
+  <data name="Exam.Stop" xml:space="preserve">
+    <value>Stop</value>
+  </data>
+  <data name="Exam.StopAsk" xml:space="preserve">
+    <value>Stop this exam now? Students still inside will be closed out.</value>
   </data>
   <data name="Exam.DeleteQuestion" xml:space="preserve">
     <value>Delete question</value>

@@ -378,7 +378,19 @@
     <value>يقفل في</value>
   </data>
   <data name="Exam.DeleteAsk" xml:space="preserve">
-    <value>حذف الاختبار؟</value>
+    <value>حذف الاختبار؟ هيختفي من عند الطلاب كمان.</value>
+  </data>
+  <data name="Exam.Live" xml:space="preserve">
+    <value>شغال</value>
+  </data>
+  <data name="Exam.Closed" xml:space="preserve">
+    <value>مقفول</value>
+  </data>
+  <data name="Exam.Stop" xml:space="preserve">
+    <value>إيقاف</value>
+  </data>
+  <data name="Exam.StopAsk" xml:space="preserve">
+    <value>إيقاف الاختبار دلوقتي؟ الطلاب اللي لسه جواه هيتقفل عليهم.</value>
   </data>
   <data name="Exam.DeleteQuestion" xml:space="preserve">
     <value>حذف السؤال</value>

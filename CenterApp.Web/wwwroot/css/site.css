@@ -309,31 +309,75 @@ body.sb-collapsed .sidebar {
     padding: 14px 0;
 }
 
-.tb-lang {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    font-size: 13px;
+.lang-dd {
+    position: relative;
     margin: 0;
 }
 
-.tb-lang-btn {
+.lang-dd details {
+    position: relative;
+}
+
+.lang-current {
+    list-style: none;
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 4px 6px;
+    border-radius: 8px;
+}
+
+.lang-current::-webkit-details-marker {
+    display: none;
+}
+
+.lang-chev {
+    font-size: 11px;
+    opacity: .55;
+}
+
+.lang-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    inset-inline-end: 0;
+    min-width: 168px;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 6px;
+    box-shadow: 0 12px 30px rgba(22, 48, 68, .12);
+    z-index: 220;
+}
+
+.lang-opt {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
     border: 0;
     background: transparent;
     color: inherit;
     font: inherit;
-    cursor: pointer;
-    padding: 4px 6px;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 8px 10px;
     border-radius: 8px;
-    opacity: .55;
+    cursor: pointer;
+    text-align: start;
 }
 
-.tb-lang-btn.on {
-    opacity: 1;
+.lang-opt:hover,
+.lang-opt.on {
     background: var(--primary-soft);
+}
+
+.lang-opt .bi-check2 {
+    margin-inline-start: auto;
+    color: var(--primary);
+    font-size: 16px;
 }
 
 .lang-code {

@@ -15,6 +15,7 @@ public class OnlineExamRow
     public DateTime ClosesAt { get; set; }
     public DateTime ResultsAt { get; set; }
     public int AttemptsCount { get; set; }
+    public bool CanStop { get; set; }
 }
 
 public class ExamChoiceInput

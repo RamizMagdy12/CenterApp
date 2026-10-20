@@ -166,22 +166,57 @@ public class ExamService : IExamService
         return OpResult.Success("تم النشر");
     }
 
+    public async Task<OpResult> StopOnlineAsync(long id)
+    {
+        var exam = await _u.OnlineExam
+            .GetAll(x => x.Id == id, "Questions.Choices,Attempts.Answers", tracking: true)
+            .FirstOrDefaultAsync();
+        if (exam == null) return OpResult.Fail("الاختبار غير موجود");
+        if (exam.Status != ExamStatus.Published) return OpResult.Fail("الاختبار مش منشور");
+        if (!IsRunning(exam)) return OpResult.Fail("الاختبار مش شغال دلوقتي");
+
+        var now = Now();
+        if (exam.ClosesAt > now) exam.ClosesAt = now;
+        foreach (var attempt in exam.Attempts)
+        {
+            if (attempt.RetakeUntil != null && attempt.RetakeUntil > now)
+                attempt.RetakeUntil = now;
+            if (attempt.Status == ExamAttemptStatus.InProgress)
+                await FinishAsync(attempt, exam, "stopped");
+        }
+
+        await _u.SaveAsync();
+        return OpResult.Success("تم إيقاف الاختبار");
+    }
+
     public async Task<OpResult> DeleteOnlineAsync(long id, long? teacherId)
     {
         var exam = await _u.OnlineExam
-            .GetAll(x => x.Id == id && (teacherId == null || x.TeacherId == teacherId), "Groups,Questions.Choices,Attempts", tracking: true)
+            .GetAll(x => x.Id == id && (teacherId == null || x.TeacherId == teacherId), "Groups,Questions.Choices,Attempts.Answers", tracking: true)
             .FirstOrDefaultAsync();
         if (exam == null) return OpResult.Fail("الاختبار غير موجود");
-        if (exam.Attempts.Count > 0) return OpResult.Fail("فيه طلاب بدأوا الاختبار، مينفعش يتحذف");
 
+        foreach (var attempt in exam.Attempts.ToList())
+        {
+            foreach (var answer in attempt.Answers.ToList()) _u.OnlineExamAnswer.Remove(answer);
+            _u.OnlineExamAttempt.Remove(attempt);
+        }
         foreach (var g in exam.Groups.ToList()) _u.OnlineExamGroup.Remove(g);
         foreach (var q in exam.Questions.ToList())
         {
+            if (!string.IsNullOrWhiteSpace(q.ImageStoredName)) DeleteImage(exam.Id, q.ImageStoredName);
             foreach (var c in q.Choices.ToList()) _u.OnlineExamChoice.Remove(c);
             _u.OnlineExamQuestion.Remove(q);
         }
         _u.OnlineExam.Remove(exam);
         await _u.SaveAsync();
+        try
+        {
+            var folder = ExamFolder(exam.Id);
+            if (Directory.Exists(folder)) Directory.Delete(folder, true);
+        }
+        catch (IOException) { }
+        catch (UnauthorizedAccessException) { }
         return OpResult.Success("تم الحذف");
     }
 
@@ -652,7 +687,7 @@ public class ExamService : IExamService
             .FirstOrDefaultAsync();
         if (attempt == null) return ExamSyncResult.Fail("ابدأ الاختبار الأول");
         if (attempt.Status != ExamAttemptStatus.InProgress)
-            return ExamSyncResult.Done("الاختبار اتسلّم");
+            return ExamSyncResult.Done(string.IsNullOrWhiteSpace(attempt.EndReason) ? "الاختبار اتسلّم" : attempt.EndReason);
 
         var now = Now();
         var close = EffectiveClose(exam, attempt);
@@ -764,9 +799,10 @@ public class ExamService : IExamService
         {
             "submit" => "تسليم",
             "timeout" => "انتهى وقت الاختبار",
+            "stopped" => "الأدمن أوقف الاختبار",
             _ => "خرجت من صفحة الاختبار"
         };
-        if (auto) attempt.ViolationCount += 1;
+        if (auto && reason != "stopped") attempt.ViolationCount += 1;
         return Task.CompletedTask;
     }
 
@@ -824,6 +860,14 @@ public class ExamService : IExamService
     private static bool IsLocked(OnlineExam exam)
         => exam.Attempts.Count > 0 || (exam.Status == ExamStatus.Published && DateTime.Now >= exam.OpensAt);
 
+    private static bool IsRunning(OnlineExam exam)
+    {
+        if (exam.Status != ExamStatus.Published) return false;
+        var now = Now();
+        if (now >= exam.OpensAt && now < exam.ClosesAt) return true;
+        return exam.Attempts.Any(a => a.Status == ExamAttemptStatus.InProgress && now < (a.RetakeUntil ?? exam.ClosesAt));
+    }
+
     private static string? ValidateSchedule(DateTime opens, DateTime closes, DateTime results)
     {
         if (opens == default || closes == default || results == default) return "حدد موعد الفتح والقفل وظهور النتيجة";
@@ -861,7 +905,8 @@ public class ExamService : IExamService
         OpensAt = x.OpensAt,
         ClosesAt = x.ClosesAt,
         ResultsAt = x.ResultsAt,
-        AttemptsCount = x.Attempts.Count
+        AttemptsCount = x.Attempts.Count,
+        CanStop = IsRunning(x)
     };
 
     private static string AttemptText(OnlineExamAttempt? attempt, DateTime now, OnlineExam exam)

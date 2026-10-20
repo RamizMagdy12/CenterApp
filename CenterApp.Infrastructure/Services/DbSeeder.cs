@@ -69,11 +69,17 @@ public static class DbSeeder
         }
 
         var adminName = config["Seed:AdminUserName"] ?? "admin";
-        if (await um.FindByNameAsync(adminName) == null)
+        var admin = await um.FindByNameAsync(adminName);
+        if (admin == null)
         {
-            var admin = new AppUser { UserName = adminName, FullName = "مدير النظام", IsActive = true, EmailConfirmed = true };
+            admin = new AppUser { UserName = adminName, FullName = "مدير النظام", FullNameEn = "System Admin", IsActive = true, EmailConfirmed = true };
             var r = await um.CreateAsync(admin, config["Seed:AdminPassword"] ?? "Admin@123");
             if (r.Succeeded) await um.AddToRoleAsync(admin, RoleNames.Admin);
+        }
+        else if (admin.FullName == "مدير النظام" && string.IsNullOrWhiteSpace(admin.FullNameEn))
+        {
+            admin.FullNameEn = "System Admin";
+            await um.UpdateAsync(admin);
         }
     }
 }

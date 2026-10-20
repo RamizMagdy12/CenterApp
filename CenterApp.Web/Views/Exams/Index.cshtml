@@ -5,6 +5,7 @@
     var canAdd = Perm.Has(User, Screens.Exams, PermissionAction.Add);
     var canEdit = Perm.Has(User, Screens.Exams, PermissionAction.Edit);
     var canDelete = Perm.Has(User, Screens.Exams, PermissionAction.Delete);
+    var isAdmin = User.IsInRole(RoleNames.Admin);
 }
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h3>@L.Get("Menu.OnlineExams") <span class="badge bg-secondary">@Model.Count</span></h3>
@@ -50,9 +51,17 @@ else
                     <td>@m.ResultsAt.ToString("yyyy-MM-dd HH:mm")</td>
                     <td>@m.MaxScore.ToString("0.##")</td>
                     <td>
-                        @if (m.Status == ExamStatus.Published)
+                        @if (m.CanStop)
                         {
-                            <span class="badge bg-success">@L.Get("Exam.Published")</span>
+                            <span class="badge bg-success">@L.Get("Exam.Live")</span>
+                        }
+                        else if (m.Status == ExamStatus.Published && m.ClosesAt <= DateTime.Now)
+                        {
+                            <span class="badge bg-dark">@L.Get("Exam.Closed")</span>
+                        }
+                        else if (m.Status == ExamStatus.Published)
+                        {
+                            <span class="badge bg-primary">@L.Get("Exam.Published")</span>
                         }
                         else
                         {
@@ -64,6 +73,10 @@ else
                         @if (canEdit)
                         {
                             <a class="btn btn-sm btn-outline-primary" asp-action="Edit" asp-route-id="@m.Id">@L.Get("Common.Edit")</a>
+                        }
+                        @if (isAdmin && m.CanStop)
+                        {
+                            <button class="btn btn-sm btn-outline-warning" onclick='confirmPost("@Url.Action("Stop", "Exams")", { id: @m.Id }, @Json.Serialize(L.Get("Exam.StopAsk").Value))'>@L.Get("Exam.Stop")</button>
                         }
                         @if (canDelete)
                         {

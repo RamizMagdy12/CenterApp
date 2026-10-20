@@ -37,6 +37,13 @@ public class ExamsController : AppController
         return Json(await _s.PublishOnlineAsync(id, await ScopeAsync()));
     }
 
+    [HttpPost]
+    public async Task<IActionResult> Stop(long id)
+    {
+        if (!IsAdmin) return NoPermission();
+        return Json(await _s.StopOnlineAsync(id));
+    }
+
     [HttpPost, RequirePermission(Screens.Exams, PermissionAction.Delete)]
     public async Task<IActionResult> Delete(long id) => Json(await _s.DeleteOnlineAsync(id, await ScopeAsync()));
 

@@ -11,6 +11,7 @@ public interface IExamService
     Task<OnlineExamEditVm?> GetOnlineAsync(long id, long? teacherId);
     Task<OpResult> SaveOnlineAsync(OnlineExamSaveDto dto, long? teacherId);
     Task<OpResult> PublishOnlineAsync(long id, long? teacherId);
+    Task<OpResult> StopOnlineAsync(long id);
     Task<OpResult> DeleteOnlineAsync(long id, long? teacherId);
     Task<OnlineGradesVm?> OnlineGradesAsync(long? examId, long? teacherId);
     Task<OpResult> ReopenAsync(long examId, long studentId, int minutes, long? teacherId);
