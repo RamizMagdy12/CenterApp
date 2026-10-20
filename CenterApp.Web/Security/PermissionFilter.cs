@@ -1,6 +1,6 @@
-﻿// Security/PermissionFilter.cs
-using CenterApp.Entity.Security;
-using CenterApp.Service.Services;
+// Security/PermissionFilter.cs
+using CenterApp.Domain.Security;
+using CenterApp.Application.Abstractions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 

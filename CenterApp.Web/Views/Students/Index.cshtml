@@ -1,5 +1,5 @@
-﻿@model PagedResult<Student>
-@inject CenterApp.Service.Services.IPermissionService Perm
+@model PagedResult<Student>
+@inject CenterApp.Application.Abstractions.IPermissionService Perm
 @{
     ViewData["Title"] = L.Get("Menu.Students").Value;
     var grades = (List<SelectListItem>)ViewBag.Grades;

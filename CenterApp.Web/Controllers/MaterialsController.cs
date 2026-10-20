@@ -1,7 +1,6 @@
-﻿using CenterApp.Entity.Security;
-using CenterApp.Service.IRepository;
-using CenterApp.Service.Models;
-using CenterApp.Service.Services;
+using CenterApp.Domain.Security;
+using CenterApp.Application.Abstractions;
+using CenterApp.Application.Models;
 using CenterApp.Web.Security;
 using Microsoft.AspNetCore.Mvc;
 
@@ -58,7 +57,8 @@ public class MaterialsController : AppController
     public async Task<IActionResult> Upload(long materialId, IFormFile file)
     {
         if (!Can(Screens.Materials, PermissionAction.Add) && !Can(Screens.Materials, PermissionAction.Edit)) return NoPermission();
-        return Json(await _s.UploadAsync(materialId, file, await ScopeAsync()));
+        using var uploaded = Uploads.Read(file);
+        return Json(await _s.UploadAsync(materialId, uploaded, await ScopeAsync()));
     }
 
     [HttpPost, RequirePermission(Screens.Materials, PermissionAction.Edit)]

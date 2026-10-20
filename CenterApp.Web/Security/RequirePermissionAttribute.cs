@@ -1,5 +1,5 @@
-﻿// Security/RequirePermissionAttribute.cs
-using CenterApp.Entity.Security;
+// Security/RequirePermissionAttribute.cs
+using CenterApp.Domain.Security;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CenterApp.Web.Security;

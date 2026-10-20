@@ -1,8 +1,9 @@
-﻿using CenterApp.Entity.Security;
-using CenterApp.Service;
-using CenterApp.Service.Models;
+using CenterApp.Domain.Security;
+using CenterApp.Application.Abstractions;
+using CenterApp.Application.Models;
 using CenterApp.Web.Security;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace CenterApp.Web.Controllers;
 
@@ -22,9 +23,9 @@ public class GroupsController : AppController
 
     public async Task<IActionResult> Form(long id = 0)
     {
-        ViewBag.Teachers = await _c.SelectAsync("teachers");
-        ViewBag.Subjects = await _c.SelectAsync("subjects");
-        ViewBag.Grades = await _c.SelectAsync("gradelevels");
+        ViewBag.Teachers = new SelectList(await _c.SelectAsync("teachers"), "Value", "Text");
+        ViewBag.Subjects = new SelectList(await _c.SelectAsync("subjects"), "Value", "Text");
+        ViewBag.Grades = new SelectList(await _c.SelectAsync("gradelevels"), "Value", "Text");
         return PartialView(await _s.GetAsync(id));
     }
 

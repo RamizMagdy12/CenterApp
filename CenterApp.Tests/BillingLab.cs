@@ -1,10 +1,10 @@
 using System.Security.Claims;
-using CenterApp.Entity.Center;
-using CenterApp.Entity.Identity;
-using CenterApp.Service.Data;
-using CenterApp.Service.Models;
-using CenterApp.Service.Repository;
-using CenterApp.Service.Unitofwork;
+using CenterApp.Domain.Center;
+using CenterApp.Domain.Identity;
+using CenterApp.Infrastructure.Data;
+using CenterApp.Application.Models;
+using CenterApp.Infrastructure.Services;
+using CenterApp.Application.Abstractions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;

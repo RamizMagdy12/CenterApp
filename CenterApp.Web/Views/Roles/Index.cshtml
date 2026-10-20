@@ -1,5 +1,5 @@
-﻿@model List<RoleRow>
-@inject CenterApp.Service.Services.IPermissionService Perm
+@model List<RoleRow>
+@inject CenterApp.Application.Abstractions.IPermissionService Perm
 @{
     ViewData["Title"] = L.Get("Menu.Roles").Value;
     var canAdd = Perm.Has(User, Screens.Roles, PermissionAction.Add);

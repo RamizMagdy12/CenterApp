@@ -1,5 +1,5 @@
-using CenterApp.Service.Models;
-using CenterApp.Service.Services;
+using CenterApp.Application.Models;
+using CenterApp.Application.Abstractions;
 using Microsoft.AspNetCore.SignalR;
 
 namespace CenterApp.Web.Hubs;

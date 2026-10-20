@@ -1,5 +1,5 @@
-﻿@model List<MaterialRow>
-@inject CenterApp.Service.Services.IPermissionService Perm
+@model List<MaterialRow>
+@inject CenterApp.Application.Abstractions.IPermissionService Perm
 @{
     ViewData["Title"] = L.Get("Menu.Materials").Value;
     var canAdd = Perm.Has(User, Screens.Materials, PermissionAction.Add);

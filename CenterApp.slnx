@@ -1,6 +1,7 @@
 <Solution>
-  <Project Path="CenterApp.Entity/CenterApp.Entity.csproj" />
-  <Project Path="CenterApp.Service/CenterApp.Service.csproj" />
+  <Project Path="CenterApp.Domain/CenterApp.Domain.csproj" />
+  <Project Path="CenterApp.Application/CenterApp.Application.csproj" />
+  <Project Path="CenterApp.Infrastructure/CenterApp.Infrastructure.csproj" />
   <Project Path="CenterApp.Web/CenterApp.Web.csproj" />
   <Project Path="CenterApp.Tests/CenterApp.Tests.csproj" />
 </Solution>

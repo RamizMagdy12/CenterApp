@@ -1,7 +1,6 @@
-﻿using CenterApp.Entity.Center;
-using CenterApp.Entity.Security;
-using CenterApp.Service.IRepository;
-using CenterApp.Service.Services;
+using CenterApp.Domain.Center;
+using CenterApp.Domain.Security;
+using CenterApp.Application.Abstractions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;

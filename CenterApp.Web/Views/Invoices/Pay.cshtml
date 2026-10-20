@@ -1,5 +1,5 @@
-﻿@model InvoiceRow
-@inject CenterApp.Service.Services.IPermissionService Perm
+@model InvoiceRow
+@inject CenterApp.Application.Abstractions.IPermissionService Perm
 @using System.Globalization
 @functions {
     string MethodName(PaymentMethod m) => m == PaymentMethod.Cash ? L.Get("Pay.Cash").Value : m == PaymentMethod.Wallet ? L.Get("Pay.Wallet").Value : L.Get("Pay.Transfer").Value;

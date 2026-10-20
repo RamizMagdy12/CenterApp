@@ -10,9 +10,9 @@ Names and numbers in the screenshots are sample data, not real records.
 
 ## الترجمة · Localization
 
-الواجهة مترجمة بالكامل بين **العربية** و**الإنجليزية**. اللغة الافتراضية عربي (مصر)، والاتجاه بيتظبط لوحده: RTL بالعربي و LTR بالإنجليزي. التبديل من زر اللغة في الشريط العلوي، والنصوص في ملفات `SharedResource.resx` و `SharedResource.en.resx`.
+الواجهة مترجمة بالكامل بين **العربية** و**الإنجليزية**. اللغة الافتراضية عربي (مصر)، والاتجاه بيتظبط لوحده: RTL بالعربي و LTR بالإنجليزي. التبديل من زر اللغة في الشريط العلوي، والنصوص في `CenterApp.Infrastructure/SharedResource.resx` و `SharedResource.en.resx`.
 
-The whole interface is localized in **Arabic** and **English**. Arabic (Egypt) is the default, and layout direction follows the language: RTL for Arabic, LTR for English. The switch is in the top bar. Strings live in `SharedResource.resx` and `SharedResource.en.resx`.
+The whole interface is localized in **Arabic** and **English**. Arabic (Egypt) is the default, and layout direction follows the language: RTL for Arabic, LTR for English. The switch is in the top bar. Strings live in `CenterApp.Infrastructure/SharedResource.resx` and `SharedResource.en.resx`.
 
 لوحة التحكم بالإنجليزي.
 
@@ -192,12 +192,23 @@ Online exams in English.
 - SignalR for messages and notifications
 - Bootstrap and Cairo, with RTL / LTR from the active culture
 
+## البنية · Clean Architecture
+
+كل طبقة تعتمد على اللي جوّاها فقط. الويب بيركّب الخدمات من `AddInfrastructure`، والكنترولرز بتتعامل مع الواجهات مش مع قاعدة البيانات.
+
+Each layer depends only inward. The web app composes services through `AddInfrastructure`, and controllers talk to interfaces rather than the database.
+
 ```
-CenterApp.Web        الواجهة والمتحكمات · UI and controllers
-CenterApp.Service    قواعد العمل والترجمة والـ Migrations · business rules, localization, migrations
-CenterApp.Entity     الكيانات والصلاحيات · entities and permissions
-CenterApp.Tests      اختبارات · tests
+CenterApp.Web  →  CenterApp.Application  →  CenterApp.Domain
+       ↓
+CenterApp.Infrastructure  →  CenterApp.Application
 ```
+
+- **CenterApp.Domain**: الكيانات، الصلاحيات، و`AppUser`. مفيش Entity Framework. Entities, permissions, and `AppUser`. No Entity Framework.
+- **CenterApp.Application**: واجهات الخدمات، موديلات الشاشات، و`ILocService`. Service interfaces, screen models, and `ILocService`.
+- **CenterApp.Infrastructure**: `AppDbContext`، الـ migrations، تنفيذ الخدمات، التخزين، وملفات الترجمة. `AppDbContext`, migrations, service implementations, storage, and the resource files.
+- **CenterApp.Web**: الشاشات، الكنترولرز، وSignalR. Screens, controllers, and SignalR.
+- **CenterApp.Tests**: اختبارات قواعد الحسابات على الخدمات. Billing-rule tests against the services.
 
 ## التشغيل · Run
 

@@ -1,5 +1,5 @@
-﻿@using System.Security.Claims
-@inject CenterApp.Service.Services.IPermissionService Perm
+@using System.Security.Claims
+@inject CenterApp.Application.Abstractions.IPermissionService Perm
 @functions {
     record MI(string Text, string C, string A, string Screen, string? Type = null, string? Act = null);
     record MG(string Title, string Icon, MI[] Items);

@@ -1,6 +1,6 @@
-﻿using CenterApp.Entity.Identity;
-using CenterApp.Entity.Security;
-using CenterApp.Service.Localization;
+using CenterApp.Domain.Identity;
+using CenterApp.Domain.Security;
+using CenterApp.Application.Localization;
 using CenterApp.Web.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
