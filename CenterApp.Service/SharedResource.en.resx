@@ -1373,6 +1373,15 @@
   <data name="Portal.Start" xml:space="preserve">
     <value>Start the exam</value>
   </data>
+  <data name="Portal.Next" xml:space="preserve">
+    <value>Next</value>
+  </data>
+  <data name="Portal.Previous" xml:space="preserve">
+    <value>Previous</value>
+  </data>
+  <data name="Portal.QuestionProgress" xml:space="preserve">
+    <value>Question {0} of {1}</value>
+  </data>
   <data name="Portal.Submit" xml:space="preserve">
     <value>Submit</value>
   </data>

@@ -1373,6 +1373,15 @@
   <data name="Portal.Start" xml:space="preserve">
     <value>ابدأ الاختبار</value>
   </data>
+  <data name="Portal.Next" xml:space="preserve">
+    <value>التالي</value>
+  </data>
+  <data name="Portal.Previous" xml:space="preserve">
+    <value>السابق</value>
+  </data>
+  <data name="Portal.QuestionProgress" xml:space="preserve">
+    <value>سؤال {0} من {1}</value>
+  </data>
   <data name="Portal.Submit" xml:space="preserve">
     <value>تسليم</value>
   </data>

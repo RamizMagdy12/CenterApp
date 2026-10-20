@@ -11,7 +11,15 @@
     .exam-timer { margin-inline-start: auto; font-weight: 800; font-size: 20px; font-variant-numeric: tabular-nums; }
     .exam-timer.late { color: #c53030; }
     .exam-sheet { position: relative; z-index: 2; max-width: 820px; margin: 0 auto; padding: 18px; }
-    .q-card { background: #fff; border: 1px solid #e3eaee; border-radius: 14px; padding: 16px; margin-bottom: 14px; }
+    .q-card { display: none; background: #fff; border: 1px solid #e3eaee; border-radius: 14px; padding: 16px; margin-bottom: 14px; }
+    .q-card.on { display: block; }
+    .q-nav { display: flex; align-items: center; gap: 12px; }
+    .q-nav .btn { min-width: 110px; }
+    .q-pos { margin-inline: auto; font-weight: 800; }
+    .q-dots { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 14px; }
+    .q-dot { width: 36px; height: 36px; border-radius: 10px; border: 1px solid #e3eaee; background: #fff; font-weight: 700; cursor: pointer; }
+    .q-dot.on { background: #146278; color: #fff; border-color: #146278; }
+    .q-dot.done:not(.on) { background: #e7f4f6; border-color: #146278; color: #146278; }
     .q-card h4 { font-size: 18px; margin-bottom: 10px; }
     .q-body { display: flex; gap: 16px; align-items: flex-start; }
     .q-main { flex: 1; min-width: 0; }
@@ -66,6 +74,15 @@
             </div>
         </article>
     }
+    @if (Model.Questions.Count > 1)
+    {
+        <div class="q-nav">
+            <button type="button" class="btn btn-outline-primary" id="btnPrev">@L.Get("Portal.Previous")</button>
+            <div class="q-pos" id="qPos"></div>
+            <button type="button" class="btn btn-primary" id="btnNext">@L.Get("Portal.Next")</button>
+        </div>
+        <div class="q-dots" id="qDots"></div>
+    }
 </div>
 
 <div class="gate" id="gate">
@@ -107,6 +124,40 @@
         var txtSubmitExam = @Json.Serialize(L.Get("Portal.SubmitExam").Value);
         var txtFullscreenRequired = @Json.Serialize(L.Get("Portal.FullscreenRequired").Value);
         var txtAllowFullscreen = @Json.Serialize(L.Get("Portal.AllowFullscreen").Value);
+        var txtProgress = @Json.Serialize(L.Get("Portal.QuestionProgress").Value);
+        var cards = [].slice.call(document.querySelectorAll('.q-card'));
+        var qIndex = 0;
+
+        function showQuestion(i) {
+            if (!cards.length) return;
+            qIndex = Math.max(0, Math.min(cards.length - 1, i));
+            cards.forEach(function (card, n) { card.classList.toggle('on', n === qIndex); });
+            var pos = document.getElementById('qPos');
+            if (pos) pos.textContent = txtProgress.replace('{0}', qIndex + 1).replace('{1}', cards.length);
+            var prev = document.getElementById('btnPrev');
+            var next = document.getElementById('btnNext');
+            if (prev) prev.disabled = qIndex === 0;
+            if (next) next.disabled = qIndex === cards.length - 1;
+            document.querySelectorAll('.q-dot').forEach(function (dot, n) {
+                dot.classList.toggle('on', n === qIndex);
+                dot.classList.toggle('done', !!cards[n].querySelector('input:checked'));
+            });
+        }
+
+        if (cards.length > 1) {
+            var dots = document.getElementById('qDots');
+            cards.forEach(function (_, n) {
+                var dot = document.createElement('button');
+                dot.type = 'button';
+                dot.className = 'q-dot';
+                dot.textContent = String(n + 1);
+                dot.onclick = function () { showQuestion(n); };
+                dots.appendChild(dot);
+            });
+            document.getElementById('btnPrev').onclick = function () { showQuestion(qIndex - 1); };
+            document.getElementById('btnNext').onclick = function () { showQuestion(qIndex + 1); };
+        }
+        showQuestion(0);
 
         function isShotKey(e) {
             var k = e.key || '';
@@ -330,6 +381,7 @@
             document.getElementById('btnFinish').disabled = false;
             document.querySelectorAll('.q-card input').forEach(function (input) {
                 input.addEventListener('change', function () {
+                    showQuestion(qIndex);
                     clearTimeout(saveTimer);
                     saveTimer = setTimeout(function () { postExam('@Url.Action("Sync", "Portal")', 'submit').catch(function () { }); }, 250);
                 });
