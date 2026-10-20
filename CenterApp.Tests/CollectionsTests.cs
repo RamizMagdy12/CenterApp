@@ -1,5 +1,5 @@
-using CenterApp.Entity.Center;
-using CenterApp.Service.Models;
+using CenterApp.Domain.Center;
+using CenterApp.Application.Models;
 using Xunit;
 
 public class BillingMathTests

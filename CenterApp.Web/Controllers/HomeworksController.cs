@@ -1,6 +1,6 @@
-using CenterApp.Entity.Security;
-using CenterApp.Service.IRepository;
-using CenterApp.Service.Models;
+using CenterApp.Domain.Security;
+using CenterApp.Application.Abstractions;
+using CenterApp.Application.Models;
 using CenterApp.Web.Security;
 using Microsoft.AspNetCore.Mvc;
 
@@ -35,7 +35,8 @@ public class HomeworksController : AppController
     public async Task<IActionResult> Upload(long homeworkId, IFormFile file)
     {
         if (!Can(Screens.Homework, PermissionAction.Add) && !Can(Screens.Homework, PermissionAction.Edit)) return NoPermission();
-        return Json(await _s.UploadAsync(homeworkId, file, await ScopeAsync()));
+        using var uploaded = Uploads.Read(file);
+        return Json(await _s.UploadAsync(homeworkId, uploaded, await ScopeAsync()));
     }
 
     [HttpPost, RequirePermission(Screens.Homework, PermissionAction.Edit)]

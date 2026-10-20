@@ -1,0 +1,284 @@
+using System.Globalization;
+using CenterApp.Domain.Center;
+
+namespace CenterApp.Application.Models;
+
+public record OpResult(bool Ok, string Message, long? Id = null, string? Extra = null)
+{
+    public static OpResult Success(string m = "تم الحفظ") => new(true, m);
+    public static OpResult Fail(string m) => new(false, m);
+}
+public record SimpleItem(long Id, string Text);
+
+public class PagedResult<T>
+{
+    public List<T> Items { get; set; } = new();
+    public int Page { get; set; }
+    public int PageSize { get; set; }
+    public int Total { get; set; }
+    public int TotalPages => Math.Max(1, (int)Math.Ceiling(Total / (double)PageSize));
+}
+
+public static class ArabicDays
+{
+    static readonly string[] Names = { "الأحد", "الإثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت" };
+    public static string Name(DayOfWeek d)
+    {
+        if (CultureInfo.CurrentUICulture.TwoLetterISOLanguageName.Equals("ar", StringComparison.OrdinalIgnoreCase))
+            return Names[(int)d];
+        return CultureInfo.CurrentUICulture.DateTimeFormat.GetDayName(d);
+    }
+    public static int Order(DayOfWeek d) => ((int)d + 1) % 7;   // السبت أولاً
+    public static readonly DayOfWeek[] WeekFromSaturday =
+    {
+        DayOfWeek.Saturday, DayOfWeek.Sunday, DayOfWeek.Monday, DayOfWeek.Tuesday,
+        DayOfWeek.Wednesday, DayOfWeek.Thursday, DayOfWeek.Friday
+    };
+}
+
+// ── Lookups
+public class LookupVm
+{
+    public string Type { get; set; } = "subjects";
+    public long Id { get; set; }
+    public string Name { get; set; } = "";
+    public string? Phone { get; set; }
+    public int SortOrder { get; set; }
+    public bool IsActive { get; set; } = true;
+}
+
+// ── Students
+// ── StudentVm: GroupIds بقت GroupId (إجباري عند التسجيل) + أسماء المجموعات للعرض
+public class StudentVm
+{
+    public long Id { get; set; }
+    public string? Code { get; set; }
+    public string Name { get; set; } = "";
+    public string? Phone { get; set; }
+    public string? ParentName { get; set; }
+    public string? ParentPhone { get; set; }
+    public long? GradeLevelId { get; set; }
+    public DateTime? BirthDate { get; set; }
+    public string? Notes { get; set; }
+    public bool IsActive { get; set; } = true;
+
+    public long? GroupId { get; set; }                          // مطلوب لما الطالب يتسجّل لأول مرة
+    public List<long> EnrolledGroupIds { get; set; } = new();
+    public List<string> GroupNames { get; set; } = new();
+}
+
+// ── Cards
+public class StudentCardVm
+{
+    public long Id { get; set; }
+    public string Name { get; set; } = "";
+    public string Code { get; set; } = "";
+    public string QrToken { get; set; } = "";
+}// ── Groups
+public class GroupScheduleDto
+{
+    public DayOfWeek DayOfWeek { get; set; }
+    public string StartTime { get; set; } = "16:00";
+    public string EndTime { get; set; } = "17:30";
+    public string? Room { get; set; }
+}
+
+public class GroupSaveDto
+{
+    public long Id { get; set; }
+    public string Name { get; set; } = "";
+    public long TeacherId { get; set; }
+    public long SubjectId { get; set; }
+    public long? GradeLevelId { get; set; }
+    public decimal MonthlyFee { get; set; }
+    public int Capacity { get; set; }
+    public bool IsActive { get; set; } = true;
+    public string Code { get; set; } = "";
+    public bool CodeLocked { get; set; }
+    public List<GroupScheduleDto> Schedules { get; set; } = new();
+}
+
+public class GroupRow
+{
+    public long Id { get; set; }
+    public string Name { get; set; } = "";
+    public string Teacher { get; set; } = "";
+    public string Subject { get; set; } = "";
+    public string Grade { get; set; } = "";
+    public decimal Fee { get; set; }
+    public int Capacity { get; set; }
+    public int Enrolled { get; set; }
+    public string Schedule { get; set; } = "";
+    public bool IsActive { get; set; }
+    public string Code { get; set; } = "";
+}
+
+// ── Enrollment
+public class EnrolledRow
+{
+    public long EnrollmentId { get; set; }
+    public long StudentId { get; set; }
+    public string StudentName { get; set; } = "";
+    public string? Phone { get; set; }
+    public DateTime JoinedAt { get; set; }
+    public decimal? CustomFee { get; set; }
+}
+
+public class ManageEnrollmentsVm
+{
+    public long StudentId { get; set; }
+    
+    public long GroupId { get; set; }
+    public string GroupName { get; set; } = "";
+    public int Capacity { get; set; }
+    public decimal MonthlyFee { get; set; }
+    public List<EnrolledRow> Enrolled { get; set; } = new();
+    public List<SimpleItem> Available { get; set; } = new();
+}
+
+// ── Sessions
+public class SessionRow
+{
+    public long Id { get; set; }
+    public string GroupName { get; set; } = "";
+    public DateTime Date { get; set; }
+    public TimeSpan Start { get; set; }
+    public TimeSpan End { get; set; }
+    public DateTime StartsAt { get; set; }
+    public bool CanTakeAttendance { get; set; }
+    public SessionStatus Status { get; set; }
+    public int Present { get; set; }
+    public int Absent { get; set; }
+    public int Total { get; set; }
+}
+
+public class AttendanceRowVm
+{
+    public long StudentId { get; set; }
+    public string StudentCode { get; set; } = "";
+    public string StudentName { get; set; } = "";
+    public AttendanceStatus Status { get; set; } = AttendanceStatus.Present;
+    public bool IsRecorded { get; set; }     // اتسجل له حضور/غياب قبل كده
+    public string QrToken { get; set; } = "";
+}
+
+public class AttendanceVm
+{
+    public long SessionId { get; set; }
+    public string GroupName { get; set; } = "";
+    public DateTime Date { get; set; }
+    public string? LockReason { get; set; }   // لو مش مسموح بالتحضير
+    public List<AttendanceRowVm> Rows { get; set; } = new();
+}
+public class AttendanceRowDto
+{
+    public long StudentId { get; set; }
+    public AttendanceStatus Status { get; set; }
+}
+
+public class AttendanceSaveDto
+{
+    public long SessionId { get; set; }
+    public List<AttendanceRowDto> Rows { get; set; } = new();
+}
+
+// ── Invoices
+public class PaymentRow
+{
+    public long Id { get; set; }
+    public DateTime PaidAt { get; set; }
+    public decimal Amount { get; set; }
+    public PaymentMethod Method { get; set; }
+    public string? Note { get; set; }
+}
+public class InvoiceRow
+{
+    public long Id { get; set; }
+    public long StudentId { get; set; }
+    public string StudentName { get; set; } = "";
+    public long GroupId { get; set; }
+    public string GroupName { get; set; } = "";
+    public int Year { get; set; }
+    public int Month { get; set; }
+    public decimal Amount { get; set; }
+    public decimal Discount { get; set; }
+    public DiscountKind DiscountKind { get; set; }
+    public decimal DiscountValue { get; set; }
+    public decimal Paid { get; set; }
+    public decimal NetDue => BillingMath.NetDue(Amount, Discount);
+    public decimal Remaining => BillingMath.Remaining(Amount, Discount, Paid);
+    public InvoiceStatus Status { get; set; }
+    public DateTime DueDate { get; set; }
+    public DateTime? LastPaymentDate { get; set; }
+    public List<PaymentRow> Payments { get; set; } = new();
+}
+
+public class DiscountFormVm
+{
+    public long StudentId { get; set; }
+    public string StudentName { get; set; } = "";
+    public DiscountKind Kind { get; set; }
+    public decimal Value { get; set; }
+    public List<decimal> BasePrices { get; set; } = new();
+}
+// ── Dashboard
+public record DayRate(string Label, double? Rate);
+public record GradeSlice(string Name, int Count);
+
+public class TodaySessionRow
+{
+    public string GroupName { get; set; } = "";
+    public TimeSpan Start { get; set; }
+    public TimeSpan End { get; set; }
+    public SessionStatus Status { get; set; }
+    public int Present { get; set; }
+    public int Total { get; set; }
+}
+
+public class RecentPaymentRow
+{
+    public string StudentName { get; set; } = "";
+    public decimal Amount { get; set; }
+    public DateTime PaidAt { get; set; }
+}
+
+public class DashboardVm
+{
+    public int TotalStudents { get; set; }
+    public int EnrolledStudents { get; set; }
+    public int ActiveGroups { get; set; }
+    public int Teachers { get; set; }
+    public int TodaySessionsCount { get; set; }
+    public double? TodayPresentRate { get; set; }
+
+    public List<DayRate> Last7 { get; set; } = new();
+    public List<GradeSlice> Grades { get; set; } = new();
+
+    public decimal MonthDue { get; set; }
+    public decimal MonthCollected { get; set; }
+    public decimal MonthRemaining => MonthDue - MonthCollected;
+
+    public List<TodaySessionRow> TodaySessions { get; set; } = new();
+    public List<RecentPaymentRow> RecentPayments { get; set; } = new();
+}
+public class GroupPick
+{
+    public long Id { get; set; }
+    public string Name { get; set; } = "";
+    public string Code { get; set; } = "";
+    public int Free { get; set; }            // الأماكن المتاحة (-1 = بلا حد)
+    public string NextCode { get; set; } = "";
+    public bool Disabled { get; set; }
+    public string? Why { get; set; }
+}
+
+public class TransferFormVm
+{
+    public long StudentId { get; set; }
+    public string StudentName { get; set; } = "";
+    public string Code { get; set; } = "";
+    public long CodeGroupId { get; set; }    // 0 = كوده مش مبني على مجموعة (طالب قديم)
+    public long? FromGroupId { get; set; }
+    public List<SimpleItem> Current { get; set; } = new();
+    public List<GroupPick> Targets { get; set; } = new();
+}

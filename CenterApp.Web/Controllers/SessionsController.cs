@@ -1,8 +1,9 @@
-﻿using CenterApp.Entity.Security;
-using CenterApp.Service;
-using CenterApp.Service.Models;
+using CenterApp.Domain.Security;
+using CenterApp.Application.Abstractions;
+using CenterApp.Application.Models;
 using CenterApp.Web.Security;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Globalization;
 
 namespace CenterApp.Web.Controllers;
@@ -28,7 +29,7 @@ public class SessionsController : AppController
         var (y, m) = ParseMonth(month);
         ViewBag.GroupId = groupId;
         ViewBag.Month = $"{y:D4}-{m:D2}";
-        ViewBag.Groups = await _g.SelectAsync();
+        ViewBag.Groups = new SelectList(await _g.SelectAsync(), "Value", "Text");
         return View(await _s.ListAsync(groupId, y, m));
     }
 

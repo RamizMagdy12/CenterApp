@@ -1,9 +1,9 @@
-﻿// Security/AppController.cs
+// Security/AppController.cs
 using System.Security.Claims;
-using CenterApp.Entity.Security;
-using CenterApp.Service.Localization;
-using CenterApp.Service.Models;
-using CenterApp.Service.Services;
+using CenterApp.Domain.Security;
+using CenterApp.Application.Localization;
+using CenterApp.Application.Models;
+using CenterApp.Application.Abstractions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CenterApp.Web.Security;

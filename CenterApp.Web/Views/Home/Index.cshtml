@@ -1,7 +1,7 @@
-﻿@model DashboardVm
+@model DashboardVm
 @using System.Text.Json
-@using CenterApp.Entity.Security
-@inject CenterApp.Service.Services.IPermissionService Perm
+@using CenterApp.Domain.Security
+@inject CenterApp.Application.Abstractions.IPermissionService Perm
 
 @{
     ViewData["Title"] = L.Get("Menu.Dashboard").Value;

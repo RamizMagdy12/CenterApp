@@ -1,8 +1,9 @@
-﻿using CenterApp.Entity.Center;
-using CenterApp.Entity.Security;
-using CenterApp.Service;
+using CenterApp.Domain.Center;
+using CenterApp.Domain.Security;
+using CenterApp.Application.Abstractions;
 using CenterApp.Web.Security;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Globalization;
 
 namespace CenterApp.Web.Controllers;
@@ -31,7 +32,7 @@ public class InvoicesController : AppController
         ViewBag.Status = status;
         ViewBag.Search = q ?? "";
         ViewBag.Sort = sort ?? "";
-        ViewBag.Groups = await _g.SelectAsync();
+        ViewBag.Groups = new SelectList(await _g.SelectAsync(), "Value", "Text");
         return View(await _s.ListAsync(y, m, groupId, status, q, sort));
     }
 

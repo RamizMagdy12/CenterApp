@@ -1,5 +1,5 @@
 @using System.Security.Claims
-@using CenterApp.Entity.Security
+@using CenterApp.Domain.Security
 @{
     var name = User.FindFirst("FullName")?.Value ?? User.Identity?.Name ?? "";
     var canClear = User.IsInRole(RoleNames.Admin) || User.IsInRole(RoleNames.Teacher);

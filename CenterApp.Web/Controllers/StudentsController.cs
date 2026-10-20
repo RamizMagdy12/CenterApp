@@ -1,9 +1,9 @@
-﻿using CenterApp.Entity.Security;
-using CenterApp.Service;
-using CenterApp.Service.IRepository;
-using CenterApp.Service.Models;
+using CenterApp.Domain.Security;
+using CenterApp.Application.Abstractions;
+using CenterApp.Application.Models;
 using CenterApp.Web.Security;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using QRCoder;
 
 
@@ -27,13 +27,13 @@ public class StudentsController : AppController
     {
         ViewBag.Q = q;
         ViewBag.GradeId = gradeId;
-        ViewBag.Grades = await _c.SelectAsync("gradelevels");
+        ViewBag.Grades = new SelectList(await _c.SelectAsync("gradelevels"), "Value", "Text");
         return View(await _s.SearchAsync(q, gradeId, page));
     }
 
     public async Task<IActionResult> Form(long id = 0)
     {
-        ViewBag.Grades = await _c.SelectAsync("gradelevels");
+        ViewBag.Grades = new SelectList(await _c.SelectAsync("gradelevels"), "Value", "Text");
         ViewBag.Picks = id == 0 ? await _t.PicksAsync(null) : new List<GroupPick>();
         return PartialView(await _s.GetAsync(id));
     }

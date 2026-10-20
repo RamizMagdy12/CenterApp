@@ -1,5 +1,5 @@
 @model OnlineGradesVm
-@inject CenterApp.Service.Services.IPermissionService Perm
+@inject CenterApp.Application.Abstractions.IPermissionService Perm
 @{
     ViewData["Title"] = L.Get("Menu.OnlineGrades").Value;
     var canEdit = Perm.Has(User, Screens.Exams, PermissionAction.Edit);

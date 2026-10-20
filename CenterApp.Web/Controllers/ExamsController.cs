@@ -1,6 +1,6 @@
-using CenterApp.Entity.Security;
-using CenterApp.Service.IRepository;
-using CenterApp.Service.Models;
+using CenterApp.Domain.Security;
+using CenterApp.Application.Abstractions;
+using CenterApp.Application.Models;
 using CenterApp.Web.Security;
 using Microsoft.AspNetCore.Mvc;
 
@@ -55,7 +55,10 @@ public class ExamsController : AppController
 
     [HttpPost, RequirePermission(Screens.Exams, PermissionAction.Edit)]
     public async Task<IActionResult> QuestionImage(long examId, int sortOrder, IFormFile file)
-        => Json(await _s.SaveQuestionImageAsync(examId, sortOrder, file, await ScopeAsync()));
+    {
+        using var uploaded = Uploads.Read(file);
+        return Json(await _s.SaveQuestionImageAsync(examId, sortOrder, uploaded, await ScopeAsync()));
+    }
 
     [HttpGet, RequirePermission(Screens.Exams, PermissionAction.View)]
     public async Task<IActionResult> QuestionImage(long examId, string name)

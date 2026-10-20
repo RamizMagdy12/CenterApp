@@ -1,5 +1,5 @@
 @model List<OnlineExamRow>
-@inject CenterApp.Service.Services.IPermissionService Perm
+@inject CenterApp.Application.Abstractions.IPermissionService Perm
 @{
     ViewData["Title"] = L.Get("Menu.OnlineExams").Value;
     var canAdd = Perm.Has(User, Screens.Exams, PermissionAction.Add);

@@ -1,7 +1,7 @@
-﻿using CenterApp.Entity.Security;
-using CenterApp.Service;
-using CenterApp.Service.Localization;
-using CenterApp.Service.Models;
+using CenterApp.Domain.Security;
+using CenterApp.Application.Abstractions;
+using CenterApp.Application.Localization;
+using CenterApp.Application.Models;
 using CenterApp.Web.Security;
 using Microsoft.AspNetCore.Mvc;
 

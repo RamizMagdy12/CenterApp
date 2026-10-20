@@ -1,24 +1,19 @@
 using System.Globalization;
-using CenterApp.Entity.Identity;
-using CenterApp.Service.Data;
-using CenterApp.Service.IRepository;
-using CenterApp.Service.Localization;
-using CenterApp.Service.Repository;
-using CenterApp.Service.Services;
-using CenterApp.Service.Unitofwork;
+using CenterApp.Application.Abstractions;
+using CenterApp.Infrastructure;
+using CenterApp.Infrastructure.Services;
 using CenterApp.Web.Hubs;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc.Authorization;
-using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // كل الصفحات محتاجة تسجيل دخول (ماعدا اللي عليها AllowAnonymous)
 builder.Services.AddControllersWithViews(o => o.Filters.Add(new AuthorizeFilter()));
 builder.Services.AddLocalization();
-builder.Services.AddScoped<ILocService, LocService>();
+builder.Services.AddInfrastructure(builder.Configuration);
 
 var arabic = new CultureInfo("ar-EG");
 var english = new CultureInfo("en");
@@ -29,29 +24,6 @@ builder.Services.Configure<RequestLocalizationOptions>(o =>
     o.SupportedUICultures = new[] { arabic, english };
     o.RequestCultureProviders = new List<IRequestCultureProvider> { new CookieRequestCultureProvider() };
 });
-
-builder.Services.AddHttpContextAccessor();
-builder.Services.AddMemoryCache();
-
-builder.Services.AddDbContext<AppDbContext>(o =>
-    o.UseSqlServer(builder.Configuration.GetConnectionString("Default"),
-        b => b.MigrationsAssembly("CenterApp.Service")));
-
-builder.Services.AddIdentity<AppUser, IdentityRole>(o =>
-{
-    o.Password.RequireNonAlphanumeric = false;
-    o.Password.RequireDigit = false;
-    o.Password.RequireUppercase = false;
-    o.Password.RequireLowercase = false;
-    o.Password.RequiredLength = 6;
-
-    o.Lockout.AllowedForNewUsers = true;
-    o.Lockout.MaxFailedAccessAttempts = 5;
-    o.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
-})
-.AddEntityFrameworkStores<AppDbContext>()
-.AddDefaultTokenProviders()
-.AddClaimsPrincipalFactory<AppClaimsFactory>();
 
 static bool IsAjax(HttpRequest r) => r.Headers["X-Requested-With"] == "XMLHttpRequest";
 
@@ -95,30 +67,6 @@ builder.Services.ConfigureApplicationCookie(o =>
 // تغيير دور المستخدم أو توقيفه يسري فوراً (الـ Cookie بيتراجع في كل طلب)
 builder.Services.Configure<SecurityStampValidatorOptions>(o => o.ValidationInterval = TimeSpan.Zero);
 
-builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-builder.Services.AddScoped<ICatalogService, CatalogService>();
-builder.Services.AddScoped<IStudentService, StudentService>();
-builder.Services.AddScoped<IGroupService, GroupService>();
-builder.Services.AddScoped<IEnrollmentService, EnrollmentService>();
-builder.Services.AddScoped<ISessionService, SessionService>();
-builder.Services.AddScoped<IInvoiceService, InvoiceService>();
-builder.Services.AddScoped<IDashboardService, DashboardService>();
-
-builder.Services.AddScoped<IPermissionService, PermissionService>();
-builder.Services.AddScoped<IUserAdminService, UserAdminService>();
-builder.Services.AddScoped<IRoleAdminService, RoleAdminService>();
-builder.Services.AddScoped<IMaterialService, MaterialService>();
-builder.Services.AddScoped<IHomeworkService, HomeworkService>();
-builder.Services.AddScoped<IExamService, ExamService>();
-builder.Services.AddScoped<IReportService, ReportService>();
-builder.Services.AddScoped<IPortalService, PortalService>();
-builder.Services.AddScoped<IGraceService, GraceService>();
-builder.Services.AddScoped<IStudentAccountService, StudentAccountService>();
-builder.Services.AddSingleton<IMaterialStorage, MaterialStorage>();
-builder.Services.AddSingleton<IHomeworkStorage, HomeworkStorage>();
-builder.Services.AddSingleton<IMediaTokenService, MediaTokenService>();
-builder.Services.AddScoped<ITransferService, TransferService>();
-builder.Services.AddScoped<IChatService, ChatService>();
 builder.Services.AddScoped<IChatNotifier, SignalRChatNotifier>();
 builder.Services.AddSignalR();
 

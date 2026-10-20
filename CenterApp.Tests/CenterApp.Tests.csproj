@@ -19,7 +19,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\CenterApp.Service\CenterApp.Service.csproj" />
+    <ProjectReference Include="..\CenterApp.Application\CenterApp.Application.csproj" />
+    <ProjectReference Include="..\CenterApp.Domain\CenterApp.Domain.csproj" />
+    <ProjectReference Include="..\CenterApp.Infrastructure\CenterApp.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>
