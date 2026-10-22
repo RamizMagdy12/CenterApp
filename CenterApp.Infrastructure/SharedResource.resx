@@ -1733,6 +1733,9 @@
   <data name="Students.AllGrades" xml:space="preserve">
     <value>كل المراحل</value>
   </data>
+  <data name="Students.AllGroups" xml:space="preserve">
+    <value>كل المجموعات</value>
+  </data>
   <data name="Students.AttendanceOf" xml:space="preserve">
     <value>حضور {0}</value>
   </data>

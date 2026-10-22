@@ -23,12 +23,14 @@ public class StudentsController : AppController
     public StudentsController(IStudentService s, ICatalogService c, IGroupService g, IStudentAccountService acc, ITransferService t, ISessionService sessions)
     { _s = s; _c = c; _g = g; _acc = acc; _t = t; _sessions = sessions; }
 
-    public async Task<IActionResult> Index(string? q, long? gradeId, int page = 1)
+    public async Task<IActionResult> Index(string? q, long? gradeId, long? groupId, int page = 1)
     {
         ViewBag.Q = q;
         ViewBag.GradeId = gradeId;
+        ViewBag.GroupId = groupId;
         ViewBag.Grades = SelectItems.From(await _c.SelectAsync("gradelevels"));
-        return View(await _s.SearchAsync(q, gradeId, page));
+        ViewBag.Groups = SelectItems.From(await _g.SelectAsync());
+        return View(await _s.SearchAsync(q, gradeId, groupId, page));
     }
 
     public async Task<IActionResult> Form(long id = 0)
@@ -64,7 +66,7 @@ public class StudentsController : AppController
         if (string.IsNullOrWhiteSpace(code) || code.Length > 100) return BadRequest();
         using var gen = new QRCodeGenerator();
         using var data = gen.CreateQrCode(code, QRCodeGenerator.ECCLevel.Q);
-        var png = new PngByteQRCode(data).GetGraphic(10);
+        var png = new PngByteQRCode(data).GetGraphic(20);
         return File(png, "image/png");
     }
 

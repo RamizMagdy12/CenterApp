@@ -20,10 +20,10 @@ public class StudentService : IStudentService
         _um = um;
     }
 
-    public async Task<PagedResult<Student>> SearchAsync(string? q, long? gradeId, int page, int pageSize = 15)
+    public async Task<PagedResult<Student>> SearchAsync(string? q, long? gradeId, long? groupId, int page, int pageSize = 15)
     {
         if (page < 1) page = 1;
-        var query = _u.Student.GetAll(includeProperties: "GradeLevel");
+        var query = _u.Student.GetAll(includeProperties: "GradeLevel,Enrollments.Group").AsSplitQuery();
 
         if (!string.IsNullOrWhiteSpace(q))
         {
@@ -37,6 +37,8 @@ public class StudentService : IStudentService
                 || (x.Code != null && x.Code.Contains(q)));
         }
         if (gradeId.HasValue && gradeId > 0) query = query.Where(x => x.GradeLevelId == gradeId);
+        if (groupId.HasValue && groupId > 0)
+            query = query.Where(x => x.Enrollments.Any(e => e.IsActive && e.GroupId == groupId));
 
         var total = await query.CountAsync();
         var items = await query.OrderBy(x => x.Name).Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();

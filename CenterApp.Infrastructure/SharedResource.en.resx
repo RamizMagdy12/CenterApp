@@ -1733,6 +1733,9 @@
   <data name="Students.AllGrades" xml:space="preserve">
     <value>All grades</value>
   </data>
+  <data name="Students.AllGroups" xml:space="preserve">
+    <value>All groups</value>
+  </data>
   <data name="Students.AttendanceOf" xml:space="preserve">
     <value>Attendance of {0}</value>
   </data>
