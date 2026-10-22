@@ -66,8 +66,9 @@ public class AccountController : Controller
 
         if (result.Succeeded)
         {
-            // ختم جديد بيلغي أي جلسة مفتوحة لنفس الحساب على جهاز تاني
-            await _um.UpdateSecurityStampAsync(user);
+            // الأدمن يفضل فاتح من أكتر من جهاز. باقي الحسابات الجلسة الجديدة بتقفل القديمة.
+            if (!await _um.IsInRoleAsync(user, RoleNames.Admin))
+                await _um.UpdateSecurityStampAsync(user);
             await _sm.SignInAsync(user, isPersistent: true);
 
             if (await _um.IsInRoleAsync(user, RoleNames.Student))

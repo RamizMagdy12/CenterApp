@@ -157,8 +157,14 @@ public class ReportService : IReportService
                 return day >= member.Joined && (member.Left == null || day <= member.Left);
             }
 
+            var lastMissedId = sessions
+                .Where(ses => ses.Date.Date < member.Joined)
+                .OrderByDescending(ses => ses.Date).ThenByDescending(ses => ses.StartTime).ThenByDescending(ses => ses.Id)
+                .Select(ses => (long?)ses.Id)
+                .FirstOrDefault();
+
             var bySession = attendance.Where(a => a.StudentId == st.Id).ToDictionary(a => a.SessionId);
-            var rows = sessions.Where(ses => InWindow(ses.Date)).Select(ses =>
+            var rows = sessions.Where(ses => InWindow(ses.Date) || ses.Id == lastMissedId).Select(ses =>
             {
                 bySession.TryGetValue(ses.Id, out var row);
                 return new AttendanceReportRow

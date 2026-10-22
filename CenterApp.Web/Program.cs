@@ -76,13 +76,17 @@ builder.WebHost.ConfigureKestrel(o => o.Limits.MaxRequestBodySize = 262144000);
 
 var app = builder.Build();
 
+// الاستضافة المجانية بتشتغل HTTP لحد ما يتفعل HTTPS. الافتراضي يفضل التحويل شغال.
+var forceHttps = app.Configuration.GetValue("Hosting:ForceHttps", true);
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    app.UseHsts();
+    if (forceHttps)
+        app.UseHsts();
 }
 
-app.UseHttpsRedirection();
+if (forceHttps)
+    app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();

@@ -99,9 +99,42 @@ public class SessionService : ISessionService
         var reason = LockReason(s);
         if (reason != null) return new AttendanceVm { SessionId = s.Id, LockReason = reason };
 
+        var day = s.Date.Date;
         var enrollments = await _u.GroupEnrollment
-            .GetAll(e => e.GroupId == s.GroupId && e.JoinedAt <= s.Date && (e.LeftAt == null || e.LeftAt >= s.Date), "Student")
-            .OrderBy(e => e.Student.Name).ToListAsync();
+            .GetAll(e => e.GroupId == s.GroupId && (e.LeftAt == null || e.LeftAt >= day), "Student")
+            .ToListAsync();
+
+        var byStudent = enrollments
+            .Where(e => e.Student != null)
+            .GroupBy(e => e.StudentId)
+            .Select(g => g.OrderByDescending(e => e.JoinedAt).First())
+            .ToList();
+
+        var roster = byStudent
+            .Where(e => e.JoinedAt.Date <= day)
+            .Select(e => (Enrollment: e, CatchUp: false))
+            .ToList();
+
+        // الطالب اللي اتضاف بعد الحصص القديمة يظهر في آخر حصة قبل تاريخ إضافته فقط.
+        var late = byStudent.Where(e => e.JoinedAt.Date > day).ToList();
+        if (late.Count > 0)
+        {
+            var latestJoin = late.Max(e => e.JoinedAt.Date);
+            var earlier = await _u.Session
+                .GetAll(x => x.GroupId == s.GroupId && x.Status != SessionStatus.Cancelled && x.Date < latestJoin)
+                .Select(x => new { x.Id, x.Date, x.StartTime })
+                .ToListAsync();
+
+            foreach (var e in late)
+            {
+                var lastMissed = earlier
+                    .Where(x => x.Date.Date < e.JoinedAt.Date)
+                    .OrderByDescending(x => x.Date).ThenByDescending(x => x.StartTime).ThenByDescending(x => x.Id)
+                    .FirstOrDefault();
+                if (lastMissed != null && lastMissed.Id == s.Id)
+                    roster.Add((e, true));
+            }
+        }
 
         var recorded = (await _u.SessionAttendance.GetAll(a => a.SessionId == sessionId).ToListAsync())
             .ToDictionary(a => a.StudentId, a => a.Status);
@@ -111,15 +144,21 @@ public class SessionService : ISessionService
             SessionId = s.Id,
             GroupName = Bilingual.Show(s.Group.Name, s.Group.NameEn),
             Date = s.Date,
-            Rows = enrollments.Select(e => new AttendanceRowVm
-            {
-                StudentId = e.StudentId,
-                StudentCode = e.Student.Code ?? "",
-                StudentName = Bilingual.Show(e.Student.Name, e.Student.NameEn),
-                IsRecorded = recorded.ContainsKey(e.StudentId),
-                QrToken = e.Student.QrToken ?? e.Student.Code ?? "",
-                Status = recorded.TryGetValue(e.StudentId, out var st) ? st : AttendanceStatus.Present
-            }).ToList()
+            Rows = roster
+                .OrderBy(x => x.Enrollment.Student.Name)
+                .Select(x =>
+                {
+                    var known = recorded.TryGetValue(x.Enrollment.StudentId, out var st);
+                    return new AttendanceRowVm
+                    {
+                        StudentId = x.Enrollment.StudentId,
+                        StudentCode = x.Enrollment.Student.Code ?? "",
+                        StudentName = Bilingual.Show(x.Enrollment.Student.Name, x.Enrollment.Student.NameEn),
+                        IsRecorded = known,
+                        QrToken = x.Enrollment.Student.QrToken ?? x.Enrollment.Student.Code ?? "",
+                        Status = known ? st : x.CatchUp ? AttendanceStatus.Absent : AttendanceStatus.Present
+                    };
+                }).ToList()
         };
     }
 
