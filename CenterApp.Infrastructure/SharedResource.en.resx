@@ -1694,6 +1694,12 @@
   <data name="Sessions.SaveAttendance" xml:space="preserve">
     <value>Save attendance</value>
   </data>
+  <data name="Sessions.SearchPh" xml:space="preserve">
+    <value>Search by name or code</value>
+  </data>
+  <data name="Sessions.NoSearchMatch" xml:space="preserve">
+    <value>No student matches this name or code.</value>
+  </data>
   <data name="Sessions.ScanPh" xml:space="preserve">
     <value>Scan with a barcode reader, or type the code and press Enter</value>
   </data>
