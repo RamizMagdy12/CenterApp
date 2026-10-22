@@ -876,7 +876,28 @@ body.sb-collapsed .sidebar {
         inset-inline-start: 0;
         z-index: 1050;
         margin: 0 !important;
+        height: 100vh;
+        height: 100dvh;
+        max-height: 100dvh;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
         transition: transform .25s ease;
+    }
+
+    .sidebar nav {
+        flex: 1 1 auto;
+        min-height: 0;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior: contain;
+        touch-action: pan-y;
+        padding-bottom: 28px;
+    }
+
+    body.sb-open {
+        overflow: hidden;
     }
 
     html[dir=rtl] .sidebar {
@@ -1119,6 +1140,17 @@ img {
 .tb-pop-bell #bellList {
     max-height: 340px;
     overflow: auto;
+}
+
+@media (max-width: 767.98px) {
+    .tb-pop-bell {
+        position: fixed;
+        top: 64px;
+        inset-inline-start: 8px;
+        inset-inline-end: 8px;
+        width: auto;
+        max-width: none;
+    }
 }
 
 .tb-note {
