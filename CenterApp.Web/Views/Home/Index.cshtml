@@ -16,83 +16,35 @@
         : 0;
 }
 
-<div class="hello">
-    <div class="avatar">
-        @(string.IsNullOrEmpty(userName) ? L.Get("Common.UnknownMark").Value : userName.Substring(0, 1))
-    </div>
+<div class="desk">
+<header class="desk-top">
+    <div class="desk-date">@DateTime.Now.ToString("dddd, dd MMMM yyyy", ui)</div>
+    <h2>@L.Get("Dash.Hello", userName)</h2>
+    <p>@L.Get("Dash.Welcome")</p>
+</header>
 
+<section class="desk-figures">
     <div>
-        <h2>@L.Get("Dash.Hello", userName)</h2>
-        <p>@L.Get("Dash.Welcome")</p>
+        <span class="k">@L.Get("Dash.TotalStudents")</span>
+        <b>@Model.TotalStudents</b>
+        <small>@L.Get("Dash.Enrolled", Model.EnrolledStudents)</small>
     </div>
-
-    <div class="date-pill">
-        <i class="bi bi-calendar3"></i>
-        @DateTime.Now.ToString("dddd, dd MMMM yyyy", ui)
+    <div>
+        <span class="k">@L.Get("Dash.TodayAttendance")</span>
+        <b>@(Model.TodayPresentRate.HasValue ? Model.TodayPresentRate + "%" : "—")</b>
+        <small>@(Model.TodayPresentRate.HasValue ? L.Get("Dash.TodaySessions", Model.TodaySessionsCount) : L.Get("Dash.NoData"))</small>
     </div>
-</div>
-
-<div class="stats">
-    <div class="stat">
-        <span class="pill pill-primary">
-            @L.Get("Dash.Enrolled", Model.EnrolledStudents)
-        </span>
-
-        <div class="stat-ico dark">
-            <i class="bi bi-people"></i>
-        </div>
-
-        <div class="stat-num">@Model.TotalStudents</div>
-        <div class="stat-label">@L.Get("Dash.TotalStudents")</div>
+    <div>
+        <span class="k">@L.Get("Menu.Groups")</span>
+        <b>@Model.ActiveGroups</b>
+        <small>@L.Get("Dash.ActiveCount", Model.ActiveGroups)</small>
     </div>
-
-    <div class="stat">
-        @if (Model.TodayPresentRate.HasValue)
-        {
-            <span class="pill pill-ok">
-                @L.Get("Dash.TodaySessions", Model.TodaySessionsCount)
-            </span>
-        }
-        else
-        {
-            <span class="pill pill-warn">@L.Get("Dash.NoData")</span>
-        }
-
-        <div class="stat-ico light">
-            <i class="bi bi-check2"></i>
-        </div>
-
-        <div class="stat-num">
-            @(Model.TodayPresentRate.HasValue
-                ? Model.TodayPresentRate + "%"
-                : "—")
-        </div>
-
-        <div class="stat-label">@L.Get("Dash.TodayAttendance")</div>
+    <div>
+        <span class="k">@L.Get("Lookups.Teachers")</span>
+        <b>@Model.Teachers</b>
+        <small>@L.Get("Dash.TeacherCount", Model.Teachers)</small>
     </div>
-
-    <div class="stat">
-        <span class="pill pill-primary">@L.Get("Dash.ActiveCount", Model.ActiveGroups)</span>
-
-        <div class="stat-ico dark">
-            <i class="bi bi-collection"></i>
-        </div>
-
-        <div class="stat-num">@Model.ActiveGroups</div>
-        <div class="stat-label">@L.Get("Menu.Groups")</div>
-    </div>
-
-    <div class="stat">
-        <span class="pill pill-primary">@L.Get("Dash.TeacherCount", Model.Teachers)</span>
-
-        <div class="stat-ico light">
-            <i class="bi bi-person-workspace"></i>
-        </div>
-
-        <div class="stat-num">@Model.Teachers</div>
-        <div class="stat-label">@L.Get("Lookups.Teachers")</div>
-    </div>
-</div>
+</section>
 
 <div class="grid-2-1">
     <div class="panel">
@@ -281,6 +233,7 @@
         </div>
     }
 </div>
+</div>
 
 @section Scripts {
     <script src="~/lib/chart.js/dist/chart.umd.js"></script>
@@ -303,14 +256,15 @@
                     data: last7.map(function (d) {
                         return d.r;
                     }),
-                    borderColor: '#146278',
-                    backgroundColor: 'rgba(20,98,120,.10)',
-                    fill: true,
-                    tension: .35,
-                    pointBackgroundColor: '#fff',
-                    pointBorderColor: '#146278',
-                    pointBorderWidth: 2,
-                    pointRadius: 5,
+                    borderColor: '#163044',
+                    backgroundColor: 'transparent',
+                    fill: false,
+                    tension: .15,
+                    borderWidth: 1.75,
+                    pointBackgroundColor: '#163044',
+                    pointBorderColor: '#163044',
+                    pointBorderWidth: 0,
+                    pointRadius: 3,
                     spanGaps: true
                 }]
             },

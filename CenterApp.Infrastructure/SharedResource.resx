@@ -83,6 +83,15 @@
   <data name="Auth.SignIn" xml:space="preserve">
     <value>دخول</value>
   </data>
+  <data name="Auth.WelcomeBack" xml:space="preserve">
+    <value>أهلاً بعودتك</value>
+  </data>
+  <data name="Auth.PanelTitle" xml:space="preserve">
+    <value>كل حاجة السنتر في مكان واحد.</value>
+  </data>
+  <data name="Auth.PanelText" xml:space="preserve">
+    <value>الطلاب، الحضور، المجموعات، والحسابات.</value>
+  </data>
   <data name="Auth.UserOrEmail" xml:space="preserve">
     <value>اسم المستخدم أو البريد الإلكتروني</value>
   </data>

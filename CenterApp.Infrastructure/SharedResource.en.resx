@@ -83,6 +83,15 @@
   <data name="Auth.SignIn" xml:space="preserve">
     <value>Sign in</value>
   </data>
+  <data name="Auth.WelcomeBack" xml:space="preserve">
+    <value>Welcome back</value>
+  </data>
+  <data name="Auth.PanelTitle" xml:space="preserve">
+    <value>The center, in one place.</value>
+  </data>
+  <data name="Auth.PanelText" xml:space="preserve">
+    <value>Students, attendance, groups, and accounts.</value>
+  </data>
   <data name="Auth.UserOrEmail" xml:space="preserve">
     <value>Username or email</value>
   </data>
