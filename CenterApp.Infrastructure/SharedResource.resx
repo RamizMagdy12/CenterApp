@@ -1694,6 +1694,12 @@
   <data name="Sessions.SaveAttendance" xml:space="preserve">
     <value>حفظ الحضور</value>
   </data>
+  <data name="Sessions.SearchPh" xml:space="preserve">
+    <value>ابحث بالاسم أو الكود</value>
+  </data>
+  <data name="Sessions.NoSearchMatch" xml:space="preserve">
+    <value>مفيش طالب مطابق للاسم أو الكود.</value>
+  </data>
   <data name="Sessions.ScanPh" xml:space="preserve">
     <value>اعمل Scan بقارئ الباركود أو اكتب الكود واضغط Enter</value>
   </data>
