@@ -36,6 +36,7 @@
     <div class="col-auto"><button class="btn btn-outline-primary">@L.Get("Common.Search")</button></div>
 </form>
 
+<div class="table-responsive">
 <table class="table table-striped table-hover align-middle">
     <thead><tr><th>@L.Get("Common.Code")</th><th>@L.Get("Common.Name")</th><th>@L.Get("Common.Phone")</th><th>@L.Get("Students.Parent")</th><th>@L.Get("Common.Grade")</th><th>@L.Get("Common.Group")</th><th>@L.Get("Common.Status")</th><th></th></tr></thead>
     <tbody>
@@ -43,7 +44,7 @@
         {
             <tr>
                 <td>@s.Code</td>
-                <td>@s.LocalName</td>
+                <td class="stu-name">@s.LocalName</td>
                 <td>@s.Phone</td>
                 <td>@s.LocalParentName <small class="text-muted">@s.ParentPhone</small></td>
                 <td>@s.GradeLevel?.LocalName</td>
@@ -82,6 +83,7 @@
     }
 </tbody>
 </table>
+</div>
 
 @if (Model.TotalPages > 1)
 {

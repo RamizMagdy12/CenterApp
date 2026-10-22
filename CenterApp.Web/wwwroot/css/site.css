@@ -859,6 +859,10 @@ body.sb-collapsed .sidebar {
     background: #fff;
 }
 
+.table td.stu-name {
+    white-space: nowrap;
+}
+
 .modal-content {
     border-radius: 16px;
     border: 0;
