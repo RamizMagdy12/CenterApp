@@ -10,9 +10,9 @@ Names and numbers in the screenshots are sample data, not real records.
 
 ## الترجمة · Localization
 
-الواجهة مترجمة بالكامل بين **العربية** و**الإنجليزية**. اللغة الافتراضية عربي (مصر)، والاتجاه بيتظبط لوحده: RTL بالعربي و LTR بالإنجليزي. التبديل من زر اللغة في الشريط العلوي، والنصوص في `CenterApp.Infrastructure/SharedResource.resx` و `SharedResource.en.resx`.
+الواجهة مترجمة بالكامل بين **العربية** و**الإنجليزية**. اللغة الافتراضية عربي (مصر)، والاتجاه بيتظبط لوحده: RTL بالعربي و LTR بالإنجليزي. التبديل من قائمة اللغة في الشريط العلوي، والنصوص في `CenterApp.Infrastructure/SharedResource.resx` و `SharedResource.en.resx`.
 
-The whole interface is localized in **Arabic** and **English**. Arabic (Egypt) is the default, and layout direction follows the language: RTL for Arabic, LTR for English. The switch is in the top bar. Strings live in `CenterApp.Infrastructure/SharedResource.resx` and `SharedResource.en.resx`.
+The whole interface is localized in **Arabic** and **English**. Arabic (Egypt) is the default, and layout direction follows the language: RTL for Arabic, LTR for English. The switch is a language menu in the top bar. Strings live in `CenterApp.Infrastructure/SharedResource.resx` and `SharedResource.en.resx`.
 
 لوحة التحكم بالإنجليزي.
 
@@ -34,17 +34,17 @@ Online exams in English.
 
 ## الدخول ولوحة التحكم · Sign-in and dashboard
 
-تسجيل الدخول. / Sign in.
+تسجيل الدخول. تحت الكارت سطر «تطوير Ramiz Magdy Awad»، وبالإنجليزي «Developed by Ramiz Magdy Awad». / Sign in. Under the card: “تطوير Ramiz Magdy Awad” in Arabic, and “Developed by Ramiz Magdy Awad” in English.
 
 ![Login](docs/screenshots/login.png)
 
-ملخص اليوم: الطلاب، المجموعات، الحضور، وحسابات الشهر. / Today’s summary: students, groups, attendance, and this month’s accounts.
+ملخص اليوم: الطلاب، المجموعات، الحضور، وحسابات الشهر. نفس سطر التطوير في آخر الصفحة. / Today’s summary: students, groups, attendance, and this month’s accounts. The same credit line sits at the bottom of the page.
 
 ![Dashboard](docs/screenshots/dashboard.png)
 
 ## الطلاب · Students
 
-القائمة: بحث، كود، كارنيه QR، وحساب دخول. / The list: search, code, QR card, and a portal login.
+القائمة: بحث، كود، المجموعة، كارنيه QR أكبر، وحساب دخول. فلتر المجموعة جنب فلتر المرحلة، واسم الطالب يفضل على سطر واحد. / The list: search, code, group, a larger QR card, and a portal login. The group filter sits next to the grade filter, and the student name stays on one line.
 
 ![Students](docs/screenshots/students.png)
 
@@ -84,13 +84,13 @@ Online exams in English.
 
 ![Sessions](docs/screenshots/attendance.png)
 
-التحضير: حاضر، غائب، بعذر، متأخر، مع تحضير بالـ QR. / Take attendance: present, absent, excused, late, including QR check-in.
+التحضير: حاضر، غائب، بعذر، متأخر، مع بحث بالاسم أو الكود وتحضير بالـ QR. / Take attendance: present, absent, excused, late, with search by name or code and QR check-in.
 
 ![Take attendance](docs/screenshots/attendance-take.png)
 
 ## التحصيل · Billing
 
-فاتورة الشهر: المستحق، المدفوع، والمتبقي، مع تسجيل الدفع والخصم والسماح. / The month’s invoice: due, paid, and remaining, plus payment, discount, and grace.
+فاتورة الشهر: المستحق، المدفوع، والمتبقي، مع تسجيل الدفع والخصم والسماح. سماح الفاتورة لدخول الماتريال، وهو غير سماح الامتحان. / The month’s invoice: due, paid, and remaining, plus payment, discount, and grace. Invoice grace opens materials. Exam grace is separate: it reopens one attempt, once.
 
 ![Invoices](docs/screenshots/invoices.png)
 
@@ -100,7 +100,7 @@ Online exams in English.
 
 ![Materials](docs/screenshots/materials.png)
 
-تعديل ماتريال: العنوان، المجموعات، ورفع فيديو أو PDF أو صور. / Edit a material: title, groups, and video, PDF, or image upload.
+تعديل ماتريال: العنوان، المجموعات، ورفع فيديو أو PDF أو صور. لو الفيديوهات أكتر من واحد، الأول يتشغل كبير والباقي في قائمة جنبه، وعلى الموبايل القائمة تحت المشغّل. ملفات PDF والصور تفضل تحت. / Edit a material: title, groups, and video, PDF, or image upload. With more than one video, the first plays large and the rest sit in a list beside it; on a phone the list goes under the player. PDF files and images stay below.
 
 ![Edit material](docs/screenshots/material-edit.png)
 
@@ -122,7 +122,7 @@ Online exams in English.
 
 ![Edit exam](docs/screenshots/exam-edit.png)
 
-درجات المحاولات، وإعادة فتح محاولة لطالب. / Attempt grades, and reopening an attempt for a student.
+درجات المحاولات، وإعادة فتح محاولة لطالب. مواعيد الامتحان بتوقيت مصر. إعادة الفتح مدة بالدقائق ودخلة واحدة: لو الطالب خرج أو رجع أو حدّث الصفحة، الامتحان بيتسلّم ومش يقدر يدخله تاني إلا لو اتفتح له من جديد. لقطة شاشة الموبايل مش بتتقفل من المتصفح، والورقة عليها علامة مائية باسم الطالب وكوده. / Attempt grades, and reopening an attempt for a student. Exam times follow Egypt. A reopen lasts for the chosen minutes and allows one entry: leaving, going back, or refreshing submits the exam, and the student cannot enter again unless it is reopened. A phone screenshot cannot be blocked in the browser; the sheet carries a watermark with the student’s name and code.
 
 ![Exam grades](docs/screenshots/exam-grades.png)
 
@@ -162,19 +162,19 @@ Online exams in English.
 - توليد حصص الشهر والتحضير. Generate the month’s sessions and take attendance.
 
 **المحتوى والاختبار · Content and exams**
-- ماتريال: فيديو، PDF، وصور. واجبات PDF و Word. Materials: video, PDF, and images. Homework as PDF or Word.
-- اختبار أونلاين باختيارات متعددة، وتسليم تلقائي، وإعادة فتح المحاولة. Online multiple-choice exams, auto-submit, and reopening an attempt.
+- ماتريال: فيديو، PDF، وصور. أكتر من فيديو يظهر كقائمة تشغيل. واجبات PDF و Word. Materials: video, PDF, and images. Several videos play as a list. Homework as PDF or Word.
+- اختبار أونلاين باختيارات متعددة وبتوقيت مصر، وتسليم تلقائي، وإعادة فتح المحاولة مرة واحدة. Online multiple-choice exams on Egypt time, auto-submit, and reopening an attempt once.
 - درجات ورقي بجانب الأونلاين، وتقارير قابلة للطباعة. Offline scores beside online exams, and printable reports.
 
 **الحسابات · Accounts**
 - فاتورة شهرية، خصم نسبة أو مبلغ، ودفعات كاش أو محفظة أو تحويل. A monthly invoice, a percent or fixed discount, and cash, wallet, or transfer payments.
-- سماح مؤقت بدخول الماتريال. A temporary grace period for material access.
+- سماح مؤقت بدخول الماتريال، منفصل عن إعادة فتح الامتحان. A temporary grace period for material access, separate from reopening an exam.
 
 **التواصل والصلاحيات · Messages and permissions**
 - رسائل بين الطالب والمدرس مع إشعارات فورية (SignalR). Student–teacher messages with live notifications (SignalR).
 - ثلاثة أدوار: مدير، مدرس، طالب. كل شاشة لها عرض وإضافة وتعديل وحذف. Three roles: admin, teacher, and student. Each screen has view, add, edit, and delete.
 - بوابة الطالب: ماتريال، واجبات، اختبارات، حضور، وسؤال للمدرس. The student portal: materials, homework, exams, attendance, and a question to the teacher.
-- جلسة واحدة نشطة للحساب. One active session per account.
+- المدير يفضل داخل على أكتر من جهاز. المدرس والطالب: الدخول الجديد بيقفل الجلسة القديمة. An admin can stay signed in on more than one device. For a teacher or a student, a new login ends the previous session.
 
 | الدور · Role | ما يراه · What they see |
 | --- | --- |
@@ -235,3 +235,17 @@ The first run applies migrations and creates the admin from `Seed` if that accou
 ملفات الماتريال والواجبات تحت `CenterApp.Web/App_Data`. تحويل صفحات المستندات لصور يستخدم LibreOffice لو كان متسطبًا، والمسار في `Material:LibreOfficePath`.
 
 Material and homework files are stored under `CenterApp.Web/App_Data`. Turning document pages into images uses LibreOffice when it is installed; the path is `Material:LibreOfficePath`.
+
+## النسخة اللايف · Live site
+
+الموقع المنشور: https://centerapp.runasp.net
+
+الكود على الجهاز في المشروع ده، وقاعدة الجهاز LocalDB اسمها `CenterApp`. بيانات اللايف في قاعدة منفصلة على الاستضافة، ومش بتنتقل لوحدها.
+
+The published site is https://centerapp.runasp.net
+
+The code on this machine is this project, and the local database is LocalDB, named `CenterApp`. Live data sits in a separate database on the host and does not move across by itself.
+
+كاميرا الـ QR على اللايف محتاجة HTTPS، وده متفعّل. تحويل Word إلى PDF محتاج LibreOffice، وده على الجهاز بس مش على الاستضافة المجانية.
+
+The QR camera on the live site needs HTTPS, and that is on. Turning Word into PDF needs LibreOffice, which is on this machine only, not on the free host.
