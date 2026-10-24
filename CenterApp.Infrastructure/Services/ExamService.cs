@@ -1,5 +1,6 @@
 using System.Text.RegularExpressions;
 using CenterApp.Domain.Center;
+using CenterApp.Application;
 using CenterApp.Application.Abstractions;
 using CenterApp.Application.Models;
 using CenterApp.Application.Abstractions;
@@ -12,6 +13,7 @@ namespace CenterApp.Infrastructure.Services;
 public class ExamService : IExamService
 {
     private const long MaxImage = 4L * 1024 * 1024;
+    private const string RetakeWait = "retake-wait";
     private static readonly Regex ImageName = new(@"^[a-f0-9]{32}\.(jpg|png|webp|gif)$", RegexOptions.Compiled);
     private readonly IUnitOfWork _u;
     private readonly IWebHostEnvironment _env;
@@ -21,7 +23,7 @@ public class ExamService : IExamService
         _env = env;
     }
 
-    private static DateTime Now() => DateTime.Now;
+    private static DateTime Now() => EgyptClock.Now;
 
     public async Task<long?> TeacherIdOfUserAsync(string userId)
         => await _u.Teacher.GetAll(t => t.UserId == userId).Select(t => (long?)t.Id).FirstOrDefaultAsync();
@@ -481,7 +483,7 @@ public class ExamService : IExamService
                 Phase = phase,
                 PhaseText = text,
                 Score = score,
-                CanStart = phase == "open",
+                CanStart = phase is "open" or "once",
                 CanResume = phase == "progress"
             };
         }).ToList();
@@ -538,7 +540,7 @@ public class ExamService : IExamService
             Phase = phase,
             PhaseText = text,
             Score = score,
-            CanStart = phase == "open",
+            CanStart = phase is "open" or "once",
             CanResume = phase == "progress"
         };
     }
@@ -570,7 +572,8 @@ public class ExamService : IExamService
                 StudentId = studentId,
                 StartedAt = Now(),
                 Status = ExamAttemptStatus.InProgress,
-                RetakeUntil = until
+                RetakeUntil = until,
+                EndReason = RetakeWait
             });
         }
         else
@@ -579,14 +582,14 @@ public class ExamService : IExamService
             attempt.Status = ExamAttemptStatus.InProgress;
             attempt.Score = null;
             attempt.SubmittedAt = null;
-            attempt.EndReason = null;
+            attempt.EndReason = RetakeWait;
             attempt.ViolationCount = 0;
             attempt.StartedAt = Now();
             attempt.RetakeUntil = until;
         }
 
         await _u.SaveAsync();
-        return OpResult.Success($"اتفتح الاختبار لمدة {minutes} دقيقة");
+        return OpResult.Success($"اتفتح الاختبار لمدة {minutes} دقيقة، ويدخل مرة واحدة");
     }
 
     public async Task<OpResult> StartAsync(long studentId, long examId)
@@ -602,6 +605,17 @@ public class ExamService : IExamService
 
         if (existing != null)
         {
+            var retakeOpen = existing.RetakeUntil != null && now < existing.RetakeUntil.Value;
+            if (retakeOpen && existing.EndReason == RetakeWait)
+            {
+                existing.EndReason = null;
+                existing.Status = ExamAttemptStatus.InProgress;
+                existing.StartedAt = now;
+                await _u.SaveAsync();
+                return new OpResult(true, "بدأ الاختبار", examId);
+            }
+            if (retakeOpen)
+                return OpResult.Fail("فترة السماح مرة واحدة، ومينفعش تدخل الاختبار تاني");
             if (existing.Status != ExamAttemptStatus.InProgress)
                 return OpResult.Fail("الاختبار اتسلّم قبل كده ومينفعش تعيده");
             return new OpResult(true, "كمّل الاختبار", examId);
@@ -634,6 +648,7 @@ public class ExamService : IExamService
             .GetAll(a => a.ExamId == examId && a.StudentId == studentId, "Answers", tracking: true)
             .FirstOrDefaultAsync();
         if (attempt == null || attempt.Status != ExamAttemptStatus.InProgress) return null;
+        if (attempt.EndReason == RetakeWait) return null;
 
         var close = EffectiveClose(exam, attempt);
         if (Now() >= close)
@@ -655,6 +670,7 @@ public class ExamService : IExamService
             ClosesAt = close,
             ResultsAt = exam.ResultsAt,
             RemainingSeconds = Math.Max(0, (int)(close - Now()).TotalSeconds),
+            SingleEntry = attempt.RetakeUntil != null,
             Questions = exam.Questions.OrderBy(q => q.SortOrder).ThenBy(q => q.Id).Select(q => new ExamTakeQuestionVm
             {
                 Id = q.Id,
@@ -858,7 +874,7 @@ public class ExamService : IExamService
     }
 
     private static bool IsLocked(OnlineExam exam)
-        => exam.Attempts.Count > 0 || (exam.Status == ExamStatus.Published && DateTime.Now >= exam.OpensAt);
+        => exam.Attempts.Count > 0 || (exam.Status == ExamStatus.Published && Now() >= exam.OpensAt);
 
     private static bool IsRunning(OnlineExam exam)
     {
@@ -920,8 +936,10 @@ public class ExamService : IExamService
         if (attempt.Status == ExamAttemptStatus.InProgress)
         {
             var close = EffectiveClose(exam, attempt);
+            if (now < close && attempt.RetakeUntil != null && attempt.EndReason == RetakeWait)
+                return "فترة سماح لحد " + attempt.RetakeUntil.Value.ToString("HH:mm") + " · مرة واحدة";
             if (now < close && attempt.RetakeUntil != null)
-                return "مفتوح تاني لحد " + attempt.RetakeUntil.Value.ToString("HH:mm");
+                return "داخل فترة السماح";
             if (now < close) return "جاري";
         }
         return attempt.EndReason ?? "تم التسليم";
@@ -934,8 +952,12 @@ public class ExamService : IExamService
     {
         var revealed = now >= exam.ResultsAt;
         var close = EffectiveClose(exam, attempt);
+        if (attempt?.Status == ExamAttemptStatus.InProgress && attempt.EndReason == RetakeWait && now < close)
+            return ("once", "مرة واحدة", null);
+        if (attempt?.Status == ExamAttemptStatus.InProgress && attempt.RetakeUntil != null && now < close)
+            return ("used", "اتسجل دخولك", null);
         if (attempt?.Status == ExamAttemptStatus.InProgress && now < close)
-            return ("progress", attempt?.RetakeUntil != null ? "اتفتح لك الاختبار تاني" : "الاختبار مفتوح، كمّل", null);
+            return ("progress", "الاختبار مفتوح، كمّل", null);
         if (attempt != null && attempt.Status != ExamAttemptStatus.InProgress)
         {
             if (!revealed) return ("submitted", "تم التسليم، النتيجة لسه", null);

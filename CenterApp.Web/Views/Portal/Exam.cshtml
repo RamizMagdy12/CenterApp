@@ -39,6 +39,17 @@
     {
         <div class="alert alert-secondary">@L.Get("Portal.Upcoming", Model.OpensAt.ToString("yyyy-MM-dd HH:mm"))</div>
     }
+    else if (Model.Phase == "once")
+    {
+        <div class="alert alert-warning">@L.Get("Portal.GraceOnce")</div>
+        <form asp-action="StartExam" asp-route-id="@Model.Id" method="post">
+            <button class="btn btn-primary">@L.Get("Portal.Start")</button>
+        </form>
+    }
+    else if (Model.Phase == "used")
+    {
+        <div class="alert alert-warning">@L.Get("Portal.GraceUsed")</div>
+    }
     else
     {
         <div class="alert alert-warning">

@@ -1,5 +1,6 @@
 using CenterApp.Domain.Center;
 using CenterApp.Application.Models;
+using CenterApp.Application;
 using CenterApp.Application.Abstractions;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,7 +21,7 @@ public class SessionService : ISessionService
         if (s.Status == SessionStatus.Cancelled) return "الحصة دي ملغية";
 
         var opensAt = StartsAt(s).AddMinutes(-EarlyMinutes);
-        if (DateTime.Now < opensAt)
+        if (EgyptClock.Now < opensAt)
             return $"معاد الحصة لسه ما جاش. التحضير بيفتح يوم {opensAt:yyyy-MM-dd} الساعة {opensAt:HH:mm}";
 
         return null;

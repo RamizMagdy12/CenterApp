@@ -1379,6 +1379,18 @@
   <data name="Portal.ResultsForAll" xml:space="preserve">
     <value>Results appear for all students</value>
   </data>
+  <data name="Portal.GraceOnce" xml:space="preserve">
+    <value>This grace period is one entry. If you leave the exam, you cannot open it again.</value>
+  </data>
+  <data name="Portal.GraceOnceShort" xml:space="preserve">
+    <value>One entry</value>
+  </data>
+  <data name="Portal.GraceUsed" xml:space="preserve">
+    <value>You already used this grace period, so you cannot enter again.</value>
+  </data>
+  <data name="Portal.GraceUsedShort" xml:space="preserve">
+    <value>Already entered</value>
+  </data>
   <data name="Portal.Resume" xml:space="preserve">
     <value>Continue the exam</value>
   </data>
@@ -1933,6 +1945,9 @@
   </data>
   <data name="Viewer.Fullscreen" xml:space="preserve">
     <value>Full screen</value>
+  </data>
+  <data name="Viewer.VideoList" xml:space="preserve">
+    <value>Videos</value>
   </data>
   <data name="Common.InArabic" xml:space="preserve">
     <value>In Arabic</value>

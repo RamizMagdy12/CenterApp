@@ -55,7 +55,7 @@ else
                         {
                             <span class="badge bg-success">@L.Get("Exam.Live")</span>
                         }
-                        else if (m.Status == ExamStatus.Published && m.ClosesAt <= DateTime.Now)
+                        else if (m.Status == ExamStatus.Published && m.ClosesAt <= EgyptClock.Now)
                         {
                             <span class="badge bg-dark">@L.Get("Exam.Closed")</span>
                         }

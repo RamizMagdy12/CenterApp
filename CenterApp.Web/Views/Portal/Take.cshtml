@@ -28,7 +28,7 @@
     .choice { display: flex; gap: 10px; align-items: flex-start; border: 1px solid #e3eaee; border-radius: 10px; padding: 10px 12px; margin-bottom: 8px; cursor: pointer; }
     .choice:has(input:checked) { border-color: #146278; background: #e7f4f6; }
     .exam-watermark { position: fixed; inset: -20%; z-index: 6; display: flex; flex-wrap: wrap; align-content: space-around; justify-content: space-around; transform: rotate(-18deg); pointer-events: none; }
-    .exam-watermark span { margin: 22px 28px; font-size: 14px; font-weight: 800; color: rgba(20,98,120,.18); white-space: nowrap; }
+    .exam-watermark span { margin: 16px 22px; font-size: 18px; font-weight: 800; color: rgba(20,98,120,.38); white-space: nowrap; }
     #shotCover { position: fixed; inset: 0; background: #102433; z-index: 90; display: none; }
     .gate, .done { position: fixed; inset: 0; background: rgba(16,36,51,.72); z-index: 40; display: grid; place-items: center; padding: 18px; }
     .gate-card, .done-card { background: #fff; border-radius: 16px; padding: 22px; max-width: 460px; width: 100%; }
@@ -36,7 +36,7 @@
 </style>
 
 <div class="exam-watermark" aria-hidden="true">
-    @for (var w = 0; w < 24; w++)
+    @for (var w = 0; w < 48; w++)
     {
         <span>@Model.StudentCode · @Model.StudentName</span>
     }
@@ -107,6 +107,8 @@
         var endsAt = Date.now() + (@Model.RemainingSeconds * 1000);
         var resultsText = '@Model.ResultsAt.ToString("yyyy-MM-dd HH:mm")';
         var armed = false, finished = false, escAsking = false, shotLock = false, saveTimer = null;
+        var oneShot = @(Model.SingleEntry ? "true" : "false");
+        function inExam() { return (armed || oneShot) && !finished; }
         var txtNoScreenshots = @Json.Serialize(L.Get("Portal.NoScreenshots").Value);
         var txtScreenshotBlocked = @Json.Serialize(L.Get("Portal.ScreenshotBlocked").Value);
         var txtReturn = @Json.Serialize(L.Get("Portal.ReturnToExam").Value);
@@ -248,7 +250,7 @@
             var el = document.getElementById('timer');
             el.textContent = String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
             el.classList.toggle('late', left < 60);
-            if (armed && left <= 0) endExam('timeout');
+            if (inExam() && left <= 0) endExam('timeout');
         }
         setInterval(tick, 250);
         tick();
@@ -411,7 +413,7 @@
             else if (armed && !finished) askEsc();
         });
         document.addEventListener('visibilitychange', function () {
-            if (armed && !finished && document.visibilityState === 'hidden') {
+            if (inExam() && document.visibilityState === 'hidden') {
                 blankShot();
                 endExam('left');
             }
@@ -429,12 +431,12 @@
             }, 800);
         });
         window.addEventListener('pagehide', function () {
-            if (armed && !finished) beacon('left');
+            if (inExam()) beacon('left');
         });
         history.pushState(null, '', location.href);
         window.addEventListener('popstate', function () {
             history.pushState(null, '', location.href);
-            if (armed && !finished) endExam('left');
+            if (inExam()) endExam('left');
         });
     </script>
 }

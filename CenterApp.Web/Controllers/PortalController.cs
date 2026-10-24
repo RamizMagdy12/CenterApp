@@ -143,6 +143,7 @@ public class PortalController : Controller
             TempData["ExamError"] = result.Message;
             return RedirectToAction(nameof(Exam), new { id });
         }
+        TempData["RetakePass"] = id.ToString();
         return RedirectToAction(nameof(Take), new { id });
     }
 
@@ -153,6 +154,8 @@ public class PortalController : Controller
         if (st == null) return Forbid();
         var vm = await _exams.TakeAsync(st.Id, id);
         if (vm == null) return RedirectToAction(nameof(Exam), new { id });
+        if (vm.SingleEntry && TempData["RetakePass"]?.ToString() != id.ToString())
+            return RedirectToAction(nameof(Exam), new { id });
         return View(vm);
     }
 

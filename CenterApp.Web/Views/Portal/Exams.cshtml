@@ -22,7 +22,7 @@
                 }
                 else
                 {
-                    <span class="pill @(m.CanStart || m.CanResume ? "pill-primary" : "pill-gray")">@m.PhaseText</span>
+                    <span class="pill @(m.CanStart || m.CanResume ? "pill-primary" : "pill-gray")">@(m.Phase == "once" ? L.Get("Portal.GraceOnceShort") : m.Phase == "used" ? L.Get("Portal.GraceUsedShort") : m.PhaseText)</span>
                 }
             </span>
         </a>

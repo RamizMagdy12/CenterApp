@@ -1379,6 +1379,18 @@
   <data name="Portal.ResultsForAll" xml:space="preserve">
     <value>النتيجة تظهر لكل الطلاب</value>
   </data>
+  <data name="Portal.GraceOnce" xml:space="preserve">
+    <value>فترة السماح مرة واحدة. لو خرجت من الامتحان مش هتقدر تدخله تاني.</value>
+  </data>
+  <data name="Portal.GraceOnceShort" xml:space="preserve">
+    <value>مرة واحدة</value>
+  </data>
+  <data name="Portal.GraceUsed" xml:space="preserve">
+    <value>دخلت فترة السماح قبل كده، ومينفعش تدخل تاني.</value>
+  </data>
+  <data name="Portal.GraceUsedShort" xml:space="preserve">
+    <value>اتسجل دخولك</value>
+  </data>
   <data name="Portal.Resume" xml:space="preserve">
     <value>كمّل الاختبار</value>
   </data>
@@ -1933,6 +1945,9 @@
   </data>
   <data name="Viewer.Fullscreen" xml:space="preserve">
     <value>ملء الشاشة</value>
+  </data>
+  <data name="Viewer.VideoList" xml:space="preserve">
+    <value>الفيديوهات</value>
   </data>
   <data name="Common.InArabic" xml:space="preserve">
     <value>بالعربي</value>

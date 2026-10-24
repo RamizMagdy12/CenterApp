@@ -1,11 +1,19 @@
 ﻿@model ViewerVm
+@{
+    var videos = Model.Files.Where(f => f.Kind == MaterialFileKind.Video).ToList();
+    var docs = Model.Files.Where(f => f.Kind != MaterialFileKind.Video).ToList();
+}
 <style>
     .viewer .vpage { width: 100%; max-width: 900px; display: block; margin: 0 auto 12px; border: 1px solid var(--line); border-radius: 6px; background: #fff; user-select: none; -webkit-user-drag: none; pointer-events: none; }
-    .viewer .vfile { margin-bottom: 30px; }
+    .viewer .vfile { margin-top: 28px; }
     .viewer .vfile-title { font-weight: 700; margin-bottom: 10px; }
 
-    .vwrap { position: relative; width: 100%; max-width: 1180px; margin: 0 auto; background: #000; border-radius: 10px; overflow: hidden; aspect-ratio: 16 / 9; max-height: 88vh; }
-    .vwrap video { width: 100%; height: 100%; display: block; object-fit: contain; background: #000; }
+    .vtheater { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 16px; align-items: start; }
+    .vtheater.solo { grid-template-columns: minmax(0, 1fr); }
+
+    .vwrap { position: relative; width: 100%; background: #111; border-radius: 10px; overflow: hidden; aspect-ratio: 16 / 9; }
+    .vwrap video { width: 100%; height: 100%; display: block; object-fit: contain; background: #111; }
+    .vnow { margin-top: 10px; font-weight: 700; font-size: 16px; line-height: 1.4; }
 
     .vwrap:fullscreen { max-width: none; max-height: none; width: 100vw; height: 100vh; border-radius: 0; aspect-ratio: auto; }
     .vwrap:-webkit-full-screen { max-width: none; max-height: none; width: 100vw; height: 100vh; border-radius: 0; aspect-ratio: auto; }
@@ -13,30 +21,63 @@
 
     .vwm { position: absolute; z-index: 5; color: rgba(255,255,255,.45); font-weight: 700; font-size: 15px; pointer-events: none; text-shadow: 0 0 4px rgba(0,0,0,.6); transition: all 1.5s ease; white-space: nowrap; direction: ltr; }
     .vfs { position: absolute; z-index: 6; top: 8px; inset-inline-end: 8px; }
+
+    .vlist { background: #fff; border: 1px solid var(--line); border-radius: 10px; overflow: auto; max-height: min(70vh, 520px); }
+    .vlist-h { padding: 10px 14px; font-size: 13px; font-weight: 700; color: var(--muted); border-bottom: 1px solid var(--line); }
+    .vitem { width: 100%; display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px; border: 0; border-bottom: 1px solid var(--line); border-inline-start: 3px solid transparent; background: #fff; color: inherit; font: inherit; text-align: start; cursor: pointer; }
+    .vitem:last-child { border-bottom: 0; }
+    .vitem:hover { background: #f7fafb; }
+    .vitem.on { background: #f3f6f7; border-inline-start-color: #163044; }
+    .vnum { flex: none; width: 1.4em; color: var(--muted); font-weight: 700; font-size: 13px; line-height: 1.4; }
+    .vitem.on .vnum { color: #163044; }
+    .vname { font-weight: 600; font-size: 14px; line-height: 1.4; }
+
+    @@media (max-width: 860px) {
+        .vtheater { grid-template-columns: minmax(0, 1fr); }
+        .vlist { max-height: 280px; }
+    }
     @@media print { .viewer { display: none !important; } }
 </style>
 
 <div class="viewer" id="viewer" data-wm="@Model.Watermark">
     @if (!string.IsNullOrWhiteSpace(Model.Description)) { <p class="text-muted">@Model.Description</p> }
 
-    @foreach (var f in Model.Files)
+    @if (videos.Count > 0)
+    {
+        var first = videos[0];
+        <div class="vtheater @(videos.Count == 1 ? "solo" : "")">
+            <div class="vstage">
+                <div class="vwrap" id="vPlayer">
+                    <video id="vMain" controls controlsList="nodownload nofullscreen noremoteplayback" disablePictureInPicture disableRemotePlayback
+                           playsinline preload="metadata" src="@Url.Action("Video", "Media", new { id = first.Id, t = first.Token })"></video>
+                    <button type="button" class="vfs btn btn-sm btn-dark">@L.Get("Viewer.Fullscreen")</button>
+                </div>
+                <div class="vnow" id="vNow">@first.Name</div>
+            </div>
+            @if (videos.Count > 1)
+            {
+                <aside class="vlist" id="vList">
+                    <div class="vlist-h">@L.Get("Viewer.VideoList") · @videos.Count</div>
+                    @for (var i = 0; i < videos.Count; i++)
+                    {
+                        var f = videos[i];
+                        <button type="button" class="vitem @(i == 0 ? "on" : "")" data-src="@Url.Action("Video", "Media", new { id = f.Id, t = f.Token })" data-name="@f.Name">
+                            <span class="vnum">@(i + 1)</span>
+                            <span class="vname">@f.Name</span>
+                        </button>
+                    }
+                </aside>
+            }
+        </div>
+    }
+
+    @foreach (var f in docs)
     {
         <div class="vfile">
             <div class="vfile-title">@f.Name</div>
-            @if (f.Kind == MaterialFileKind.Video)
+            @for (var p = 1; p <= f.PageCount; p++)
             {
-                <div class="vwrap">
-                    <video controls controlsList="nodownload nofullscreen noremoteplayback" disablePictureInPicture disableRemotePlayback
-                           playsinline preload="metadata" src="@Url.Action("Video", "Media", new { id = f.Id, t = f.Token })"></video>
-                    <button type="button" class="vfs btn btn-sm btn-dark">@L.Get("Viewer.Fullscreen")</button>
-                </div>
-            }
-            else
-            {
-                for (var p = 1; p <= f.PageCount; p++)
-                {
-                    <img class="vpage" loading="lazy" draggable="false" alt="" src="@Url.Action("Page", "Media", new { id = f.Id, n = p, t = f.Token })" />
-                }
+                <img class="vpage" loading="lazy" draggable="false" alt="" src="@Url.Action("Page", "Media", new { id = f.Id, n = p, t = f.Token })" />
             }
         </div>
     }
@@ -59,7 +100,6 @@
             if (e.key === 'Escape') document.querySelectorAll('.vwrap.vfake').forEach(function (w) { setFake(w, false); });
         });
 
-        // ───── ملء الشاشة (على الحاوية عشان العلامة المائية تفضل ظاهرة)
         function fsEl() { return document.fullscreenElement || document.webkitFullscreenElement || null; }
 
         function label(w) {
@@ -95,7 +135,6 @@
 
         function onFsChange() {
             var el = fsEl();
-            // المتصفح فتح ملء شاشة الفيديو نفسه (هتختفي العلامة المائية): نلغيه وندخل ملء شاشة الحاوية
             if (el && el.tagName === 'VIDEO' && v.contains(el)) {
                 var w = el.closest('.vwrap');
                 var x = document.exitFullscreen || document.webkitExitFullscreen;
@@ -108,7 +147,6 @@
         document.addEventListener('webkitfullscreenchange', onFsChange);
 
         document.querySelectorAll('.vwrap').forEach(function (w) {
-            // علامة مائية متحركة
             var s = document.createElement('div');
             s.className = 'vwm'; s.textContent = wm; w.appendChild(s);
             function move() { s.style.top = (8 + Math.random() * 78) + '%'; s.style.left = (4 + Math.random() * 60) + '%'; }
@@ -118,11 +156,42 @@
             if (b) b.addEventListener('click', function () { toggle(w); });
 
             var vid = w.querySelector('video');
+            if (!vid) return;
             vid.addEventListener('dblclick', function (e) { e.preventDefault(); toggle(w); });
-            vid.addEventListener('webkitbeginfullscreen', function () {   // آيفون
+            vid.addEventListener('webkitbeginfullscreen', function () {
                 try { vid.webkitExitFullscreen(); } catch (e) { }
                 setFake(w, true);
             });
+        });
+
+        var list = document.getElementById('vList');
+        var main = document.getElementById('vMain');
+        var now = document.getElementById('vNow');
+        if (!list || !main) return;
+
+        function playItem(btn) {
+            list.querySelectorAll('.vitem').forEach(function (b) { b.classList.remove('on'); });
+            btn.classList.add('on');
+            var src = btn.getAttribute('data-src');
+            now.textContent = btn.getAttribute('data-name') || '';
+            if (main.getAttribute('src') !== src) {
+                main.pause();
+                main.src = src;
+                main.load();
+            }
+            var play = main.play();
+            if (play && play.catch) play.catch(function () { });
+            btn.scrollIntoView({ block: 'nearest' });
+        }
+
+        list.querySelectorAll('.vitem').forEach(function (btn) {
+            btn.addEventListener('click', function () { playItem(btn); });
+        });
+
+        main.addEventListener('ended', function () {
+            var on = list.querySelector('.vitem.on');
+            var next = on && on.nextElementSibling;
+            if (next && next.classList.contains('vitem')) playItem(next);
         });
     })();
 </script>

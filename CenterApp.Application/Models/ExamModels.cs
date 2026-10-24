@@ -233,6 +233,7 @@ public class ExamTakeVm
     public DateTime ClosesAt { get; set; }
     public DateTime ResultsAt { get; set; }
     public int RemainingSeconds { get; set; }
+    public bool SingleEntry { get; set; }
     public List<ExamTakeQuestionVm> Questions { get; set; } = new();
 }
 
