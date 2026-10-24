@@ -14,6 +14,9 @@
   <data name="App.Name" xml:space="preserve">
     <value>Center</value>
   </data>
+  <data name="App.DevelopedBy" xml:space="preserve">
+    <value>Developed by Ramiz Magdy Awad</value>
+  </data>
   <data name="Att.Absent" xml:space="preserve">
     <value>Absent</value>
   </data>

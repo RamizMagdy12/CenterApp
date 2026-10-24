@@ -777,6 +777,14 @@ body.sb-collapsed .sidebar {
     font-size: 13px;
 }
 
+.desk-credit {
+    margin: 22px 0 4px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 600;
+}
+
 .desk-figures {
     display: grid;
     grid-template-columns: repeat(4, 1fr);

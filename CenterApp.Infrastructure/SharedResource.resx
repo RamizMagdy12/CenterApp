@@ -14,6 +14,9 @@
   <data name="App.Name" xml:space="preserve">
     <value>السنتر</value>
   </data>
+  <data name="App.DevelopedBy" xml:space="preserve">
+    <value>تطوير Ramiz Magdy Awad</value>
+  </data>
   <data name="Att.Absent" xml:space="preserve">
     <value>غائب</value>
   </data>
